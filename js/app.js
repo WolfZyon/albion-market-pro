@@ -1,10 +1,11 @@
 // ============================================
-// SILVERFORGE — ALBION MARKET TOOLS v2.0
+// SILVERFORGE — ALBION MARKET TOOLS v2.1
 // ============================================
 
 const API_BASE = 'https://west.albion-online-data.com/api/v2/stats/prices';
 const CIDADES = ['Bridgewatch','Caerleon','Fort Sterling','Lymhurst','Martlock','Thetford'];
 const CIDADES_COM_BRECILIEN = ['Bridgewatch','Caerleon','Fort Sterling','Lymhurst','Martlock','Thetford','Brecilien'];
+let usarDadosExemplo = true;
 
 function navigateTo(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -14,14 +15,17 @@ function navigateTo(page) {
   const btn = document.querySelector('.nav-btn[data-page="' + page + '"]');
   if (btn) btn.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (page === 'blackmarket') carregarBM();
+  if (page === 'buscar') initBuscar();
 }
 
 function toggleDadosExemplo() {
   const btn = document.getElementById('btnDadosExemplo');
-  const isExemplo = btn.textContent.includes('exemplo');
-  btn.textContent = isExemplo ? 'Usar API real' : 'Dados de exemplo';
-  btn.style.borderColor = isExemplo ? 'var(--green)' : 'var(--gold-dark)';
-  btn.style.color = isExemplo ? 'var(--green)' : 'var(--gold)';
+  usarDadosExemplo = !usarDadosExemplo;
+  btn.textContent = usarDadosExemplo ? 'Dados de exemplo' : 'Usar API real';
+  btn.style.borderColor = usarDadosExemplo ? 'var(--gold-dark)' : 'var(--green)';
+  btn.style.color = usarDadosExemplo ? 'var(--gold)' : 'var(--green)';
 }
 
 function setLoading(show) {
@@ -57,6 +61,7 @@ function getItemIconUrl(id) {
 }
 
 async function fetchPrices(items, locations, qualities) {
+  if (usarDadosExemplo) return [];
   if (!items || !items.length) return [];
   const locStr = locations.join(',');
   const qualStr = (qualities || [1]).join(',');
@@ -300,42 +305,38 @@ function buscarSugestoes(texto) {
     .slice(0, 8);
   return scored.map(s => s.sugestao);
 }
+
 // ============================================
 // FLIPPER
 // ============================================
-function initFlipper() {
-  const input = document.getElementById('flipItemInput');
+
+const FLIP_EXEMPLOS = [
+  { itemId: 'T8_MOUNT_DIREWOLF', fromCity: 'Bridgewatch', toCity: 'Thetford', buy: 3410000, sell: 5830000, profit: 1290000, profitPct: 0.378, volume: 27, updated: '78min' },
+  { itemId: 'T8_2H_CAPEITEM_FW_THETFORD', fromCity: 'Brecilien', toCity: 'Fort Sterling', buy: 1360000, sell: 2350000, profit: 831700, profitPct: 0.611, volume: 65, updated: '126min' },
+  { itemId: 'T6_3_2H_FIRESTAFF', fromCity: 'Martlock', toCity: 'Caerleon', buy: 2270000, sell: 3270000, profit: 787700, profitPct: 0.347, volume: 39, updated: '161min' },
+  { itemId: 'T8_2H_AXE', fromCity: 'Lymhurst', toCity: 'Thetford', buy: 1680000, sell: 2230000, profit: 490200, profitPct: 0.387, volume: 97, updated: '72min' },
+  { itemId: 'T7_2_2H_DAGGER', fromCity: 'Caerleon', toCity: 'Martlock', buy: 1820000, sell: 1480000, profit: 366100, profitPct: 0.359, volume: 400, updated: '168min' },
+  { itemId: 'T7_1_2H_HAMMER', fromCity: 'Bridgewatch', toCity: 'Brecilien', buy: 1120000, sell: 1510000, profit: 292100, profitPct: 0.261, volume: 217, updated: '99min' },
+  { itemId: 'T7_1_SHOES_LEATHER_SET1', fromCity: 'Fort Sterling', toCity: 'Thetford', buy: 587900, sell: 838100, profit: 195800, profitPct: 0.333, volume: 180, updated: '172min' },
+  { itemId: 'T6_2_HEAD_LEATHER_SET1', fromCity: 'Thetford', toCity: 'Caerleon', buy: 444600, sell: 647500, profit: 160800, profitPct: 0.362, volume: 226, updated: '179min' },
+  { itemId: 'T6_1_ARMOR_CLOTH_SET1', fromCity: 'Fort Sterling', toCity: 'Thetford', buy: 245400, sell: 432500, profit: 159000, profitPct: 0.648, volume: 217, updated: '131min' },
+  { itemId: 'T6_1_2H_BOW', fromCity: 'Caerleon', toCity: 'Bridgewatch', buy: 397700, sell: 559900, profit: 125800, profitPct: 0.316, volume: 148, updated: '145min' }
+];
+
+function onFlipInput(val) {
   const sugestoesBox = document.getElementById('flipSugestoes');
-  if (!input) return;
-
-  input.addEventListener('input', e => {
-    const val = e.target.value;
-    const sugestoes = buscarSugestoes(val);
-    if (sugestoes.length > 0) {
-      sugestoesBox.innerHTML = sugestoes.map(s => {
-        const id = TRADUCOES[s];
-        const nome = getNomeItem(id);
-        return '<div class="sugestao-item" onclick="selecionarFlipSugestao(\'' + s.replace(/'/g, "\\'") + '\')">' + nome + ' <span class="sugestao-id">' + id + '</span></div>';
-      }).join('');
-      sugestoesBox.style.display = 'block';
-    } else {
-      sugestoesBox.innerHTML = '';
-      sugestoesBox.style.display = 'none';
-    }
-  });
-
-  input.addEventListener('keypress', e => {
-    if (e.key === 'Enter') {
-      sugestoesBox.style.display = 'none';
-      scanFlips();
-    }
-  });
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#flipItemInput') && !e.target.closest('#flipSugestoes')) {
-      sugestoesBox.style.display = 'none';
-    }
-  });
+  const sugestoes = buscarSugestoes(val);
+  if (sugestoes.length > 0) {
+    sugestoesBox.innerHTML = sugestoes.map(s => {
+      const id = TRADUCOES[s];
+      const nome = getNomeItem(id);
+      return '<div class="sugestao-item" onclick="selecionarFlipSugestao(\'' + escapeHtml(s) + '\')">' + nome + '<span class="sugestao-id">' + id + '</span></div>';
+    }).join('');
+    sugestoesBox.style.display = 'block';
+  } else {
+    sugestoesBox.innerHTML = '';
+    sugestoesBox.style.display = 'none';
+  }
 }
 
 function selecionarFlipSugestao(texto) {
@@ -363,17 +364,27 @@ async function scanFlips() {
   const tax = getTaxaVenda();
 
   if (!inputRaw) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state small" style="text-align:center;padding:40px;"><p>Digite um item para buscar</p><span>Ex: claymore, bolsa, capa, cajado de fogo...</span></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Escolha o item e clique em <strong>Escanear</strong></p><span>Ex: claymore, bolsa, capa, cajado de fogo...</span></div></td></tr>';
     return;
   }
 
   let itemId = traduzirParaId(inputRaw);
   if (!itemId) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state small" style="text-align:center;padding:40px;"><p style="color:var(--red)">Item nao encontrado: "' + escapeHtml(inputRaw) + '"</p></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Item nao encontrado: "' + escapeHtml(inputRaw) + '"</p></div></td></tr>';
     return;
   }
 
   setLoading(true);
+
+  if (usarDadosExemplo) {
+    setTimeout(() => {
+      const dados = FLIP_EXEMPLOS.filter(e => e.itemId === itemId || itemId.includes('BAG') || itemId.includes('CAPE') || itemId.includes('SWORD') || itemId.includes('AXE') || itemId.includes('DAGGER') || itemId.includes('HAMMER') || itemId.includes('STAFF') || itemId.includes('BOW'));
+      const oportunidades = dados.length ? dados : FLIP_EXEMPLOS.slice(0, 5);
+      renderFlipResults(oportunidades, tax);
+      setLoading(false);
+    }, 600);
+    return;
+  }
 
   let fromCities = fromCity === 'Todas' ? CIDADES_COM_BRECILIEN : [fromCity];
   let toCities = toCity === 'Todas' ? CIDADES_COM_BRECILIEN : [toCity];
@@ -409,411 +420,623 @@ async function scanFlips() {
     }
 
     oportunidades.sort((a, b) => b.profit - a.profit);
-
-    if (oportunidades.length > 0) {
-      const best = oportunidades[0];
-      document.getElementById('flipStatBest').textContent = formatSilver(best.profit);
-      document.getElementById('flipStatBestRoute').textContent = best.fromCity + ' -> ' + best.toCity;
-      const totalProfit = oportunidades.reduce((s, o) => s + o.profit, 0);
-      document.getElementById('flipStatTotal').textContent = formatSilver(totalProfit);
-      document.getElementById('flipStatCount').textContent = oportunidades.length + ' rotas listadas';
-      const avgMargin = oportunidades.reduce((s, o) => s + o.profitPct, 0) / oportunidades.length;
-      document.getElementById('flipStatMargin').textContent = formatPercent(avgMargin);
-      document.getElementById('flipStatPremium').textContent = tax === 0.04 ? 'com Premium (4% imposto)' : 'sem Premium (8% imposto)';
-    } else {
-      document.getElementById('flipStatBest').textContent = '-';
-      document.getElementById('flipStatBestRoute').textContent = 'Nenhuma oportunidade';
-      document.getElementById('flipStatTotal').textContent = '-';
-      document.getElementById('flipStatCount').textContent = '0 rotas';
-      document.getElementById('flipStatMargin').textContent = '-';
-    }
-
-    if (!oportunidades.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state small" style="text-align:center;padding:40px;"><p>Nenhuma oportunidade de lucro encontrada</p><span>Tente outras cidades ou verifique se o item tem volume no mercado</span></td></tr>';
-    } else {
-      tbody.innerHTML = oportunidades.map(o => {
-        const nome = getNomeItem(o.itemId);
-        return '<tr>' +
-          '<td><div class="item-cell"><img src="' + getItemIconUrl(o.itemId) + '" class="item-icon" onerror="this.style.display=\'none\'" loading="lazy"><div class="item-info"><div class="item-name">' + nome + '</div><div class="item-category">' + getCategoria(o.itemId) + '</div></div></div></td>' +
-          '<td><div class="route-cell">' + o.fromCity + ' <span class="arrow">-></span> ' + o.toCity + '</div></td>' +
-          '<td class="price-sell">' + formatSilverFull(o.buy) + ' S</td>' +
-          '<td class="price-buy">' + formatSilverFull(o.sell) + ' S</td>' +
-          '<td class="profit-pos">' + formatSilverFull(o.profit) + ' S</td>' +
-          '<td>' + o.volume + '</td>' +
-          '<td><div class="timestamp"><span class="dot dot-green"></span>' + o.updated + '</div></td>' +
-          '</tr>';
-      }).join('');
-    }
-  } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state small" style="text-align:center;padding:40px;"><p style="color:var(--red)">Erro ao buscar dados: ' + escapeHtml(err.message) + '</p></td></tr>';
+    renderFlipResults(oportunidades, tax);
+  } catch (e) {
+    console.error(e);
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Erro ao buscar dados</p><span>Tente novamente mais tarde</span></div></td></tr>';
   } finally {
     setLoading(false);
   }
 }
 
-// ============================================
-// BUSCAR ITEM (PREÇOS)
-// ============================================
-const ITENS_POPULARES = [
-  'T4_BAG','T5_BAG','T6_BAG','T4_CAPE','T5_CAPE','T6_CAPE',
-  'T4_2H_CLAYMORE','T5_2H_CLAYMORE','T6_2H_CLAYMORE',
-  'T4_2H_FIRESTAFF','T5_2H_FIRESTAFF','T6_2H_FIRESTAFF',
-  'T4_2H_BOW','T5_2H_BOW','T6_2H_BOW',
-  'T4_HEAD_PLATE_SET1','T4_ARMOR_PLATE_SET1','T4_SHOES_PLATE_SET1',
-  'T4_HEAD_LEATHER_SET1','T4_ARMOR_LEATHER_SET1','T4_SHOES_LEATHER_SET1',
-  'T4_HEAD_CLOTH_SET1','T4_ARMOR_CLOTH_SET1','T4_SHOES_CLOTH_SET1',
-  'T4_METALBAR','T5_METALBAR','T6_METALBAR',
-  'T4_LEATHER','T5_LEATHER','T6_LEATHER',
-  'T4_CLOTH','T5_CLOTH','T6_CLOTH',
-  'T4_PLANKS','T5_PLANKS','T6_PLANKS',
-  'T4_POTION_HEAL','T5_POTION_HEAL'
-];
+function renderFlipResults(oportunidades, tax) {
+  const tbody = document.getElementById('flipTableBody');
 
-function initBuscar() {
-  const input = document.getElementById('buscarInput');
-  const sugestoesBox = document.getElementById('buscarSugestoes');
-  if (!input) return;
+  if (oportunidades.length > 0) {
+    const best = oportunidades[0];
+    document.getElementById('flipStatBest').textContent = formatSilver(best.profit);
+    document.getElementById('flipStatBestRoute').textContent = best.fromCity + ' \u2192 ' + best.toCity;
+    const totalProfit = oportunidades.reduce((s, o) => s + o.profit, 0);
+    document.getElementById('flipStatTotal').textContent = formatSilver(totalProfit);
+    document.getElementById('flipStatCount').textContent = oportunidades.length + ' rotas listadas';
+    const avgMargin = oportunidades.reduce((s, o) => s + o.profitPct, 0) / oportunidades.length;
+    document.getElementById('flipStatMargin').textContent = formatPercent(avgMargin);
+    document.getElementById('flipStatPremium').textContent = tax === 0.04 ? 'com Premium (4% imposto)' : 'sem Premium (8% imposto)';
+  } else {
+    document.getElementById('flipStatBest').textContent = '-';
+    document.getElementById('flipStatBestRoute').textContent = 'Nenhuma oportunidade';
+    document.getElementById('flipStatTotal').textContent = '-';
+    document.getElementById('flipStatCount').textContent = '0 rotas';
+    document.getElementById('flipStatMargin').textContent = '-';
+  }
 
-  renderListaPopulares();
-
-  input.addEventListener('input', e => {
-    const val = e.target.value;
-    const sugestoes = buscarSugestoes(val);
-    if (sugestoes.length > 0) {
-      sugestoesBox.innerHTML = sugestoes.map(s => {
-        const id = TRADUCOES[s];
-        const nome = getNomeItem(id);
-        return '<div class="sugestao-item" onclick="selecionarBuscar(\'' + s.replace(/'/g, "\\'") + '\')">' + nome + ' <span class="sugestao-id">' + id + '</span></div>';
-      }).join('');
-      sugestoesBox.style.display = 'block';
-    } else {
-      sugestoesBox.innerHTML = '';
-      sugestoesBox.style.display = 'none';
-    }
-  });
-
-  input.addEventListener('keypress', e => {
-    if (e.key === 'Enter') {
-      sugestoesBox.style.display = 'none';
-      const id = traduzirParaId(input.value);
-      if (id) buscarPrecosItem(id);
-    }
-  });
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#buscarInput') && !e.target.closest('#buscarSugestoes')) {
-      sugestoesBox.style.display = 'none';
-    }
-  });
+  if (!oportunidades.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Nenhuma oportunidade de lucro encontrada</p><span>Tente outras cidades ou verifique se o item tem volume no mercado</span></div></td></tr>';
+  } else {
+    tbody.innerHTML = oportunidades.map(o => {
+      const nome = getNomeItem(o.itemId);
+      const cat = getCategoria(o.itemId);
+      const tier = o.itemId.match(/^T([4-8])/)?.[1] || '4';
+      const enchant = o.itemId.match(/@([1-3])$/)?.[1] || '';
+      const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
+      const dotClass = o.updated === 'Agora' ? 'dot-green' : (parseInt(o.updated) < 60 ? 'dot-yellow' : 'dot-red');
+      return '<tr>' +
+        '<td><div class="item-cell"><span class="tier-badge">' + tierStr + '</span><div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div></div></td>' +
+        '<td><div class="route-cell">' + o.fromCity + '<span class="arrow">\u2192</span>' + o.toCity + '</div></td>' +
+        '<td class="price-sell price-val">' + formatSilver(o.buy) + '</td>' +
+        '<td class="price-buy price-val">' + formatSilver(o.sell) + '</td>' +
+        '<td class="profit-pos price-val">+' + formatSilver(o.profit) + ' <span style="font-size:11px;color:var(--green-dim)">(' + formatPercent(o.profitPct) + ')</span></td>' +
+        '<td>' + o.volume + '</td>' +
+        '<td><div class="timestamp"><span class="dot ' + dotClass + '"></span>' + o.updated + '</div></td>' +
+        '</tr>';
+    }).join('');
+  }
 }
 
-function renderListaPopulares() {
-  const lista = document.getElementById('buscarLista');
+// ============================================
+// BUSCAR ITEM
+// ============================================
+
+const ITENS_POPULARES = [
+  'T7_2_2H_DAGGER', 'T6_1_2H_BOW', 'T8_2H_AXE', 'T6_3_2H_FIRESTAFF',
+  'T7_1_2H_HAMMER', 'T6_2_HEAD_LEATHER_SET1', 'T7_1_SHOES_LEATHER_SET1',
+  'T5_HEAD_PLATE_SET1', 'T6_1_ARMOR_CLOTH_SET1', 'T5_2H_CLAYMORE',
+  'T8_MOUNT_DIREWOLF', 'T8_2H_CAPEITEM_FW_THETFORD'
+];
+
+const BUSCAR_EXEMPLOS = {
+  'T7_2_2H_DAGGER': {
+    nome: 'Adaga Bruxa', categoria: 'Armas', tier: 'T7.2', qualidade: 'Qualidade 4',
+    menorVenda: 1020190, maiorCompra: 1482630, blackMarket: 1387730,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 1020000, compraMax: 901500, volume: 489, updated: '168min' },
+      { cidade: 'Bridgewatch', vendaMin: 1450000, compraMax: 1270000, volume: 84, updated: '9min' },
+      { cidade: 'Lymhurst', vendaMin: 1740000, compraMax: 1480000, volume: 138, updated: '14min' },
+      { cidade: 'Martlock', vendaMin: 1720000, compraMax: 1480000, volume: 400, updated: '7min' },
+      { cidade: 'Fort Sterling', vendaMin: 1250000, compraMax: 931400, volume: 495, updated: '97min' },
+      { cidade: 'Thetford', vendaMin: 1240000, compraMax: 975100, volume: 218, updated: '13min' },
+      { cidade: 'Brecilien', vendaMin: 1610000, compraMax: 1290000, volume: 81, updated: '156min' }
+    ]
+  },
+  'T6_1_2H_BOW': {
+    nome: 'Arco Bruxo', categoria: 'Armas', tier: 'T6.1', qualidade: 'Qualidade 3',
+    menorVenda: 397700, maiorCompra: 350000, blackMarket: 559900,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 397700, compraMax: 320000, volume: 148, updated: '145min' },
+      { cidade: 'Bridgewatch', vendaMin: 450000, compraMax: 380000, volume: 92, updated: '22min' },
+      { cidade: 'Lymhurst', vendaMin: 510000, compraMax: 420000, volume: 67, updated: '45min' },
+      { cidade: 'Martlock', vendaMin: 480000, compraMax: 390000, volume: 112, updated: '18min' },
+      { cidade: 'Fort Sterling', vendaMin: 420000, compraMax: 350000, volume: 203, updated: '33min' },
+      { cidade: 'Thetford', vendaMin: 460000, compraMax: 370000, volume: 89, updated: '51min' },
+      { cidade: 'Brecilien', vendaMin: 550000, compraMax: 410000, volume: 34, updated: '120min' }
+    ]
+  },
+  'T8_2H_AXE': {
+    nome: 'Machado Sanguinário', categoria: 'Armas', tier: 'T8', qualidade: 'Qualidade 1',
+    menorVenda: 1680000, maiorCompra: 1400000, blackMarket: 2230000,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 1680000, compraMax: 1400000, volume: 97, updated: '72min' },
+      { cidade: 'Bridgewatch', vendaMin: 1850000, compraMax: 1520000, volume: 45, updated: '15min' },
+      { cidade: 'Lymhurst', vendaMin: 2100000, compraMax: 1650000, volume: 32, updated: '28min' },
+      { cidade: 'Martlock', vendaMin: 1950000, compraMax: 1580000, volume: 78, updated: '41min' },
+      { cidade: 'Fort Sterling', vendaMin: 1780000, compraMax: 1450000, volume: 156, updated: '8min' },
+      { cidade: 'Thetford', vendaMin: 1900000, compraMax: 1500000, volume: 67, updated: '35min' },
+      { cidade: 'Brecilien', vendaMin: 2200000, compraMax: 1600000, volume: 21, updated: '95min' }
+    ]
+  },
+  'T6_3_2H_FIRESTAFF': {
+    nome: 'Cajado da Grande Fogueira', categoria: 'Armas', tier: 'T6.3', qualidade: 'Qualidade 4',
+    menorVenda: 2270000, maiorCompra: 1900000, blackMarket: 3270000,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 2270000, compraMax: 1900000, volume: 39, updated: '161min' },
+      { cidade: 'Bridgewatch', vendaMin: 2500000, compraMax: 2050000, volume: 28, updated: '42min' },
+      { cidade: 'Lymhurst', vendaMin: 2800000, compraMax: 2200000, volume: 15, updated: '55min' },
+      { cidade: 'Martlock', vendaMin: 2600000, compraMax: 2100000, volume: 52, updated: '19min' },
+      { cidade: 'Fort Sterling', vendaMin: 2350000, compraMax: 1950000, volume: 89, updated: '33min' },
+      { cidade: 'Thetford', vendaMin: 2550000, compraMax: 2000000, volume: 41, updated: '48min' },
+      { cidade: 'Brecilien', vendaMin: 2900000, compraMax: 2150000, volume: 12, updated: '110min' }
+    ]
+  },
+  'T7_1_2H_HAMMER': {
+    nome: 'Martelo de Guerra', categoria: 'Armas', tier: 'T7.1', qualidade: 'Qualidade 3',
+    menorVenda: 1120000, maiorCompra: 950000, blackMarket: 1510000,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 1120000, compraMax: 950000, volume: 217, updated: '99min' },
+      { cidade: 'Bridgewatch', vendaMin: 1250000, compraMax: 1000000, volume: 134, updated: '27min' },
+      { cidade: 'Lymhurst', vendaMin: 1400000, compraMax: 1100000, volume: 78, updated: '38min' },
+      { cidade: 'Martlock', vendaMin: 1300000, compraMax: 1050000, volume: 167, updated: '15min' },
+      { cidade: 'Fort Sterling', vendaMin: 1180000, compraMax: 980000, volume: 245, updated: '22min' },
+      { cidade: 'Thetford', vendaMin: 1280000, compraMax: 1020000, volume: 98, updated: '44min' },
+      { cidade: 'Brecilien', vendaMin: 1450000, compraMax: 1080000, volume: 45, updated: '85min' }
+    ]
+  },
+  'T6_2_HEAD_LEATHER_SET1': {
+    nome: 'Capuz do Assassino', categoria: 'Armaduras', tier: 'T6.2', qualidade: 'Qualidade 4',
+    menorVenda: 444600, maiorCompra: 380000, blackMarket: 647500,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 444600, compraMax: 380000, volume: 226, updated: '179min' },
+      { cidade: 'Bridgewatch', vendaMin: 490000, compraMax: 400000, volume: 134, updated: '31min' },
+      { cidade: 'Lymhurst', vendaMin: 550000, compraMax: 430000, volume: 89, updated: '42min' },
+      { cidade: 'Martlock', vendaMin: 510000, compraMax: 410000, volume: 178, updated: '18min' },
+      { cidade: 'Fort Sterling', vendaMin: 470000, compraMax: 390000, volume: 267, updated: '25min' },
+      { cidade: 'Thetford', vendaMin: 500000, compraMax: 400000, volume: 112, updated: '48min' },
+      { cidade: 'Brecilien', vendaMin: 570000, compraMax: 420000, volume: 56, updated: '92min' }
+    ]
+  },
+  'T7_1_SHOES_LEATHER_SET1': {
+    nome: 'Botas do Guardião', categoria: 'Armaduras', tier: 'T7.1', qualidade: 'Qualidade 3',
+    menorVenda: 587900, maiorCompra: 500000, blackMarket: 838100,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 587900, compraMax: 500000, volume: 180, updated: '172min' },
+      { cidade: 'Bridgewatch', vendaMin: 650000, compraMax: 530000, volume: 112, updated: '28min' },
+      { cidade: 'Lymhurst', vendaMin: 720000, compraMax: 570000, volume: 67, updated: '41min' },
+      { cidade: 'Martlock', vendaMin: 680000, compraMax: 550000, volume: 145, updated: '19min' },
+      { cidade: 'Fort Sterling', vendaMin: 620000, compraMax: 520000, volume: 234, updated: '22min' },
+      { cidade: 'Thetford', vendaMin: 670000, compraMax: 540000, volume: 98, updated: '45min' },
+      { cidade: 'Brecilien', vendaMin: 750000, compraMax: 560000, volume: 43, updated: '88min' }
+    ]
+  },
+  'T5_HEAD_PLATE_SET1': {
+    nome: 'Capacete Soldier', categoria: 'Armaduras', tier: 'T5', qualidade: 'Qualidade 1',
+    menorVenda: 95000, maiorCompra: 80000, blackMarket: 135000,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 95000, compraMax: 80000, volume: 520, updated: '12min' },
+      { cidade: 'Bridgewatch', vendaMin: 105000, compraMax: 85000, volume: 340, updated: '8min' },
+      { cidade: 'Lymhurst', vendaMin: 115000, compraMax: 90000, volume: 210, updated: '15min' },
+      { cidade: 'Martlock', vendaMin: 108000, compraMax: 87000, volume: 420, updated: '10min' },
+      { cidade: 'Fort Sterling', vendaMin: 100000, compraMax: 82000, volume: 580, updated: '6min' },
+      { cidade: 'Thetford', vendaMin: 106000, compraMax: 86000, volume: 310, updated: '11min' },
+      { cidade: 'Brecilien', vendaMin: 120000, compraMax: 88000, volume: 150, updated: '25min' }
+    ]
+  },
+  'T6_1_ARMOR_CLOTH_SET1': {
+    nome: 'Túnica do Clérigo', categoria: 'Armaduras', tier: 'T6.1', qualidade: 'Qualidade 3',
+    menorVenda: 245400, maiorCompra: 210000, blackMarket: 432500,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 245400, compraMax: 210000, volume: 217, updated: '131min' },
+      { cidade: 'Bridgewatch', vendaMin: 270000, compraMax: 220000, volume: 145, updated: '29min' },
+      { cidade: 'Lymhurst', vendaMin: 300000, compraMax: 240000, volume: 89, updated: '42min' },
+      { cidade: 'Martlock', vendaMin: 280000, compraMax: 230000, volume: 178, updated: '18min' },
+      { cidade: 'Fort Sterling', vendaMin: 255000, compraMax: 215000, volume: 267, updated: '25min' },
+      { cidade: 'Thetford', vendaMin: 275000, compraMax: 225000, volume: 112, updated: '48min' },
+      { cidade: 'Brecilien', vendaMin: 310000, compraMax: 235000, volume: 56, updated: '92min' }
+    ]
+  },
+  'T5_2H_CLAYMORE': {
+    nome: 'Claymore', categoria: 'Armas', tier: 'T5', qualidade: 'Qualidade 1',
+    menorVenda: 85000, maiorCompra: 72000, blackMarket: 120000,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 85000, compraMax: 72000, volume: 890, updated: '5min' },
+      { cidade: 'Bridgewatch', vendaMin: 92000, compraMax: 78000, volume: 560, updated: '8min' },
+      { cidade: 'Lymhurst', vendaMin: 100000, compraMax: 82000, volume: 340, updated: '12min' },
+      { cidade: 'Martlock', vendaMin: 95000, compraMax: 80000, volume: 670, updated: '7min' },
+      { cidade: 'Fort Sterling', vendaMin: 88000, compraMax: 75000, volume: 920, updated: '4min' },
+      { cidade: 'Thetford', vendaMin: 93000, compraMax: 77000, volume: 480, updated: '9min' },
+      { cidade: 'Brecilien', vendaMin: 105000, compraMax: 79000, volume: 210, updated: '18min' }
+    ]
+  },
+  'T8_MOUNT_DIREWOLF': {
+    nome: 'Lobo Direwolf', categoria: 'Montarias', tier: 'T8', qualidade: 'Qualidade 1',
+    menorVenda: 3410000, maiorCompra: 3000000, blackMarket: 5830000,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 3410000, compraMax: 3000000, volume: 27, updated: '78min' },
+      { cidade: 'Bridgewatch', vendaMin: 3800000, compraMax: 3200000, volume: 18, updated: '25min' },
+      { cidade: 'Lymhurst', vendaMin: 4200000, compraMax: 3400000, volume: 12, updated: '38min' },
+      { cidade: 'Martlock', vendaMin: 3900000, compraMax: 3300000, volume: 22, updated: '19min' },
+      { cidade: 'Fort Sterling', vendaMin: 3600000, compraMax: 3100000, volume: 34, updated: '15min' },
+      { cidade: 'Thetford', vendaMin: 3700000, compraMax: 3150000, volume: 20, updated: '28min' },
+      { cidade: 'Brecilien', vendaMin: 4300000, compraMax: 3350000, volume: 8, updated: '65min' }
+    ]
+  },
+  'T8_2H_CAPEITEM_FW_THETFORD': {
+    nome: 'Capa de Thetford', categoria: 'Acessórios', tier: 'T8.2', qualidade: 'Qualidade 4',
+    menorVenda: 1360000, maiorCompra: 1150000, blackMarket: 2350000,
+    cidades: [
+      { cidade: 'Caerleon', vendaMin: 1360000, compraMax: 1150000, volume: 65, updated: '126min' },
+      { cidade: 'Bridgewatch', vendaMin: 1500000, compraMax: 1200000, volume: 42, updated: '32min' },
+      { cidade: 'Lymhurst', vendaMin: 1680000, compraMax: 1300000, volume: 28, updated: '45min' },
+      { cidade: 'Martlock', vendaMin: 1550000, compraMax: 1250000, volume: 56, updated: '22min' },
+      { cidade: 'Fort Sterling', vendaMin: 1420000, compraMax: 1180000, volume: 78, updated: '18min' },
+      { cidade: 'Thetford', vendaMin: 1480000, compraMax: 1220000, volume: 48, updated: '35min' },
+      { cidade: 'Brecilien', vendaMin: 1700000, compraMax: 1280000, volume: 22, updated: '72min' }
+    ]
+  }
+};
+
+let buscarItemSelecionado = null;
+
+function initBuscar() {
+  const lista = document.getElementById('buscarListaItens');
   lista.innerHTML = ITENS_POPULARES.map(id => {
-    return '<div class="search-list-item" onclick="buscarPrecosItem(\'' + id + '\')">' +
-      '<img src="' + getItemIconUrl(id) + '" class="item-icon-sm" onerror="this.style.display=\'none\'" loading="lazy">' +
-      '<div class="item-info"><div class="item-name">' + getNomeItem(id) + '</div><div class="item-category">' + getCategoria(id) + '</div></div>' +
+    const nome = getNomeItem(id);
+    const tier = id.match(/^T([4-8])/)?.[1] || '4';
+    const enchant = id.match(/@([1-3])$/)?.[1] || '';
+    const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
+    const cat = getCategoria(id);
+    const active = buscarItemSelecionado === id ? 'active' : '';
+    return '<div class="search-list-item ' + active + '" onclick="selecionarBuscarItem(\'' + id + '\')">' +
+      '<span class="tier-badge">' + tierStr + '</span>' +
+      '<div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div>' +
       '</div>';
   }).join('');
 }
 
-function selecionarBuscar(texto) {
-  document.getElementById('buscarInput').value = texto;
-  document.getElementById('buscarSugestoes').style.display = 'none';
-  const id = traduzirParaId(texto);
-  if (id) buscarPrecosItem(id);
+function onBuscarInput(val) {
+  const sugestoesBox = document.getElementById('buscarSugestoes');
+  const sugestoes = buscarSugestoes(val);
+  if (sugestoes.length > 0) {
+    sugestoesBox.innerHTML = sugestoes.map(s => {
+      const id = TRADUCOES[s];
+      const nome = getNomeItem(id);
+      return '<div class="sugestao-item" onclick="selecionarBuscarSugestao(\'' + escapeHtml(s) + '\')">' + nome + '<span class="sugestao-id">' + id + '</span></div>';
+    }).join('');
+    sugestoesBox.style.display = 'block';
+  } else {
+    sugestoesBox.innerHTML = '';
+    sugestoesBox.style.display = 'none';
+  }
 }
 
-async function buscarPrecosItem(itemId) {
+function selecionarBuscarSugestao(texto) {
+  document.getElementById('buscarInput').value = texto;
+  document.getElementById('buscarSugestoes').style.display = 'none';
+  const itemId = traduzirParaId(texto);
+  if (itemId) selecionarBuscarItem(itemId);
+}
+
+function selecionarBuscarItem(itemId) {
+  buscarItemSelecionado = itemId;
+  initBuscar();
+
   const detalhes = document.getElementById('buscarDetalhes');
-  setLoading(true);
+  const dados = BUSCAR_EXEMPLOS[itemId];
 
-  try {
-    const data = await fetchPrices([itemId], CIDADES_COM_BRECILIEN, [1,2,3,4,5]);
-
-    if (!data || !data.length) {
-      detalhes.innerHTML = '<div class="empty-state small"><p style="color:var(--red)">Nenhum dado encontrado para ' + getNomeItem(itemId) + '</p></div>';
-      setLoading(false);
-      return;
-    }
-
-    const grupos = {};
-    data.forEach(e => {
-      const key = e.item_id + '@' + e.quality;
-      if (!grupos[key]) grupos[key] = { item: e.item_id, quality: e.quality, precos: [] };
-      grupos[key].precos.push({
-        cidade: e.city,
-        venda: e.sell_price_min || 0,
-        compra: e.buy_price_max || 0,
-      });
-    });
-
-    let html = '<div class="item-detail-header">' +
-      '<img src="' + getItemIconUrl(itemId) + '" class="item-icon-lg" onerror="this.style.display=\'none\'" loading="lazy">' +
-      '<div><div class="item-detail-title">' + getNomeItem(itemId) + '</div><div class="item-detail-category">' + getCategoria(itemId) + '</div></div>' +
-      '</div>';
-
-    Object.values(grupos).forEach(g => {
-      const qName = ['','Normal','Bom','Excelente','Obra-Prima','Lendario'][g.quality] || 'Normal';
-      const melhorVenda = Math.max(...g.precos.filter(p => p.venda > 0).map(p => p.venda), 0);
-      const melhorCompra = Math.max(...g.precos.filter(p => p.compra > 0).map(p => p.compra), 0);
-
-      html += '<div class="price-card">' +
-        '<div class="price-card-header">' +
-        '<div><div class="price-card-title">Qualidade: ' + qName + '</div></div>' +
-        '<div style="text-align:right;font-size:12px;color:var(--text-muted);">Melhor Venda: <span style="color:var(--gold)">' + formatSilver(melhorVenda) + 'S</span><br>Melhor Compra: <span style="color:var(--green)">' + formatSilver(melhorCompra) + 'S</span></div>' +
-        '</div>';
-
-      g.precos.sort((a, b) => (b.venda || 0) - (a.venda || 0));
-      g.precos.forEach(p => {
-        const vendaStr = p.venda > 0 ? formatSilverFull(p.venda) + 'S' : '-';
-        const compraStr = p.compra > 0 ? formatSilverFull(p.compra) + 'S' : '-';
-        html += '<div class="price-row"><span class="city">' + p.cidade + '</span><span><span class="sell">V: ' + vendaStr + '</span> <span style="color:var(--text-muted)">|</span> <span class="buy">C: ' + compraStr + '</span></span></div>';
-      });
-      html += '</div>';
-    });
-
-    detalhes.innerHTML = html;
-  } catch (err) {
-    detalhes.innerHTML = '<div class="empty-state small"><p style="color:var(--red)">Erro: ' + escapeHtml(err.message) + '</p></div>';
-  } finally {
-    setLoading(false);
+  if (!dados) {
+    detalhes.innerHTML = '<div class="empty-state"><p>Item selecionado: ' + escapeHtml(getNomeItem(itemId)) + '</p><span>Dados de exemplo disponíveis para itens populares. Use a API real para dados completos.</span></div>';
+    return;
   }
+
+  const tier = itemId.match(/^T([4-8])/)?.[1] || '4';
+  const enchant = itemId.match(/@([1-3])$/)?.[1] || '';
+  const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
+
+  detalhes.innerHTML =
+    '<div class="price-card">' +
+      '<div class="item-detail-header">' +
+        '<span class="tier-badge" style="font-size:12px;padding:4px 10px;">' + tierStr + '</span>' +
+        '<div>' +
+          '<div class="item-detail-title">' + escapeHtml(dados.nome.toUpperCase()) + '</div>' +
+          '<div class="item-detail-category">' + dados.categoria + ' · ' + dados.qualidade + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="price-summary">' +
+        '<div class="price-summary-box">' +
+          '<div class="price-summary-label">Menor Venda</div>' +
+          '<div class="price-summary-value" style="color:var(--green);">' + formatSilverFull(dados.menorVenda) + '</div>' +
+        '</div>' +
+        '<div class="price-summary-box">' +
+          '<div class="price-summary-label">Maior Ordem de Compra</div>' +
+          '<div class="price-summary-value">' + formatSilverFull(dados.maiorCompra) + '</div>' +
+        '</div>' +
+        '<div class="price-summary-box">' +
+          '<div class="price-summary-label">Black Market</div>' +
+          '<div class="price-summary-value" style="color:var(--gold);">' + formatSilverFull(dados.blackMarket) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<table class="data-table">' +
+        '<thead><tr><th>Cidade</th><th>Venda Min.</th><th>Compra Max.</th><th>Volume</th><th>Atualizado</th></tr></thead>' +
+        '<tbody>' +
+        dados.cidades.map(c => {
+          const dotClass = parseInt(c.updated) < 30 ? 'dot-green' : (parseInt(c.updated) < 90 ? 'dot-yellow' : 'dot-red');
+          return '<tr>' +
+            '<td style="font-weight:500;">' + c.cidade + '</td>' +
+            '<td style="color:var(--green);font-weight:600;">' + formatSilver(c.vendaMin) + '</td>' +
+            '<td>' + formatSilver(c.compraMax) + '</td>' +
+            '<td>' + c.volume + '</td>' +
+            '<td><div class="timestamp"><span class="dot ' + dotClass + '"></span>' + c.updated + '</div></td>' +
+            '</tr>';
+        }).join('') +
+        '</tbody>' +
+      '</table>' +
+    '</div>';
 }
 
 // ============================================
 // BLACK MARKET
 // ============================================
-const ITENS_BM = [
-  'T4_BAG','T5_BAG','T6_BAG','T4_CAPE','T5_CAPE','T6_CAPE',
-  'T4_2H_CLAYMORE','T5_2H_CLAYMORE','T6_2H_CLAYMORE','T7_2H_CLAYMORE','T8_2H_CLAYMORE',
-  'T4_2H_FIRESTAFF','T5_2H_FIRESTAFF','T6_2H_FIRESTAFF','T7_2H_FIRESTAFF','T8_2H_FIRESTAFF',
-  'T4_2H_BOW','T5_2H_BOW','T6_2H_BOW','T7_2H_BOW','T8_2H_BOW',
-  'T4_HEAD_PLATE_SET1','T4_ARMOR_PLATE_SET1','T4_SHOES_PLATE_SET1',
-  'T5_HEAD_PLATE_SET1','T5_ARMOR_PLATE_SET1','T5_SHOES_PLATE_SET1',
-  'T4_HEAD_LEATHER_SET1','T4_ARMOR_LEATHER_SET1','T4_SHOES_LEATHER_SET1',
-  'T5_HEAD_LEATHER_SET1','T5_ARMOR_LEATHER_SET1','T5_SHOES_LEATHER_SET1',
-  'T4_HEAD_CLOTH_SET1','T4_ARMOR_CLOTH_SET1','T4_SHOES_CLOTH_SET1',
-  'T5_HEAD_CLOTH_SET1','T5_ARMOR_CLOTH_SET1','T5_SHOES_CLOTH_SET1',
-  'T4_METALBAR','T5_METALBAR','T6_METALBAR','T7_METALBAR','T8_METALBAR',
-  'T4_LEATHER','T5_LEATHER','T6_LEATHER','T7_LEATHER','T8_LEATHER',
-  'T4_CLOTH','T5_CLOTH','T6_CLOTH','T7_CLOTH','T8_CLOTH',
-  'T4_PLANKS','T5_PLANKS','T6_PLANKS','T7_PLANKS','T8_PLANKS',
-  'T4_POTION_HEAL','T5_POTION_HEAL','T6_POTION_HEAL','T7_POTION_HEAL','T8_POTION_HEAL',
-  'T4_MOUNT_HORSE','T5_MOUNT_HORSE','T6_MOUNT_HORSE','T7_MOUNT_HORSE','T8_MOUNT_HORSE',
-  'T4_OFF_SHIELD','T4_OFF_TORCH','T4_OFF_BOOK'
+
+const BM_EXEMPLOS = [
+  { itemId: 'T6_3_2H_FIRESTAFF', nome: 'Cajado da Grande Fogueira', categoria: 'Armas', tier: 'T6.3', comprarEm: 'Martlock', precoCompra: 2270000, precoBM: 4990000, lucro: 2390000, lucroPct: 1.052, updated: '161min' },
+  { itemId: 'T8_2H_AXE', nome: 'Machado Sanguinário', categoria: 'Armas', tier: 'T8', comprarEm: 'Lymhurst', precoCompra: 1680000, precoBM: 3460000, lucro: 1630000, lucroPct: 0.823, updated: '72min' },
+  { itemId: 'T8_2H_CAPEITEM_FW_THETFORD', nome: 'Capa de Thetford', categoria: 'Acessórios', tier: 'T8.2', comprarEm: 'Brecilien', precoCompra: 1360000, precoBM: 3160000, lucro: 1600000, lucroPct: 1.172, updated: '126min' },
+  { itemId: 'T7_1_2H_SPEAR', nome: 'Lança Espírito', categoria: 'Armas', tier: 'T7.1', comprarEm: 'Bridgewatch', precoCompra: 689900, precoBM: 1590000, lucro: 796800, lucroPct: 1.154, updated: '109min' },
+  { itemId: 'T7_1_SHOES_LEATHER_SET1', nome: 'Botas do Guardião', categoria: 'Armaduras', tier: 'T7.1', comprarEm: 'Fort Sterling', precoCompra: 587900, precoBM: 1230000, lucro: 563700, lucroPct: 0.959, updated: '63min' },
+  { itemId: 'T7_2H_NATURESTAFF', nome: 'Tomo de Feitiços', categoria: 'Armas', tier: 'T7', comprarEm: 'Lymhurst', precoCompra: 353800, precoBM: 756800, lucro: 353800, lucroPct: 0.998, updated: '157min' },
+  { itemId: 'T7_2_2H_DAGGER', nome: 'Adaga Bruxa', categoria: 'Armas', tier: 'T7.2', comprarEm: 'Caerleon', precoCompra: 1820000, precoBM: 1390000, lucro: 277300, lucroPct: 0.272, updated: '168min' },
+  { itemId: 'T6_1_2H_BOW', nome: 'Arco Bruxo', categoria: 'Armas', tier: 'T6.1', comprarEm: 'Caerleon', precoCompra: 397700, precoBM: 718200, lucro: 273800, lucroPct: 0.688, updated: '145min' },
+  { itemId: 'T6_2_HEAD_LEATHER_SET1', nome: 'Capuz do Assassino', categoria: 'Armaduras', tier: 'T6.2', comprarEm: 'Thetford', precoCompra: 444600, precoBM: 637900, lucro: 158900, lucroPct: 0.339, updated: '179min' },
+  { itemId: 'T7_1_2H_HAMMER', nome: 'Martelo de Guerra', categoria: 'Armas', tier: 'T7.1', comprarEm: 'Caerleon', precoCompra: 118800, precoBM: 236400, lucro: 103800, lucroPct: 0.872, updated: '52min' },
+  { itemId: 'T6_1_ARMOR_CLOTH_SET1', nome: 'Túnica do Clérigo', categoria: 'Armaduras', tier: 'T6.1', comprarEm: 'Fort Sterling', precoCompra: 245400, precoBM: 346400, lucro: 78500, lucroPct: 0.328, updated: '131min' },
+  { itemId: 'T5_2H_CLAYMORE', nome: 'Claymore', categoria: 'Armas', tier: 'T5', comprarEm: 'Caerleon', precoCompra: 85000, precoBM: 137000, lucro: 28000, lucroPct: 0.895, updated: '7min' }
 ];
 
-let bmResultadosCache = [];
+let bmMinProfit = 0;
 
-function updateBmRange(val) {
-  document.getElementById('bmMinProfitLabel').textContent = formatSilver(parseInt(val));
-  const pct = Math.min(100, (val / 5000000) * 100);
-  document.getElementById('bmRangeFill').style.width = pct + '%';
-  document.getElementById('bmRangeThumb').style.left = pct + '%';
+function initBM() {
+  const track = document.getElementById('bmRangeTrack');
+  const thumb = document.getElementById('bmRangeThumb');
+  const fill = document.getElementById('bmRangeFill');
+
+  let isDragging = false;
+
+  function updateSlider(clientX) {
+    const rect = track.getBoundingClientRect();
+    let pct = (clientX - rect.left) / rect.width;
+    pct = Math.max(0, Math.min(1, pct));
+    bmMinProfit = Math.round(pct * 2000000);
+    thumb.style.left = (pct * 100) + '%';
+    fill.style.width = (pct * 100) + '%';
+    document.getElementById('bmMinProfitLabel').textContent = formatSilver(bmMinProfit);
+    filtrarBM();
+  }
+
+  thumb.addEventListener('mousedown', () => isDragging = true);
+  document.addEventListener('mousemove', e => { if (isDragging) updateSlider(e.clientX); });
+  document.addEventListener('mouseup', () => isDragging = false);
+
+  track.addEventListener('click', e => updateSlider(e.clientX));
+}
+
+function updateBMPremiumLabel() {
+  const toggle = document.getElementById('bmPremiumToggle');
+  const label = toggle.querySelector('.toggle-label');
+  label.textContent = toggle.classList.contains('active') ? 'Conta Premium' : 'Sem Premium';
+}
+
+function carregarBM() {
   filtrarBM();
 }
 
 function filtrarBM() {
-  const filtro = document.getElementById('bmInput').value.toLowerCase().trim();
-  const minProfit = parseInt(document.getElementById('bmMinProfit').value) || 0;
   const grid = document.getElementById('bmGrid');
+  const filtro = document.getElementById('bmFilterInput').value.toLowerCase().trim();
+  const tax = document.getElementById('bmPremiumToggle')?.classList.contains('active') ? 0.04 : 0.08;
 
-  let filtrados = bmResultadosCache.filter(o => o.profit >= minProfit);
+  let itens = BM_EXEMPLOS;
+
   if (filtro) {
-    filtrados = filtrados.filter(o => getNomeItem(o.itemId).toLowerCase().includes(filtro));
+    itens = itens.filter(i => i.nome.toLowerCase().includes(filtro) || i.categoria.toLowerCase().includes(filtro));
   }
 
-  if (!filtrados.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Nenhuma oportunidade encontrada com esses filtros</p></div>';
+  itens = itens.filter(i => i.lucro >= bmMinProfit);
+
+  if (!itens.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Nenhuma oportunidade encontrada</p><span>Ajuste o filtro ou o lucro mínimo</span></div>';
     return;
   }
 
-  grid.innerHTML = filtrados.map(o => {
-    const nome = getNomeItem(o.itemId);
+  grid.innerHTML = itens.map(i => {
+    const dotClass = parseInt(i.updated) < 60 ? 'dot-green' : (parseInt(i.updated) < 120 ? 'dot-yellow' : 'dot-red');
     return '<div class="bm-card">' +
       '<div class="bm-card-header">' +
-      '<div class="bm-card-name"><img src="' + getItemIconUrl(o.itemId) + '" class="item-icon-sm" onerror="this.style.display=\'none\'" loading="lazy"> ' + nome + '</div>' +
-      '<span class="tier-badge">' + getCategoria(o.itemId) + '</span>' +
+        '<div class="bm-card-name"><span class="tier-badge">' + i.tier + '</span>' + escapeHtml(i.nome) + '</div>' +
+        '<svg class="bm-card-info" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>' +
       '</div>' +
-      '<div class="bm-price-row"><span class="label">Compra em ' + o.cidade + '</span><span class="value price-sell">' + formatSilverFull(o.buy) + ' S</span></div>' +
-      '<div class="bm-price-row"><span class="label">Venda BM (Caerleon)</span><span class="value price-bm">' + formatSilverFull(o.sell) + ' S</span></div>' +
-      '<div class="bm-price-row"><span class="label">Taxa Venda (' + o.taxPct + '%)</span><span class="value" style="color:var(--red)">-' + formatSilverFull(o.tax) + ' S</span></div>' +
+      '<div class="bm-price-row"><span class="label">Comprar em ' + i.comprarEm + '</span><span class="value price-sell">' + formatSilver(i.precoCompra) + '</span></div>' +
+      '<div class="bm-price-row"><span class="label">Black Market</span><span class="value price-bm">' + formatSilver(i.precoBM) + '</span></div>' +
       '<div class="bm-card-footer">' +
-      '<span class="bm-profit">' + formatSilverFull(o.profit) + ' S</span>' +
-      '<span class="bm-profit-pct">' + formatPercent(o.profitPct) + '</span>' +
+        '<div class="timestamp"><span class="dot ' + dotClass + '"></span>' + i.updated + '</div>' +
+        '<div><span class="bm-profit">+' + formatSilver(i.lucro) + '</span><span class="bm-profit-pct">(' + (i.lucroPct * 100).toFixed(1) + '%)</span></div>' +
       '</div>' +
-      '</div>';
+    '</div>';
   }).join('');
-}
-
-async function scanBM() {
-  const grid = document.getElementById('bmGrid');
-  const tax = document.getElementById('bmPremiumToggle')?.classList.contains('active') ? 0.04 : 0.08;
-  const taxPct = tax === 0.04 ? '4' : '8';
-
-  grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Buscando oportunidades no Black Market...</p></div>';
-  setLoading(true);
-
-  try {
-    const data = await fetchPrices(ITENS_BM, [...CIDADES_COM_BRECILIEN, 'Black Market'], [1]);
-
-    const oportunidades = [];
-    for (const itemId of ITENS_BM) {
-      const bmPrice = getPrice(data, itemId, 'Black Market', 1);
-      if (!bmPrice || !bmPrice.buy) continue;
-
-      for (const city of CIDADES_COM_BRECILIEN) {
-        const cityPrice = getPrice(data, itemId, city, 1);
-        if (!cityPrice || !cityPrice.sell) continue;
-
-        const buyCost = cityPrice.sell;
-        const sellRevenue = bmPrice.buy;
-        const sellFee = Math.ceil(sellRevenue * tax);
-        const netRevenue = sellRevenue - sellFee;
-        const profit = netRevenue - buyCost;
-        const profitPct = buyCost > 0 ? (profit / buyCost) : 0;
-
-        if (profit > 0) {
-          oportunidades.push({ itemId, cidade: city, buy: buyCost, sell: sellRevenue, profit, profitPct, tax: sellFee, taxPct });
-        }
-      }
-    }
-
-    oportunidades.sort((a, b) => b.profit - a.profit);
-    bmResultadosCache = oportunidades;
-    filtrarBM();
-
-  } catch (err) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p style="color:var(--red)">Erro: ' + escapeHtml(err.message) + '</p></div>';
-  } finally {
-    setLoading(false);
-  }
 }
 
 // ============================================
 // CRAFT & REFINO
 // ============================================
-const RECIPES_REFINO = {
-  'T2_METALBAR': { raw: 'T2_ORE', refined: 'T2_METALBAR', tier: 2, rawQty: 1, lowerRefined: null, lowerQty: 0, nome: 'Barra de Metal T2' },
-  'T3_METALBAR': { raw: 'T3_ORE', refined: 'T3_METALBAR', tier: 3, rawQty: 2, lowerRefined: 'T2_METALBAR', lowerQty: 1, nome: 'Barra de Metal T3' },
-  'T4_METALBAR': { raw: 'T4_ORE', refined: 'T4_METALBAR', tier: 4, rawQty: 2, lowerRefined: 'T3_METALBAR', lowerQty: 1, nome: 'Barra de Metal T4' },
-  'T5_METALBAR': { raw: 'T5_ORE', refined: 'T5_METALBAR', tier: 5, rawQty: 3, lowerRefined: 'T4_METALBAR', lowerQty: 1, nome: 'Barra de Metal T5' },
-  'T6_METALBAR': { raw: 'T6_ORE', refined: 'T6_METALBAR', tier: 6, rawQty: 4, lowerRefined: 'T5_METALBAR', lowerQty: 1, nome: 'Barra de Metal T6' },
-  'T7_METALBAR': { raw: 'T7_ORE', refined: 'T7_METALBAR', tier: 7, rawQty: 5, lowerRefined: 'T6_METALBAR', lowerQty: 1, nome: 'Barra de Metal T7' },
-  'T8_METALBAR': { raw: 'T8_ORE', refined: 'T8_METALBAR', tier: 8, rawQty: 5, lowerRefined: 'T7_METALBAR', lowerQty: 1, nome: 'Barra de Metal T8' },
-  'T2_LEATHER': { raw: 'T2_HIDE', refined: 'T2_LEATHER', tier: 2, rawQty: 1, lowerRefined: null, lowerQty: 0, nome: 'Couro T2' },
-  'T3_LEATHER': { raw: 'T3_HIDE', refined: 'T3_LEATHER', tier: 3, rawQty: 2, lowerRefined: 'T2_LEATHER', lowerQty: 1, nome: 'Couro T3' },
-  'T4_LEATHER': { raw: 'T4_HIDE', refined: 'T4_LEATHER', tier: 4, rawQty: 2, lowerRefined: 'T3_LEATHER', lowerQty: 1, nome: 'Couro T4' },
-  'T5_LEATHER': { raw: 'T5_HIDE', refined: 'T5_LEATHER', tier: 5, rawQty: 3, lowerRefined: 'T4_LEATHER', lowerQty: 1, nome: 'Couro T5' },
-  'T6_LEATHER': { raw: 'T6_HIDE', refined: 'T6_LEATHER', tier: 6, rawQty: 4, lowerRefined: 'T5_LEATHER', lowerQty: 1, nome: 'Couro T6' },
-  'T7_LEATHER': { raw: 'T7_HIDE', refined: 'T7_LEATHER', tier: 7, rawQty: 5, lowerRefined: 'T6_LEATHER', lowerQty: 1, nome: 'Couro T7' },
-  'T8_LEATHER': { raw: 'T8_HIDE', refined: 'T8_LEATHER', tier: 8, rawQty: 5, lowerRefined: 'T7_LEATHER', lowerQty: 1, nome: 'Couro T8' },
-  'T2_CLOTH': { raw: 'T2_FIBER', refined: 'T2_CLOTH', tier: 2, rawQty: 1, lowerRefined: null, lowerQty: 0, nome: 'Tecido T2' },
-  'T3_CLOTH': { raw: 'T3_FIBER', refined: 'T3_CLOTH', tier: 3, rawQty: 2, lowerRefined: 'T2_CLOTH', lowerQty: 1, nome: 'Tecido T3' },
-  'T4_CLOTH': { raw: 'T4_FIBER', refined: 'T4_CLOTH', tier: 4, rawQty: 2, lowerRefined: 'T3_CLOTH', lowerQty: 1, nome: 'Tecido T4' },
-  'T5_CLOTH': { raw: 'T5_FIBER', refined: 'T5_CLOTH', tier: 5, rawQty: 3, lowerRefined: 'T4_CLOTH', lowerQty: 1, nome: 'Tecido T5' },
-  'T6_CLOTH': { raw: 'T6_FIBER', refined: 'T6_CLOTH', tier: 6, rawQty: 4, lowerRefined: 'T5_CLOTH', lowerQty: 1, nome: 'Tecido T6' },
-  'T7_CLOTH': { raw: 'T7_FIBER', refined: 'T7_CLOTH', tier: 7, rawQty: 5, lowerRefined: 'T6_CLOTH', lowerQty: 1, nome: 'Tecido T7' },
-  'T8_CLOTH': { raw: 'T8_FIBER', refined: 'T8_CLOTH', tier: 8, rawQty: 5, lowerRefined: 'T7_CLOTH', lowerQty: 1, nome: 'Tecido T8' },
-  'T2_PLANKS': { raw: 'T2_WOOD', refined: 'T2_PLANKS', tier: 2, rawQty: 1, lowerRefined: null, lowerQty: 0, nome: 'Tabua T2' },
-  'T3_PLANKS': { raw: 'T3_WOOD', refined: 'T3_PLANKS', tier: 3, rawQty: 2, lowerRefined: 'T2_PLANKS', lowerQty: 1, nome: 'Tabua T3' },
-  'T4_PLANKS': { raw: 'T4_WOOD', refined: 'T4_PLANKS', tier: 4, rawQty: 2, lowerRefined: 'T3_PLANKS', lowerQty: 1, nome: 'Tabua T4' },
-  'T5_PLANKS': { raw: 'T5_WOOD', refined: 'T5_PLANKS', tier: 5, rawQty: 3, lowerRefined: 'T4_PLANKS', lowerQty: 1, nome: 'Tabua T5' },
-  'T6_PLANKS': { raw: 'T6_WOOD', refined: 'T6_PLANKS', tier: 6, rawQty: 4, lowerRefined: 'T5_PLANKS', lowerQty: 1, nome: 'Tabua T6' },
-  'T7_PLANKS': { raw: 'T7_WOOD', refined: 'T7_PLANKS', tier: 7, rawQty: 5, lowerRefined: 'T6_PLANKS', lowerQty: 1, nome: 'Tabua T7' },
-  'T8_PLANKS': { raw: 'T8_WOOD', refined: 'T8_PLANKS', tier: 8, rawQty: 5, lowerRefined: 'T7_PLANKS', lowerQty: 1, nome: 'Tabua T8' },
-  'T2_STONEBLOCK': { raw: 'T2_ROCK', refined: 'T2_STONEBLOCK', tier: 2, rawQty: 1, lowerRefined: null, lowerQty: 0, nome: 'Bloco de Pedra T2' },
-  'T3_STONEBLOCK': { raw: 'T3_ROCK', refined: 'T3_STONEBLOCK', tier: 3, rawQty: 2, lowerRefined: 'T2_STONEBLOCK', lowerQty: 1, nome: 'Bloco de Pedra T3' },
-  'T4_STONEBLOCK': { raw: 'T4_ROCK', refined: 'T4_STONEBLOCK', tier: 4, rawQty: 2, lowerRefined: 'T3_STONEBLOCK', lowerQty: 1, nome: 'Bloco de Pedra T4' },
-  'T5_STONEBLOCK': { raw: 'T5_ROCK', refined: 'T5_STONEBLOCK', tier: 5, rawQty: 3, lowerRefined: 'T4_STONEBLOCK', lowerQty: 1, nome: 'Bloco de Pedra T5' },
-  'T6_STONEBLOCK': { raw: 'T6_ROCK', refined: 'T6_STONEBLOCK', tier: 6, rawQty: 4, lowerRefined: 'T5_STONEBLOCK', lowerQty: 1, nome: 'Bloco de Pedra T6' },
-  'T7_STONEBLOCK': { raw: 'T7_ROCK', refined: 'T7_STONEBLOCK', tier: 7, rawQty: 5, lowerRefined: 'T6_STONEBLOCK', lowerQty: 1, nome: 'Bloco de Pedra T7' },
-  'T8_STONEBLOCK': { raw: 'T8_ROCK', refined: 'T8_STONEBLOCK', tier: 8, rawQty: 5, lowerRefined: 'T7_STONEBLOCK', lowerQty: 1, nome: 'Bloco de Pedra T8' }
+
+function switchCraftTab(tab) {
+  document.querySelectorAll('.craft-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('craftRefinoPanel').style.display = tab === 'refino' ? 'grid' : 'none';
+  document.getElementById('craftCraftPanel').style.display = tab === 'craft' ? 'grid' : 'none';
+}
+
+const REFINO_RECEITAS = {
+  metal: { nome: 'Minério → Barra de Metal', bruto: 'Minério', refinado: 'Barra de Metal', ratio: 2, tierAnterior: true, desc: '2× Minério de Cobre → 1× Barra de Aço T4 (usa 1× Barra T3)' },
+  couro: { nome: 'Pele → Couro', bruto: 'Pele', refinado: 'Couro', ratio: 2, tierAnterior: true, desc: '2× Pele Bruta → 1× Couro T4 (usa 1× Couro T3)' },
+  tecido: { nome: 'Fibra → Tecido', bruto: 'Fibra', refinado: 'Tecido', ratio: 2, tierAnterior: true, desc: '2× Fibra Bruta → 1× Tecido T4 (usa 1× Tecido T3)' },
+  tabua: { nome: 'Tronco → Tábua', bruto: 'Tronco', refinado: 'Tábua', ratio: 2, tierAnterior: true, desc: '2× Tronco → 1× Tábua T4 (usa 1× Tábua T3)' },
+  pedra: { nome: 'Pedra Bruta → Bloco de Pedra', bruto: 'Pedra Bruta', refinado: 'Bloco de Pedra', ratio: 2, tierAnterior: false, desc: '2× Pedra Bruta → 1× Bloco de Pedra T4' }
 };
 
-function updateRecipeDesc() {
-  const recipeId = document.getElementById('craftRecipe').value;
-  const recipe = RECIPES_REFINO[recipeId];
-  if (!recipe) return;
-  const desc = document.getElementById('recipeDesc');
-  if (recipe.lowerRefined) {
-    desc.textContent = recipe.rawQty + 'x ' + getNomeItem(recipe.raw) + ' + ' + recipe.lowerQty + 'x ' + getNomeItem(recipe.lowerRefined) + ' -> 1x ' + recipe.nome;
+function atualizarDescRefino() {
+  const tipo = document.getElementById('refinoReceita').value;
+  document.getElementById('refinoDesc').textContent = REFINO_RECEITAS[tipo].desc;
+}
+
+function updateRefinoPremiumLabel() {
+  const toggle = document.getElementById('refinoPremiumToggle');
+  const label = toggle.querySelector('.toggle-label');
+  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
+}
+
+function calcularRefino() {
+  const precoBruto = parseFloat(document.getElementById('refinoPrecoBruto').value) || 0;
+  const precoRefinado = parseFloat(document.getElementById('refinoPrecoRefinado').value) || 0;
+  const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
+  const rrr = parseFloat(document.getElementById('refinoRRR').value) || 0;
+  const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
+  const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
+  const taxaVenda = premium ? 0.04 : 0.08;
+
+  const ratio = 2; // 2 brutos = 1 refinado
+  const custoMP = precoBruto * ratio * quantidade;
+  const receitaBruta = precoRefinado * quantidade;
+  const taxaTotal = taxaEstacao * quantidade;
+  const retornoValor = custoMP * (rrr / 100);
+  const imposto = receitaBruta * taxaVenda;
+  const custoTotal = custoMP + taxaTotal - retornoValor;
+  const lucroLiquido = receitaBruta - imposto - custoTotal;
+  const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
+
+  document.getElementById('refinoCustoTotal').textContent = formatSilver(custoTotal);
+  document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
+  document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
+  document.getElementById('refinoTaxa').textContent = formatSilver(taxaTotal);
+  document.getElementById('refinoRetorno').textContent = '+' + formatSilver(retornoValor);
+  document.getElementById('refinoImposto').textContent = '-' + formatSilver(imposto);
+  document.getElementById('refinoLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
+  document.getElementById('refinoLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('refinoLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
+  document.getElementById('refinoLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red)';
+  document.getElementById('refinoNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado por lote de ' + quantidade + ' unidades' : 'Prejuízo estimado por lote de ' + quantidade + ' unidades';
+}
+
+// ============================================
+// CRAFT
+// ============================================
+
+let craftMaterialCount = 2;
+
+function onCraftInput(val) {
+  const sugestoesBox = document.getElementById('craftSugestoes');
+  const sugestoes = buscarSugestoes(val);
+  if (sugestoes.length > 0) {
+    sugestoesBox.innerHTML = sugestoes.map(s => {
+      const id = TRADUCOES[s];
+      const nome = getNomeItem(id);
+      return '<div class="sugestao-item" onclick="selecionarCraftSugestao(\'' + escapeHtml(s) + '\')">' + nome + '<span class="sugestao-id">' + id + '</span></div>';
+    }).join('');
+    sugestoesBox.style.display = 'block';
   } else {
-    desc.textContent = recipe.rawQty + 'x ' + getNomeItem(recipe.raw) + ' -> 1x ' + recipe.nome;
+    sugestoesBox.innerHTML = '';
+    sugestoesBox.style.display = 'none';
   }
 }
 
-function updateCraftRrr(val) {
-  document.getElementById('craftRrrLabel').textContent = parseFloat(val).toFixed(1) + '%';
-  document.getElementById('craftRrrFill').style.width = val + '%';
-  document.getElementById('craftRrrThumb').style.left = val + '%';
+function selecionarCraftSugestao(texto) {
+  document.getElementById('craftItemInput').value = texto;
+  document.getElementById('craftSugestoes').style.display = 'none';
 }
 
-function updateCraftStation(val) {
-  document.getElementById('craftStationLabel').textContent = val;
-  const pct = Math.min(100, (val / 5000) * 100);
-  document.getElementById('craftStationFill').style.width = pct + '%';
-  document.getElementById('craftStationThumb').style.left = pct + '%';
+function addMaterialRow() {
+  craftMaterialCount++;
+  const container = document.getElementById('craftMateriais');
+  const row = document.createElement('div');
+  row.className = 'craft-material-row';
+  row.id = 'craftMatRow' + craftMaterialCount;
+  row.innerHTML =
+    '<input type="text" class="form-input" placeholder="Material ' + craftMaterialCount + '" style="flex:1;" id="craftMat' + craftMaterialCount + 'Nome">' +
+    '<input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat' + craftMaterialCount + 'Qtd" value="1">' +
+    '<input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat' + craftMaterialCount + 'Preco" value="0">' +
+    '<button class="btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="removeMaterialRow(' + craftMaterialCount + ')">✕</button>';
+  container.appendChild(row);
 }
 
-function calcularCraftRefino() {
-  const recipeId = document.getElementById('craftRecipe').value;
-  const recipe = RECIPES_REFINO[recipeId];
-  if (!recipe) return;
+function removeMaterialRow(index) {
+  const row = document.getElementById('craftMatRow' + index);
+  if (row) row.remove();
+}
 
-  const rawPrice = parseFloat(document.getElementById('craftRawPrice').value) || 0;
-  const refinedPrice = parseFloat(document.getElementById('craftRefinedPrice').value) || 0;
-  const qty = parseInt(document.getElementById('craftQty').value) || 1;
-  const rrr = parseFloat(document.getElementById('craftRrr').value) || 0;
-  const stationFee = parseInt(document.getElementById('craftStation').value) || 0;
-  const premium = document.getElementById('craftPremiumToggle')?.classList.contains('active');
-  const tax = premium ? 0.04 : 0.08;
+function updateCraftPremiumLabel() {
+  const toggle = document.getElementById('craftPremiumToggle');
+  const label = toggle.querySelector('.toggle-label');
+  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
+}
 
-  const totalRawCost = rawPrice * recipe.rawQty * qty;
-  const returnValue = totalRawCost * (rrr / 100);
-  const totalStationFee = stationFee * qty;
-  const netCost = totalRawCost - returnValue + totalStationFee;
+function calcularCraft() {
+  const precoVenda = parseFloat(document.getElementById('craftPrecoVenda').value) || 0;
+  const quantidade = parseFloat(document.getElementById('craftQuantidade').value) || 0;
+  const rrr = parseFloat(document.getElementById('craftRRR').value) || 0;
+  const taxaEstacao = parseFloat(document.getElementById('craftTaxaEstacao').value) || 0;
+  const premium = document.getElementById('craftPremiumToggle').classList.contains('active');
+  const taxaVenda = premium ? 0.04 : 0.08;
 
-  const totalSellRevenue = refinedPrice * qty;
-  const sellFee = Math.ceil(totalSellRevenue * tax);
-  const netRevenue = totalSellRevenue - sellFee;
-  const profit = netRevenue - netCost;
-  const profitPct = netCost > 0 ? (profit / netCost) : 0;
+  // Coletar materiais
+  const materiais = [];
+  let custoMP = 0;
+  for (let i = 1; i <= craftMaterialCount; i++) {
+    const nomeEl = document.getElementById('craftMat' + i + 'Nome');
+    const qtdEl = document.getElementById('craftMat' + i + 'Qtd');
+    const precoEl = document.getElementById('craftMat' + i + 'Preco');
+    if (nomeEl && qtdEl && precoEl) {
+      const nome = nomeEl.value || 'Material ' + i;
+      const qtd = parseFloat(qtdEl.value) || 0;
+      const preco = parseFloat(precoEl.value) || 0;
+      const custo = qtd * preco * quantidade;
+      custoMP += custo;
+      materiais.push({ nome, qtd, preco, custo });
+    }
+  }
 
-  const profitClass = profit >= 0 ? 'positive' : 'negative';
-  const profitColor = profit >= 0 ? 'green' : 'red';
+  const receitaBruta = precoVenda * quantidade;
+  const taxaTotal = taxaEstacao * quantidade;
+  const retornoValor = custoMP * (rrr / 100);
+  const imposto = receitaBruta * taxaVenda;
+  const custoTotal = custoMP + taxaTotal - retornoValor;
+  const lucroLiquido = receitaBruta - imposto - custoTotal;
+  const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
 
-  const html =
-    '<div class="result-grid">' +
-    '<div class="result-item"><label>Receita Bruta</label><div class="value neutral">' + formatSilver(totalSellRevenue) + '</div></div>' +
-    '<div class="result-item"><label>Custo Total</label><div class="value ' + profitClass + '">' + formatSilver(netCost) + '</div></div>' +
-    '<div class="result-item"><label>Lucro Liquido</label><div class="value ' + profitClass + '">' + formatSilver(profit) + '</div></div>' +
-    '<div class="result-item"><label>Margem</label><div class="value ' + profitClass + '">' + formatPercent(profitPct) + '</div></div>' +
-    '</div>' +
-    '<div class="result-breakdown">' +
-    '<h4>Detalhamento (' + qty + ' unidades)</h4>' +
-    '<div class="breakdown-row"><span class="label">' + getNomeItem(recipe.raw) + ' x' + (recipe.rawQty * qty) + ' @ ' + formatSilver(rawPrice) + '</span><span class="amount">' + formatSilver(totalRawCost) + '</span></div>' +
-    (recipe.lowerRefined ? '<div class="breakdown-row"><span class="label">' + getNomeItem(recipe.lowerRefined) + ' x' + (recipe.lowerQty * qty) + '</span><span class="amount">(incluido no preco do bruto)</span></div>' : '') +
-    '<div class="breakdown-row"><span class="label">Retorno de Materiais (' + rrr + '%)</span><span class="amount" style="color:var(--green)">-' + formatSilver(returnValue) + '</span></div>' +
-    '<div class="breakdown-row"><span class="label">Taxa Estacao x' + qty + '</span><span class="amount" style="color:var(--red)">+' + formatSilver(totalStationFee) + '</span></div>' +
-    '<div class="breakdown-row"><span class="label">Taxa Venda (' + (tax*100) + '%)</span><span class="amount" style="color:var(--red)">-' + formatSilver(sellFee) + '</span></div>' +
-    '<div class="breakdown-row" style="border-top:2px solid var(--border);margin-top:8px;padding-top:8px">' +
-    '<span class="label" style="color:var(--text);font-weight:600">Lucro Final</span>' +
-    '<span class="amount" style="color:var(--' + profitColor + ');font-weight:700">' + formatSilver(profit) + '</span>' +
-    '</div>' +
-    '</div>';
+  document.getElementById('craftCustoTotal').textContent = formatSilver(custoTotal);
+  document.getElementById('craftReceitaBruta').textContent = formatSilver(receitaBruta);
 
-  document.getElementById('craftResultContent').innerHTML = html;
+  // Render breakdown de materiais
+  const breakdownHTML = materiais.map(m =>
+    '<div class="breakdown-row"><span class="label">' + escapeHtml(m.nome) + ' (' + m.qtd + '×' + formatSilver(m.preco) + ')</span><span class="amount">' + formatSilver(m.custo) + '</span></div>'
+  ).join('');
+  document.getElementById('craftBreakdownMateriais').innerHTML = breakdownHTML;
+
+  document.getElementById('craftTaxa').textContent = formatSilver(taxaTotal);
+  document.getElementById('craftRetorno').textContent = '+' + formatSilver(retornoValor);
+  document.getElementById('craftImposto').textContent = '-' + formatSilver(imposto);
+  document.getElementById('craftLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
+  document.getElementById('craftLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('craftLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
+  document.getElementById('craftLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red)';
+  document.getElementById('craftNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado por lote de ' + quantidade + ' unidades craftadas' : 'Prejuízo estimado por lote de ' + quantidade + ' unidades craftadas';
 }
 
 // ============================================
-// INICIALIZACAO
+// INICIALIZAÇÃO
 // ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
-  initFlipper();
   initBuscar();
-  updateRecipeDesc();
-  updateCraftRrr(document.getElementById('craftRrr').value);
-  updateCraftStation(document.getElementById('craftStation').value);
+  initBM();
+  updateFlipPremiumLabel();
+  updateBMPremiumLabel();
+  updateRefinoPremiumLabel();
+  updateCraftPremiumLabel();
+
+  // Fechar sugestões ao clicar fora
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#flipItemInput') && !e.target.closest('#flipSugestoes')) {
+      const box = document.getElementById('flipSugestoes');
+      if (box) box.style.display = 'none';
+    }
+    if (!e.target.closest('#buscarInput') && !e.target.closest('#buscarSugestoes')) {
+      const box = document.getElementById('buscarSugestoes');
+      if (box) box.style.display = 'none';
+    }
+    if (!e.target.closest('#craftItemInput') && !e.target.closest('#craftSugestoes')) {
+      const box = document.getElementById('craftSugestoes');
+      if (box) box.style.display = 'none';
+    }
+  });
+
+  // Enter nos inputs
+  document.getElementById('flipItemInput')?.addEventListener('keypress', e => {
+    if (e.key === 'Enter') { document.getElementById('flipSugestoes').style.display = 'none'; scanFlips(); }
+  });
+  document.getElementById('buscarInput')?.addEventListener('keypress', e => {
+    if (e.key === 'Enter') { document.getElementById('buscarSugestoes').style.display = 'none'; const id = traduzirParaId(e.target.value); if (id) selecionarBuscarItem(id); }
+  });
+  document.getElementById('craftItemInput')?.addEventListener('keypress', e => {
+    if (e.key === 'Enter') { document.getElementById('craftSugestoes').style.display = 'none'; }
+  });
+
+  // Carregar BM inicial
+  carregarBM();
 });
