@@ -48,7 +48,7 @@
       </button>
     </div>
     <div class="nav-right">
-      <button class="btn-ghost" id="btnDadosExemplo" onclick="toggleDadosExemplo()">Dados de exemplo</button>
+      <!-- Botão removido - apenas dados reais -->
     </div>
   </div>
 </nav>
@@ -65,12 +65,12 @@
         <div class="stat-card">
           <div class="stat-label">Melhor Flip <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg></div>
           <div class="stat-value" id="flipStatBest">-</div>
-          <div class="stat-desc" id="flipStatBestRoute">Escaneie para ver</div>
+          <div class="stat-desc" id="flipStatBestRoute">Nenhuma oportunidade</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Lucro Somado <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
           <div class="stat-value" id="flipStatTotal">-</div>
-          <div class="stat-desc" id="flipStatCount">0 rotas listadas</div>
+          <div class="stat-desc" id="flipStatCount">0 rotas</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Margem Média <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
@@ -115,9 +115,15 @@
         <option>Brecilien</option>
       </select>
     </div>
-    <div class="toggle-wrap active" id="flipPremiumToggle" onclick="this.classList.toggle('active'); updateFlipPremiumLabel(); scanFlips();" style="margin-bottom:0; align-self:flex-end; padding-bottom:8px;">
-      <div class="toggle-switch"></div>
-      <span class="toggle-label">Conta Premium</span>
+    <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:0;">
+      <div class="toggle-wrap active" id="flipPremiumToggle" onclick="this.classList.toggle('active'); updateFlipPremiumLabel(); scanFlips();">
+        <div class="toggle-switch"></div>
+        <span class="toggle-label">Conta Premium</span>
+      </div>
+      <button class="btn-primary" onclick="scanFlips()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Escanear
+      </button>
     </div>
   </div>
 
@@ -138,8 +144,8 @@
         <tr>
           <td colspan="7">
             <div class="empty-state small">
-              <p>Escolha o item e clique em <strong>Escanear</strong></p>
-              <span>Ex: claymore, bolsa, capa, cajado de fogo...</span>
+              <p>Clique em <strong>Escanear</strong> para buscar oportunidades</p>
+              <span>Buscaremos os melhores flips entre todas as cidades</span>
             </div>
           </td>
         </tr>
@@ -167,9 +173,7 @@
           <div class="sugestoes-box" id="buscarSugestoes"></div>
         </div>
       </div>
-      <div class="search-list" id="buscarListaItens">
-        <!-- Lista de itens populares -->
-      </div>
+      <div class="search-list" id="buscarListaItens"></div>
     </div>
     <div id="buscarDetalhes">
       <div class="empty-state">
@@ -209,7 +213,17 @@
   </div>
 
   <div class="bm-grid" id="bmGrid">
-    <!-- Cards do Black Market -->
+    <div class="empty-state" style="grid-column:1/-1;">
+      <p>Clique em <strong>Escanear</strong> para buscar oportunidades no Black Market</p>
+      <span>Buscando dados reais da Albion Online Data Project</span>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:20px;">
+    <button class="btn-primary" onclick="scanBlackMarket()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Escanear Black Market
+    </button>
   </div>
 </div>
 
@@ -382,9 +396,7 @@
       </div>
       <div class="result-breakdown">
         <h4>Detalhamento</h4>
-        <div id="craftBreakdownMateriais">
-          <!-- Materiais dinâmicos -->
-        </div>
+        <div id="craftBreakdownMateriais"></div>
         <div class="breakdown-row"><span class="label">Taxa da estação</span><span class="amount" id="craftTaxa">-</span></div>
         <div class="breakdown-row"><span class="label">Retorno de recursos</span><span class="amount positive" id="craftRetorno">-</span></div>
         <div class="breakdown-row"><span class="label">Imposto de venda</span><span class="amount negative" id="craftImposto">-</span></div>
