@@ -496,16 +496,16 @@ async function fetchPrices(items, locations, qualities) {
   for (let i = 0; i < items.length; i += chunkSize) {
     const chunk = items.slice(i, i + chunkSize);
     const url = API_BASE + '/' + chunk.join(',') + '.json?locations=' + encodeURIComponent(locStr) + '&qualities=' + qualStr;
-    console.log('[API] Fetch: ' + url.substring(0, 120) + '...');
+    
     try {
       const r = await fetch(url);
-      console.log('[API] Status: ' + r.status);
+      
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
-      console.log('[API] Registros: ' + (Array.isArray(data) ? data.length : 'N/A'));
+      
       if (Array.isArray(data)) allData.push(...data);
     } catch (e) {
-      console.warn('[API] Fetch error:', e.message);
+      console.warn('Fetch error:', e.message);
     }
   }
   return allData;
@@ -548,55 +548,140 @@ function timeSince(dateStr) {
 }
 
 const NOMES_ITENS = {
+  // Bolsas
   'T2_BAG':'Bolsa T2','T3_BAG':'Bolsa T3','T4_BAG':'Bolsa T4','T5_BAG':'Bolsa T5','T6_BAG':'Bolsa T6','T7_BAG':'Bolsa T7','T8_BAG':'Bolsa T8',
+  // Capas
   'T2_CAPE':'Capa T2','T3_CAPE':'Capa T3','T4_CAPE':'Capa T4','T5_CAPE':'Capa T5','T6_CAPE':'Capa T6','T7_CAPE':'Capa T7','T8_CAPE':'Capa T8',
-  'T4_CAPEITEM_FW_BRIDGEWATCH':'Capa Bridgewatch','T4_CAPEITEM_FW_CAERLEON':'Capa Caerleon','T4_CAPEITEM_FW_FORTSTERLING':'Capa Fort Sterling','T4_CAPEITEM_FW_LYMHURST':'Capa Lymhurst','T4_CAPEITEM_FW_MARTLOCK':'Capa Martlock','T4_CAPEITEM_FW_THETFORD':'Capa Thetford',
-  'T4_MAIN_SWORD':'Broadsword T4','T5_MAIN_SWORD':'Broadsword T5','T6_MAIN_SWORD':'Broadsword T6',
+  'T4_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch','T4_CAPEITEM_FW_CAERLEON':'Capa de Caerleon','T4_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling','T4_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst','T4_CAPEITEM_FW_MARTLOCK':'Capa de Martlock','T4_CAPEITEM_FW_THETFORD':'Capa de Thetford',
+  'T5_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T5','T5_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T5','T5_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T5','T5_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T5','T5_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T5','T5_CAPEITEM_FW_THETFORD':'Capa de Thetford T5',
+  'T6_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T6','T6_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T6','T6_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T6','T6_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T6','T6_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T6','T6_CAPEITEM_FW_THETFORD':'Capa de Thetford T6',
+  'T7_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T7','T7_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T7','T7_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T7','T7_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T7','T7_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T7','T7_CAPEITEM_FW_THETFORD':'Capa de Thetford T7',
+  'T8_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T8','T8_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T8','T8_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T8','T8_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T8','T8_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T8','T8_CAPEITEM_FW_THETFORD':'Capa de Thetford T8',
+  // Espadas
+  'T4_MAIN_SWORD':'Broadsword T4','T5_MAIN_SWORD':'Broadsword T5','T6_MAIN_SWORD':'Broadsword T6','T7_MAIN_SWORD':'Broadsword T7','T8_MAIN_SWORD':'Broadsword T8',
   'T4_2H_CLAYMORE':'Claymore T4','T5_2H_CLAYMORE':'Claymore T5','T6_2H_CLAYMORE':'Claymore T6','T7_2H_CLAYMORE':'Claymore T7','T8_2H_CLAYMORE':'Claymore T8',
-  'T4_2H_DUALSWORD':'Dual Swords T4','T4_2H_CLAYMORE_AVALON':'Clarent Blade T4',
-  'T4_2H_AXE':'Battleaxe T4','T5_2H_AXE':'Battleaxe T5','T4_2H_GREATAXE':'Greataxe T4','T4_2H_HALBERD':'Halberd T4',
-  'T4_MAIN_MACE':'Maca T4','T4_2H_MACE':'Maca Pesada T4','T4_2H_FLAIL':'Morning Star T4',
-  'T4_2H_SPEAR':'Lanca T4','T4_2H_PIKE':'Pique T4','T4_2H_GLAIVE':'Glaive T4',
-  'T4_2H_FIRESTAFF':'Cajado de Fogo T4','T5_2H_FIRESTAFF':'Cajado de Fogo T5','T6_2H_FIRESTAFF':'Cajado de Fogo T6','T7_2H_FIRESTAFF':'Cajado de Fogo T7','T8_2H_FIRESTAFF':'Cajado de Fogo T8','T4_2H_INFERNOSTAFF':'Grande Fogo T4',
-  'T4_2H_FROSTSTAFF':'Cajado de Gelo T4','T5_2H_FROSTSTAFF':'Cajado de Gelo T5','T6_2H_FROSTSTAFF':'Cajado de Gelo T6','T7_2H_FROSTSTAFF':'Cajado de Gelo T7','T8_2H_FROSTSTAFF':'Cajado de Gelo T8','T4_2H_GLACIALSTAFF':'Grande Gelo T4',
-  'T4_2H_ARCANESTAFF':'Cajado Arcano T4','T5_2H_ARCANESTAFF':'Cajado Arcano T5','T6_2H_ARCANESTAFF':'Cajado Arcano T6','T7_2H_ARCANESTAFF':'Cajado Arcano T7','T8_2H_ARCANESTAFF':'Cajado Arcano T8','T4_2H_ENIGMATICSTAFF':'Grande Arcano T4',
-  'T4_2H_HOLYSTAFF':'Cajado Sagrado T4','T5_2H_HOLYSTAFF':'Cajado Sagrado T5','T6_2H_HOLYSTAFF':'Cajado Sagrado T6','T7_2H_HOLYSTAFF':'Cajado Sagrado T7','T8_2H_HOLYSTAFF':'Cajado Sagrado T8','T4_2H_DIVINESTAFF':'Grande Sagrado T4',
-  'T4_2H_CURSESTAFF':'Cajado Maldito T4','T5_2H_CURSESTAFF':'Cajado Maldito T5','T6_2H_CURSESTAFF':'Cajado Maldito T6','T7_2H_CURSESTAFF':'Cajado Maldito T7','T8_2H_CURSESTAFF':'Cajado Maldito T8','T4_2H_DEMONICSTAFF':'Grande Maldito T4',
-  'T4_2H_NATURESTAFF':'Cajado da Natureza T4','T5_2H_NATURESTAFF':'Cajado da Natureza T5','T6_2H_NATURESTAFF':'Cajado da Natureza T6','T7_2H_NATURESTAFF':'Cajado da Natureza T7','T8_2H_NATURESTAFF':'Cajado da Natureza T8','T4_2H_WILDSTAFF':'Grande Natureza T4',
-  'T4_2H_SHAPESHIFTER_SET1':'Prowling Staff T4 (Pantera)','T5_2H_SHAPESHIFTER_SET1':'Prowling Staff T5 (Pantera)','T6_2H_SHAPESHIFTER_SET1':'Prowling Staff T6 (Pantera)','T7_2H_SHAPESHIFTER_SET1':'Prowling Staff T7 (Pantera)','T8_2H_SHAPESHIFTER_SET1':'Prowling Staff T8 (Pantera)',
-  'T4_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T4 (Lobisomem)','T5_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T5 (Lobisomem)','T6_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T6 (Lobisomem)','T7_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T7 (Lobisomem)','T8_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T8 (Lobisomem)',
-  'T4_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T4 (Demonio)','T5_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T5 (Demonio)','T6_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T6 (Demonio)','T7_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T7 (Demonio)','T8_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T8 (Demonio)',
-  'T4_2H_SHAPESHIFTER_SET3':'Earthrune Staff T4 (Ent)','T5_2H_SHAPESHIFTER_SET3':'Earthrune Staff T5 (Ent)','T6_2H_SHAPESHIFTER_SET3':'Earthrune Staff T6 (Ent)','T7_2H_SHAPESHIFTER_SET3':'Earthrune Staff T7 (Ent)','T8_2H_SHAPESHIFTER_SET3':'Earthrune Staff T8 (Ent)',
-  'T4_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T4 (Demonio)','T5_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T5 (Demonio)','T6_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T6 (Demonio)','T7_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T7 (Demonio)','T8_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T8 (Demonio)',
-  'T4_2H_SHAPESHIFTER_SET5':'Primal Staff T4 (Urso)','T5_2H_SHAPESHIFTER_SET5':'Primal Staff T5 (Urso)','T6_2H_SHAPESHIFTER_SET5':'Primal Staff T6 (Urso)','T7_2H_SHAPESHIFTER_SET5':'Primal Staff T7 (Urso)','T8_2H_SHAPESHIFTER_SET5':'Primal Staff T8 (Urso)',
-  'T4_2H_SHAPESHIFTER_AVALON':'Lightcaller T4 (Falcao)','T5_2H_SHAPESHIFTER_AVALON':'Lightcaller T5 (Falcao)','T6_2H_SHAPESHIFTER_AVALON':'Lightcaller T6 (Falcao)','T7_2H_SHAPESHIFTER_AVALON':'Lightcaller T7 (Falcao)','T8_2H_SHAPESHIFTER_AVALON':'Lightcaller T8 (Falcao)',
-  'T4_HEAD_PLATE_SET1':'Capacete Soldier T4','T4_ARMOR_PLATE_SET1':'Armadura Soldier T4','T4_SHOES_PLATE_SET1':'Botas Soldier T4','T5_HEAD_PLATE_SET1':'Capacete Soldier T5','T5_ARMOR_PLATE_SET1':'Armadura Soldier T5','T5_SHOES_PLATE_SET1':'Botas Soldier T5',
-  'T4_HEAD_LEATHER_SET1':'Capuz Mercenary T4','T4_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T4','T4_SHOES_LEATHER_SET1':'Sapatos Mercenary T4','T5_HEAD_LEATHER_SET1':'Capuz Mercenary T5','T5_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T5','T5_SHOES_LEATHER_SET1':'Sapatos Mercenary T5',
-  'T4_HEAD_CLOTH_SET1':'Capuz Scholar T4','T4_ARMOR_CLOTH_SET1':'Veste Scholar T4','T4_SHOES_CLOTH_SET1':'Sandalias Scholar T4','T5_HEAD_CLOTH_SET1':'Capuz Scholar T5','T5_ARMOR_CLOTH_SET1':'Veste Scholar T5','T5_SHOES_CLOTH_SET1':'Sandalias Scholar T5',
+  'T4_2H_DUALSWORD':'Espadas Duplas T4','T5_2H_DUALSWORD':'Espadas Duplas T5','T6_2H_DUALSWORD':'Espadas Duplas T6','T7_2H_DUALSWORD':'Espadas Duplas T7','T8_2H_DUALSWORD':'Espadas Duplas T8',
+  'T4_2H_CLAYMORE_AVALON':'Clarent Blade T4','T5_2H_CLAYMORE_AVALON':'Clarent Blade T5','T6_2H_CLAYMORE_AVALON':'Clarent Blade T6','T7_2H_CLAYMORE_AVALON':'Clarent Blade T7','T8_2H_CLAYMORE_AVALON':'Clarent Blade T8',
+  // Machados
+  'T4_2H_AXE':'Machado Sanguinario T4','T5_2H_AXE':'Machado Sanguinario T5','T6_2H_AXE':'Machado Sanguinario T6','T7_2H_AXE':'Machado Sanguinario T7','T8_2H_AXE':'Machado Sanguinario T8',
+  'T4_2H_GREATAXE':'Greataxe T4','T5_2H_GREATAXE':'Greataxe T5','T6_2H_GREATAXE':'Greataxe T6','T7_2H_GREATAXE':'Greataxe T7','T8_2H_GREATAXE':'Greataxe T8',
+  'T4_2H_HALBERD':'Halberd T4','T5_2H_HALBERD':'Halberd T5','T6_2H_HALBERD':'Halberd T6','T7_2H_HALBERD':'Halberd T7','T8_2H_HALBERD':'Halberd T8',
+  // Macas
+  'T4_MAIN_MACE':'Maca T4','T5_MAIN_MACE':'Maca T5','T6_MAIN_MACE':'Maca T6','T7_MAIN_MACE':'Maca T7','T8_MAIN_MACE':'Maca T8',
+  'T4_2H_MACE':'Maca Pesada T4','T5_2H_MACE':'Maca Pesada T5','T6_2H_MACE':'Maca Pesada T6','T7_2H_MACE':'Maca Pesada T7','T8_2H_MACE':'Maca Pesada T8',
+  'T4_2H_FLAIL':'Morning Star T4','T5_2H_FLAIL':'Morning Star T5','T6_2H_FLAIL':'Morning Star T6','T7_2H_FLAIL':'Morning Star T7','T8_2H_FLAIL':'Morning Star T8',
+  // Lancas
+  'T4_2H_SPEAR':'Lanca T4','T5_2H_SPEAR':'Lanca T5','T6_2H_SPEAR':'Lanca T6','T7_2H_SPEAR':'Lanca T7','T8_2H_SPEAR':'Lanca T8',
+  'T4_2H_PIKE':'Pique T4','T5_2H_PIKE':'Pique T5','T6_2H_PIKE':'Pique T6','T7_2H_PIKE':'Pique T7','T8_2H_PIKE':'Pique T8',
+  'T4_2H_GLAIVE':'Glaive T4','T5_2H_GLAIVE':'Glaive T5','T6_2H_GLAIVE':'Glaive T6','T7_2H_GLAIVE':'Glaive T7','T8_2H_GLAIVE':'Glaive T8',
+  // Cajados de Fogo
+  'T4_2H_FIRESTAFF':'Cajado de Fogo T4','T5_2H_FIRESTAFF':'Cajado de Fogo T5','T6_2H_FIRESTAFF':'Cajado de Fogo T6','T7_2H_FIRESTAFF':'Cajado de Fogo T7','T8_2H_FIRESTAFF':'Cajado de Fogo T8',
+  'T4_2H_INFERNOSTAFF':'Grande Fogo T4','T5_2H_INFERNOSTAFF':'Grande Fogo T5','T6_2H_INFERNOSTAFF':'Grande Fogo T6','T7_2H_INFERNOSTAFF':'Grande Fogo T7','T8_2H_INFERNOSTAFF':'Grande Fogo T8',
+  // Cajados de Gelo
+  'T4_2H_FROSTSTAFF':'Cajado de Gelo T4','T5_2H_FROSTSTAFF':'Cajado de Gelo T5','T6_2H_FROSTSTAFF':'Cajado de Gelo T6','T7_2H_FROSTSTAFF':'Cajado de Gelo T7','T8_2H_FROSTSTAFF':'Cajado de Gelo T8',
+  'T4_2H_GLACIALSTAFF':'Grande Gelo T4','T5_2H_GLACIALSTAFF':'Grande Gelo T5','T6_2H_GLACIALSTAFF':'Grande Gelo T6','T7_2H_GLACIALSTAFF':'Grande Gelo T7','T8_2H_GLACIALSTAFF':'Grande Gelo T8',
+  // Cajados Arcanos
+  'T4_2H_ARCANESTAFF':'Cajado Arcano T4','T5_2H_ARCANESTAFF':'Cajado Arcano T5','T6_2H_ARCANESTAFF':'Cajado Arcano T6','T7_2H_ARCANESTAFF':'Cajado Arcano T7','T8_2H_ARCANESTAFF':'Cajado Arcano T8',
+  'T4_2H_ENIGMATICSTAFF':'Grande Arcano T4','T5_2H_ENIGMATICSTAFF':'Grande Arcano T5','T6_2H_ENIGMATICSTAFF':'Grande Arcano T6','T7_2H_ENIGMATICSTAFF':'Grande Arcano T7','T8_2H_ENIGMATICSTAFF':'Grande Arcano T8',
+  // Cajados Sagrados
+  'T4_2H_HOLYSTAFF':'Cajado Sagrado T4','T5_2H_HOLYSTAFF':'Cajado Sagrado T5','T6_2H_HOLYSTAFF':'Cajado Sagrado T6','T7_2H_HOLYSTAFF':'Cajado Sagrado T7','T8_2H_HOLYSTAFF':'Cajado Sagrado T8',
+  'T4_2H_DIVINESTAFF':'Grande Sagrado T4','T5_2H_DIVINESTAFF':'Grande Sagrado T5','T6_2H_DIVINESTAFF':'Grande Sagrado T6','T7_2H_DIVINESTAFF':'Grande Sagrado T7','T8_2H_DIVINESTAFF':'Grande Sagrado T8',
+  // Cajados Malditos
+  'T4_2H_CURSESTAFF':'Cajado Maldito T4','T5_2H_CURSESTAFF':'Cajado Maldito T5','T6_2H_CURSESTAFF':'Cajado Maldito T6','T7_2H_CURSESTAFF':'Cajado Maldito T7','T8_2H_CURSESTAFF':'Cajado Maldito T8',
+  'T4_2H_DEMONICSTAFF':'Grande Maldito T4','T5_2H_DEMONICSTAFF':'Grande Maldito T5','T6_2H_DEMONICSTAFF':'Grande Maldito T6','T7_2H_DEMONICSTAFF':'Grande Maldito T7','T8_2H_DEMONICSTAFF':'Grande Maldito T8',
+  // Cajados da Natureza
+  'T4_2H_NATURESTAFF':'Cajado da Natureza T4','T5_2H_NATURESTAFF':'Cajado da Natureza T5','T6_2H_NATURESTAFF':'Cajado da Natureza T6','T7_2H_NATURESTAFF':'Cajado da Natureza T7','T8_2H_NATURESTAFF':'Cajado da Natureza T8',
+  'T4_2H_WILDSTAFF':'Grande Natureza T4','T5_2H_WILDSTAFF':'Grande Natureza T5','T6_2H_WILDSTAFF':'Grande Natureza T6','T7_2H_WILDSTAFF':'Grande Natureza T7','T8_2H_WILDSTAFF':'Grande Natureza T8',
+  // Shapeshifters
+  'T4_2H_SHAPESHIFTER_SET1':'Prowling Staff T4','T5_2H_SHAPESHIFTER_SET1':'Prowling Staff T5','T6_2H_SHAPESHIFTER_SET1':'Prowling Staff T6','T7_2H_SHAPESHIFTER_SET1':'Prowling Staff T7','T8_2H_SHAPESHIFTER_SET1':'Prowling Staff T8',
+  'T4_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T4','T5_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T5','T6_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T6','T7_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T7','T8_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T8',
+  'T4_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T4','T5_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T5','T6_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T6','T7_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T7','T8_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T8',
+  'T4_2H_SHAPESHIFTER_SET3':'Earthrune Staff T4','T5_2H_SHAPESHIFTER_SET3':'Earthrune Staff T5','T6_2H_SHAPESHIFTER_SET3':'Earthrune Staff T6','T7_2H_SHAPESHIFTER_SET3':'Earthrune Staff T7','T8_2H_SHAPESHIFTER_SET3':'Earthrune Staff T8',
+  'T4_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T4','T5_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T5','T6_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T6','T7_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T7','T8_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T8',
+  'T4_2H_SHAPESHIFTER_SET5':'Primal Staff T4','T5_2H_SHAPESHIFTER_SET5':'Primal Staff T5','T6_2H_SHAPESHIFTER_SET5':'Primal Staff T6','T7_2H_SHAPESHIFTER_SET5':'Primal Staff T7','T8_2H_SHAPESHIFTER_SET5':'Primal Staff T8',
+  'T4_2H_SHAPESHIFTER_AVALON':'Lightcaller T4','T5_2H_SHAPESHIFTER_AVALON':'Lightcaller T5','T6_2H_SHAPESHIFTER_AVALON':'Lightcaller T6','T7_2H_SHAPESHIFTER_AVALON':'Lightcaller T7','T8_2H_SHAPESHIFTER_AVALON':'Lightcaller T8',
+  // Armaduras Placa
+  'T4_HEAD_PLATE_SET1':'Capacete Soldier T4','T4_ARMOR_PLATE_SET1':'Armadura Soldier T4','T4_SHOES_PLATE_SET1':'Botas Soldier T4',
+  'T5_HEAD_PLATE_SET1':'Capacete Soldier T5','T5_ARMOR_PLATE_SET1':'Armadura Soldier T5','T5_SHOES_PLATE_SET1':'Botas Soldier T5',
+  'T6_HEAD_PLATE_SET1':'Capacete Soldier T6','T6_ARMOR_PLATE_SET1':'Armadura Soldier T6','T6_SHOES_PLATE_SET1':'Botas Soldier T6',
+  'T7_HEAD_PLATE_SET1':'Capacete Soldier T7','T7_ARMOR_PLATE_SET1':'Armadura Soldier T7','T7_SHOES_PLATE_SET1':'Botas Soldier T7',
+  'T8_HEAD_PLATE_SET1':'Capacete Soldier T8','T8_ARMOR_PLATE_SET1':'Armadura Soldier T8','T8_SHOES_PLATE_SET1':'Botas Soldier T8',
+  // Armaduras Couro
+  'T4_HEAD_LEATHER_SET1':'Capuz Mercenary T4','T4_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T4','T4_SHOES_LEATHER_SET1':'Sapatos Mercenary T4',
+  'T5_HEAD_LEATHER_SET1':'Capuz Mercenary T5','T5_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T5','T5_SHOES_LEATHER_SET1':'Sapatos Mercenary T5',
+  'T6_HEAD_LEATHER_SET1':'Capuz Mercenary T6','T6_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T6','T6_SHOES_LEATHER_SET1':'Sapatos Mercenary T6',
+  'T7_HEAD_LEATHER_SET1':'Capuz Mercenary T7','T7_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T7','T7_SHOES_LEATHER_SET1':'Sapatos Mercenary T7',
+  'T8_HEAD_LEATHER_SET1':'Capuz Mercenary T8','T8_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T8','T8_SHOES_LEATHER_SET1':'Sapatos Mercenary T8',
+  // Armaduras Tecido
+  'T4_HEAD_CLOTH_SET1':'Capuz Scholar T4','T4_ARMOR_CLOTH_SET1':'Veste Scholar T4','T4_SHOES_CLOTH_SET1':'Sandalias Scholar T4',
+  'T5_HEAD_CLOTH_SET1':'Capuz Scholar T5','T5_ARMOR_CLOTH_SET1':'Veste Scholar T5','T5_SHOES_CLOTH_SET1':'Sandalias Scholar T5',
+  'T6_HEAD_CLOTH_SET1':'Capuz Scholar T6','T6_ARMOR_CLOTH_SET1':'Veste Scholar T6','T6_SHOES_CLOTH_SET1':'Sandalias Scholar T6',
+  'T7_HEAD_CLOTH_SET1':'Capuz Scholar T7','T7_ARMOR_CLOTH_SET1':'Veste Scholar T7','T7_SHOES_CLOTH_SET1':'Sandalias Scholar T7',
+  'T8_HEAD_CLOTH_SET1':'Capuz Scholar T8','T8_ARMOR_CLOTH_SET1':'Veste Scholar T8','T8_SHOES_CLOTH_SET1':'Sandalias Scholar T8',
+  // Recursos Refinados
   'T2_METALBAR':'Barra de Metal T2','T3_METALBAR':'Barra de Metal T3','T4_METALBAR':'Barra de Metal T4','T5_METALBAR':'Barra de Metal T5','T6_METALBAR':'Barra de Metal T6','T7_METALBAR':'Barra de Metal T7','T8_METALBAR':'Barra de Metal T8',
   'T2_LEATHER':'Couro T2','T3_LEATHER':'Couro T3','T4_LEATHER':'Couro T4','T5_LEATHER':'Couro T5','T6_LEATHER':'Couro T6','T7_LEATHER':'Couro T7','T8_LEATHER':'Couro T8',
   'T2_CLOTH':'Tecido T2','T3_CLOTH':'Tecido T3','T4_CLOTH':'Tecido T4','T5_CLOTH':'Tecido T5','T6_CLOTH':'Tecido T6','T7_CLOTH':'Tecido T7','T8_CLOTH':'Tecido T8',
   'T2_PLANKS':'Tabua T2','T3_PLANKS':'Tabua T3','T4_PLANKS':'Tabua T4','T5_PLANKS':'Tabua T5','T6_PLANKS':'Tabua T6','T7_PLANKS':'Tabua T7','T8_PLANKS':'Tabua T8',
   'T2_STONEBLOCK':'Bloco de Pedra T2','T3_STONEBLOCK':'Bloco de Pedra T3','T4_STONEBLOCK':'Bloco de Pedra T4','T5_STONEBLOCK':'Bloco de Pedra T5','T6_STONEBLOCK':'Bloco de Pedra T6','T7_STONEBLOCK':'Bloco de Pedra T7','T8_STONEBLOCK':'Bloco de Pedra T8',
+  // Recursos Brutos
   'T2_ORE':'Minerio T2','T3_ORE':'Minerio T3','T4_ORE':'Minerio T4','T5_ORE':'Minerio T5','T6_ORE':'Minerio T6','T7_ORE':'Minerio T7','T8_ORE':'Minerio T8',
   'T2_HIDE':'Pele T2','T3_HIDE':'Pele T3','T4_HIDE':'Pele T4','T5_HIDE':'Pele T5','T6_HIDE':'Pele T6','T7_HIDE':'Pele T7','T8_HIDE':'Pele T8',
   'T2_FIBER':'Fibra T2','T3_FIBER':'Fibra T3','T4_FIBER':'Fibra T4','T5_FIBER':'Fibra T5','T6_FIBER':'Fibra T6','T7_FIBER':'Fibra T7','T8_FIBER':'Fibra T8',
   'T2_WOOD':'Tronco T2','T3_WOOD':'Tronco T3','T4_WOOD':'Tronco T4','T5_WOOD':'Tronco T5','T6_WOOD':'Tronco T6','T7_WOOD':'Tronco T7','T8_WOOD':'Tronco T8',
   'T2_ROCK':'Pedra Bruta T2','T3_ROCK':'Pedra Bruta T3','T4_ROCK':'Pedra Bruta T4','T5_ROCK':'Pedra Bruta T5','T6_ROCK':'Pedra Bruta T6','T7_ROCK':'Pedra Bruta T7','T8_ROCK':'Pedra Bruta T8',
+  // Pocoes
   'T4_POTION_HEAL':'Pocao de Cura T4','T5_POTION_HEAL':'Pocao de Cura T5','T6_POTION_HEAL':'Pocao de Cura T6','T7_POTION_HEAL':'Pocao de Cura T7','T8_POTION_HEAL':'Pocao de Cura T8',
-  'T4_POTION_ENERGY':'Pocao de Energia T4','T4_POTION_STONESKIN':'Pocao de Invisibilidade T4',
+  'T4_POTION_ENERGY':'Pocao de Energia T4','T5_POTION_ENERGY':'Pocao de Energia T5','T6_POTION_ENERGY':'Pocao de Energia T6','T7_POTION_ENERGY':'Pocao de Energia T7','T8_POTION_ENERGY':'Pocao de Energia T8',
+  'T4_POTION_STONESKIN':'Pocao de Invisibilidade T4','T5_POTION_STONESKIN':'Pocao de Invisibilidade T5',
+  // Comida
   'T4_MEAL_STEW':'Ensopado T4','T4_MEAL_SANDWICH':'Sanduiche T4','T4_MEAL_PIE':'Torta T4','T4_MEAL_OMELETTE':'Omelete T4','T4_MEAL_ROAST':'Assado T4','T4_MEAL_SOUP':'Sopa T4','T4_MEAL_SALAD':'Salada T4',
+  // Montarias
   'T4_MOUNT_HORSE':'Cavalo T4','T5_MOUNT_HORSE':'Cavalo T5','T6_MOUNT_HORSE':'Cavalo T6','T7_MOUNT_HORSE':'Cavalo T7','T8_MOUNT_HORSE':'Cavalo T8',
-  'T4_MOUNT_ARMORED_HORSE':'Cavalo Blindado T4','T4_MOUNT_OX':'Boi T4','T5_MOUNT_OX':'Boi T5','T6_MOUNT_OX':'Boi T6','T7_MOUNT_OX':'Boi T7','T8_MOUNT_OX':'Boi T8',
-  'T4_TOOL_PICK':'Picareta T4','T4_TOOL_AXE':'Machado de Coleta T4','T4_TOOL_SICKLE':'Foice T4','T4_TOOL_HAMMER':'Martelo de Coleta T4','T4_TOOL_KNIFE':'Facao T4',
-  'T4_MOUNT_GIANTSTAG':'Gigante T4','T4_MOUNT_DIREWOLF':'Lobo Direwolf T4','T4_MOUNT_DIREBOAR':'Javali T4','T6_MOUNT_MAMMOTH_TRANSPORT':'Mamute T6','T4_MOUNT_COUGAR_KEEPER':'Besouro T4','T4_MOUNT_SWAMPDRAGON':'Ave T4',
+  'T4_MOUNT_ARMORED_HORSE':'Cavalo Blindado T4','T5_MOUNT_ARMORED_HORSE':'Cavalo Blindado T5','T6_MOUNT_ARMORED_HORSE':'Cavalo Blindado T6',
+  'T4_MOUNT_OX':'Boi T4','T5_MOUNT_OX':'Boi T5','T6_MOUNT_OX':'Boi T6','T7_MOUNT_OX':'Boi T7','T8_MOUNT_OX':'Boi T8',
+  'T4_MOUNT_GIANTSTAG':'Gigante T4','T5_MOUNT_GIANTSTAG':'Gigante T5','T6_MOUNT_GIANTSTAG':'Gigante T6',
+  'T4_MOUNT_DIREWOLF':'Lobo Direwolf T4','T5_MOUNT_DIREWOLF':'Lobo Direwolf T5','T6_MOUNT_DIREWOLF':'Lobo Direwolf T6','T7_MOUNT_DIREWOLF':'Lobo Direwolf T7','T8_MOUNT_DIREWOLF':'Lobo Direwolf T8',
+  'T4_MOUNT_DIREBOAR':'Javali T4','T5_MOUNT_DIREBOAR':'Javali T5','T6_MOUNT_DIREBOAR':'Javali T6','T7_MOUNT_DIREBOAR':'Javali T7','T8_MOUNT_DIREBOAR':'Javali T8',
+  'T6_MOUNT_MAMMOTH_TRANSPORT':'Mamute T6','T7_MOUNT_MAMMOTH_TRANSPORT':'Mamute T7','T8_MOUNT_MAMMOTH_TRANSPORT':'Mamute T8',
+  'T4_MOUNT_COUGAR_KEEPER':'Besouro T4','T5_MOUNT_COUGAR_KEEPER':'Besouro T5','T6_MOUNT_COUGAR_KEEPER':'Besouro T6',
+  'T4_MOUNT_SWAMPDRAGON':'Ave T4','T5_MOUNT_SWAMPDRAGON':'Ave T5','T6_MOUNT_SWAMPDRAGON':'Ave T6',
+  // Ferramentas
+  'T4_TOOL_PICK':'Picareta T4','T5_TOOL_PICK':'Picareta T5','T6_TOOL_PICK':'Picareta T6','T7_TOOL_PICK':'Picareta T7','T8_TOOL_PICK':'Picareta T8',
+  'T4_TOOL_AXE':'Machado de Coleta T4','T5_TOOL_AXE':'Machado de Coleta T5','T6_TOOL_AXE':'Machado de Coleta T6',
+  'T4_TOOL_SICKLE':'Foice T4','T5_TOOL_SICKLE':'Foice T5','T6_TOOL_SICKLE':'Foice T6',
+  'T4_TOOL_HAMMER':'Martelo de Coleta T4','T5_TOOL_HAMMER':'Martelo de Coleta T5','T6_TOOL_HAMMER':'Martelo de Coleta T6',
+  'T4_TOOL_KNIFE':'Facao T4','T5_TOOL_KNIFE':'Facao T5','T6_TOOL_KNIFE':'Facao T6',
+  // Livros
   'T4_SKILLBOOK_STANDARD':'Livro de Habilidade T4','T5_SKILLBOOK_STANDARD':'Livro de Habilidade T5','T6_SKILLBOOK_STANDARD':'Livro de Habilidade T6','T7_SKILLBOOK_STANDARD':'Livro de Habilidade T7','T8_SKILLBOOK_STANDARD':'Livro de Habilidade T8',
-  'T4_RUNE':'Runa T4','T4_SOUL':'Alma T4','T4_RELIC':'Reliquia T4','T4_SHARD_AVALONIAN':'Fragmento Avaloniano T4',
-  'T4_OFF_SHIELD':'Escudo T4','T4_OFF_TORCH':'Tocha T4','T4_OFF_BOOK':'Livro T4','T4_OFF_ORB_MORGANA':'Coracao T4','T4_OFF_TOTEM_KEEPER':'Totem T4','T4_OFF_HORN_KEEPER':'Chifre T4',
-  'T4_2H_BOW':'Arco Bruxo T4','T5_2H_BOW':'Arco Bruxo T5','T6_2H_BOW':'Arco Bruxo T6','T7_2H_BOW':'Arco Bruxo T7','T8_2H_BOW':'Arco Bruxo T8','T4_2H_WARBOW':'Arco de Guerra T4','T4_2H_LONGBOW':'Arco Longo T4',
-  'T4_2H_CROSSBOW':'Besta T4','T5_2H_CROSSBOW':'Besta T5','T4_MAIN_CROSSBOW':'Besta Leve T4','T4_2H_CROSSBOWLARGE':'Besta Pesada T4',
-  'T4_2H_DAGGER':'Adaga Bruxa T4','T5_2H_DAGGER':'Adaga Bruxa T5','T4_2H_CLAWPAIR':'Garras T4','T4_MAIN_DAGGER_HELL':'Carta Sangrenta T4',
-  'T4_2H_HAMMER':'Martelo T4','T5_2H_HAMMER':'Martelo T5','T4_2H_POLEHAMMER':'Martelo de Haste T4','T4_2H_RAM_KEEPER':'Grande Martelo T4'
+  // Runas
+  'T4_RUNE':'Runa T4','T5_RUNE':'Runa T5','T6_RUNE':'Runa T6','T7_RUNE':'Runa T7','T8_RUNE':'Runa T8',
+  'T4_SOUL':'Alma T4','T5_SOUL':'Alma T5','T6_SOUL':'Alma T6','T7_SOUL':'Alma T7','T8_SOUL':'Alma T8',
+  'T4_RELIC':'Reliquia T4','T5_RELIC':'Reliquia T5','T6_RELIC':'Reliquia T6','T7_RELIC':'Reliquia T7','T8_RELIC':'Reliquia T8',
+  'T4_SHARD_AVALONIAN':'Fragmento Avaloniano T4','T5_SHARD_AVALONIAN':'Fragmento Avaloniano T5','T6_SHARD_AVALONIAN':'Fragmento Avaloniano T6',
+  // Off-hands
+  'T4_OFF_SHIELD':'Escudo T4','T5_OFF_SHIELD':'Escudo T5','T6_OFF_SHIELD':'Escudo T6','T7_OFF_SHIELD':'Escudo T7','T8_OFF_SHIELD':'Escudo T8',
+  'T4_OFF_TORCH':'Tocha T4','T5_OFF_TORCH':'Tocha T5','T6_OFF_TORCH':'Tocha T6',
+  'T4_OFF_BOOK':'Livro T4','T5_OFF_BOOK':'Livro T5','T6_OFF_BOOK':'Livro T6',
+  'T4_OFF_ORB_MORGANA':'Coracao T4','T5_OFF_ORB_MORGANA':'Coracao T5','T6_OFF_ORB_MORGANA':'Coracao T6',
+  'T4_OFF_TOTEM_KEEPER':'Totem T4','T5_OFF_TOTEM_KEEPER':'Totem T5','T6_OFF_TOTEM_KEEPER':'Totem T6',
+  'T4_OFF_HORN_KEEPER':'Chifre T4','T5_OFF_HORN_KEEPER':'Chifre T5','T6_OFF_HORN_KEEPER':'Chifre T6',
+  // Arcos
+  'T4_2H_BOW':'Arco Bruxo T4','T5_2H_BOW':'Arco Bruxo T5','T6_2H_BOW':'Arco Bruxo T6','T7_2H_BOW':'Arco Bruxo T7','T8_2H_BOW':'Arco Bruxo T8',
+  'T4_2H_WARBOW':'Arco de Guerra T4','T5_2H_WARBOW':'Arco de Guerra T5','T6_2H_WARBOW':'Arco de Guerra T6',
+  'T4_2H_LONGBOW':'Arco Longo T4','T5_2H_LONGBOW':'Arco Longo T5','T6_2H_LONGBOW':'Arco Longo T6',
+  // Bestas
+  'T4_2H_CROSSBOW':'Besta T4','T5_2H_CROSSBOW':'Besta T5','T6_2H_CROSSBOW':'Besta T6','T7_2H_CROSSBOW':'Besta T7','T8_2H_CROSSBOW':'Besta T8',
+  'T4_MAIN_CROSSBOW':'Besta Leve T4','T5_MAIN_CROSSBOW':'Besta Leve T5','T6_MAIN_CROSSBOW':'Besta Leve T6',
+  'T4_2H_CROSSBOWLARGE':'Besta Pesada T4','T5_2H_CROSSBOWLARGE':'Besta Pesada T5','T6_2H_CROSSBOWLARGE':'Besta Pesada T6',
+  // Adagas
+  'T4_2H_DAGGER':'Adaga Bruxa T4','T5_2H_DAGGER':'Adaga Bruxa T5','T6_2H_DAGGER':'Adaga Bruxa T6','T7_2H_DAGGER':'Adaga Bruxa T7','T8_2H_DAGGER':'Adaga Bruxa T8',
+  'T4_2H_CLAWPAIR':'Garras T4','T5_2H_CLAWPAIR':'Garras T5','T6_2H_CLAWPAIR':'Garras T6',
+  'T4_MAIN_DAGGER_HELL':'Carta Sangrenta T4','T5_MAIN_DAGGER_HELL':'Carta Sangrenta T5','T6_MAIN_DAGGER_HELL':'Carta Sangrenta T6',
+  // Martelos
+  'T4_2H_HAMMER':'Martelo T4','T5_2H_HAMMER':'Martelo T5','T6_2H_HAMMER':'Martelo T6','T7_2H_HAMMER':'Martelo T7','T8_2H_HAMMER':'Martelo T8',
+  'T4_2H_POLEHAMMER':'Martelo de Haste T4','T5_2H_POLEHAMMER':'Martelo de Haste T5','T6_2H_POLEHAMMER':'Martelo de Haste T6',
+  'T4_2H_RAM_KEEPER':'Grande Martelo T4','T5_2H_RAM_KEEPER':'Grande Martelo T5','T6_2H_RAM_KEEPER':'Grande Martelo T6'
 };
 
 const TRADUCOES = {
@@ -902,8 +987,9 @@ function renderFlipResults(oportunidades, tax) {
       const enchant = o.itemId.match(/@([1-3])$/)?.[1] || '';
       const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
       const dotClass = o.updated === 'Agora' ? 'dot-green' : (parseInt(o.updated) < 60 ? 'dot-yellow' : 'dot-red');
+      const iconUrl = getItemIconUrl(o.itemId);
       return '<tr>' +
-        '<td><div class="item-cell"><span class="tier-badge">' + tierStr + '</span><div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div></div></td>' +
+        '<td><div class="item-cell"><img src="' + iconUrl + '" class="item-icon" alt="" onerror="this.style.display=\'none\'"><span class="tier-badge">' + tierStr + '</span><div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div></div></td>' +
         '<td><div class="route-cell">' + o.fromCity + '<span class="arrow">\u2192</span>' + o.toCity + '</div></td>' +
         '<td class="price-sell price-val">' + formatSilver(o.buy) + '</td>' +
         '<td class="price-buy price-val">' + formatSilver(o.sell) + '</td>' +
@@ -937,7 +1023,9 @@ function initBuscar() {
     const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
     const cat = getCategoria(id);
     const active = buscarItemSelecionado === id ? 'active' : '';
+    const iconUrl = getItemIconUrl(id);
     return '<div class="search-list-item ' + active + '" onclick="selecionarBuscarItem(\'' + id + '\')">' +
+      '<img src="' + iconUrl + '" class="item-icon-sm" alt="" onerror="this.style.display=\'none\'">' +
       '<span class="tier-badge">' + tierStr + '</span>' +
       '<div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div>' +
       '</div>';
@@ -1015,6 +1103,7 @@ async function selecionarBuscarItem(itemId) {
     detalhes.innerHTML =
       '<div class="price-card">' +
         '<div class="item-detail-header">' +
+          '<img src="' + getItemIconUrl(itemId) + '" class="item-icon-lg" alt="" onerror="this.style.display=\'none\'">' +
           '<span class="tier-badge" style="font-size:12px;padding:4px 10px;">' + tierStr + '</span>' +
           '<div>' +
             '<div class="item-detail-title">' + escapeHtml(nome.toUpperCase()) + '</div>' +
@@ -1105,10 +1194,10 @@ async function scanBlackMarket() {
 
   try {
     const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
-    console.log('[BM] Buscando ' + ITENS_BLACK_MARKET.length + ' itens em ' + allLocations.length + ' locais...');
+    
 
     const data = await fetchPrices(ITENS_BLACK_MARKET, allLocations, [1]);
-    console.log('[BM] Dados recebidos: ' + data.length + ' registros');
+    
 
     if (!data || data.length === 0) {
       grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>API retornou dados vazios</p><span>Tente novamente em alguns segundos</span></div>';
@@ -1123,7 +1212,7 @@ async function scanBlackMarket() {
       const bmPrice = bmEntry?.sell || 0;
 
       if (!bmPrice || bmPrice <= 0) {
-        console.log('[BM] ' + itemId + ' — sem preço no BM');
+        
         continue;
       }
 
@@ -1138,7 +1227,7 @@ async function scanBlackMarket() {
         }
       }
 
-      console.log('[BM] ' + itemId + ' — BM: ' + bmPrice + ', melhor cidade: ' + melhorCidade + ' @ ' + melhorPreco);
+      
 
       if (!melhorCidade || melhorPreco >= bmPrice) continue;
 
@@ -1147,7 +1236,7 @@ async function scanBlackMarket() {
       const lucro = netRevenue - melhorPreco;
       const lucroPct = melhorPreco > 0 ? (lucro / melhorPreco) : 0;
 
-      console.log('[BM] ' + itemId + ' — lucro: ' + lucro + ' (' + (lucroPct*100).toFixed(1) + '%)');
+      
 
       if (lucro > 0) {
         resultados.push({
@@ -1165,12 +1254,12 @@ async function scanBlackMarket() {
       }
     }
 
-    console.log('[BM] Total de oportunidades: ' + resultados.length);
+    
     resultados.sort((a, b) => b.lucro - a.lucro);
     bmDataCache = resultados;
     filtrarBM();
   } catch (e) {
-    console.error('[BM] Erro:', e);
+    console.error('BM Erro:', e);
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Erro ao buscar dados do Black Market</p><span>Detalhes no console (F12) — Verifique sua conexão</span></div>';
   }
 }
@@ -1194,9 +1283,10 @@ function filtrarBM() {
 
   grid.innerHTML = itens.map(i => {
     const dotClass = i.updated === 'Agora' ? 'dot-green' : (parseInt(i.updated) < 60 ? 'dot-yellow' : 'dot-red');
+    const iconUrl = getItemIconUrl(i.itemId);
     return '<div class="bm-card">' +
       '<div class="bm-card-header">' +
-        '<div class="bm-card-name"><span class="tier-badge">T' + i.tier + '</span>' + escapeHtml(i.nome) + '</div>' +
+        '<div class="bm-card-name"><img src="' + iconUrl + '" class="item-icon-sm" alt="" onerror="this.style.display=\'none\'" style="margin-right:6px;"><span class="tier-badge">T' + i.tier + '</span>' + escapeHtml(i.nome) + '</div>' +
         '<svg class="bm-card-info" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>' +
       '</div>' +
       '<div class="bm-price-row"><span class="label">Comprar em ' + i.comprarEm + '</span><span class="value price-sell">' + formatSilver(i.precoCompra) + '</span></div>' +
@@ -1381,7 +1471,7 @@ async function testarAPI() {
   try {
     const r = await fetch(API_BASE + '/T4_BAG.json?locations=Caerleon&qualities=1');
     if (r.ok) {
-      console.log('[API] Conectividade OK ✓');
+      
       return true;
     } else {
       console.warn('[API] Conectividade falhou — Status ' + r.status);
@@ -1398,7 +1488,7 @@ async function testarAPI() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  testarAPI();
+
   initBuscar();
   initBM();
   updateFlipPremiumLabel();
