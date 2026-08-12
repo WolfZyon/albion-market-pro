@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SilverForge — Albion Market Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="#" class="logo" onclick="navigateTo('flipper'); return false;">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M8 3L3 8v8l5 5h8l5-5V8l-5-5H8z"/>
+        <path d="M12 8v8M8 12h8"/>
+      </svg>
+      <span class="logo-text">SILVERFORGE</span>
+    </a>
+    <div class="nav-center">
+      <button class="nav-btn active" data-page="flipper" onclick="navigateTo('flipper')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        Flipper
+      </button>
+      <button class="nav-btn" data-page="buscar" onclick="navigateTo('buscar')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Buscar Item
+      </button>
+      <button class="nav-btn" data-page="bm" onclick="navigateTo('bm')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Black Market
+      </button>
+      <button class="nav-btn" data-page="craft" onclick="navigateTo('craft')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Craft & Refino
+      </button>
+    </div>
+    <div class="nav-right">
+      <button class="btn-ghost" id="btnDadosExemplo" onclick="toggleDadosExemplo()">Dados de exemplo</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== PAGE: FLIPPER ========== -->
+<div id="page-flipper" class="page active">
+  <div class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-label">Albion Online · Mercado Royal</div>
+      <h1 class="hero-title">TRANSFORME DIFERENÇA<br>DE PREÇO EM <span class="gold">PRATA.</span></h1>
+      <p class="hero-subtitle">Compare o mercado das sete cidades, desconte taxa de anúncio e imposto de venda, e veja exatamente quanto sobra no seu bolso por rota de flip.</p>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Melhor Flip <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-value" id="flipStatBest">-</div>
+          <div class="stat-desc" id="flipStatBestRoute">Escaneie para ver</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Lucro Somado <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-value" id="flipStatTotal">-</div>
+          <div class="stat-desc" id="flipStatCount">0 rotas listadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Margem Média <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="stat-value" id="flipStatMargin">-</div>
+          <div class="stat-desc" id="flipStatPremium">com Premium (4% imposto)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="flip-filters" style="margin-bottom:0;">
+      <div style="position:relative;">
+        <label class="form-label">Item</label>
+        <input type="text" class="form-input" id="flipItemInput" placeholder="Ex.: Adaga, Claymore, Bolsa..." autocomplete="off">
+        <div id="flipSugestoes" class="sugestoes-box"></div>
+      </div>
+      <div>
+        <label class="form-label">Comprar em</label>
+        <select class="form-select" id="flipFrom">
+          <option value="Todas">Todas</option>
+          <option value="Bridgewatch">Bridgewatch</option>
+          <option value="Caerleon">Caerleon</option>
+          <option value="Fort Sterling">Fort Sterling</option>
+          <option value="Lymhurst">Lymhurst</option>
+          <option value="Martlock">Martlock</option>
+          <option value="Thetford">Thetford</option>
+          <option value="Brecilien">Brecilien</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Vender em</label>
+        <select class="form-select" id="flipTo">
+          <option value="Todas">Todas</option>
+          <option value="Bridgewatch">Bridgewatch</option>
+          <option value="Caerleon">Caerleon</option>
+          <option value="Fort Sterling">Fort Sterling</option>
+          <option value="Lymhurst">Lymhurst</option>
+          <option value="Martlock">Martlock</option>
+          <option value="Thetford">Thetford</option>
+          <option value="Brecilien">Brecilien</option>
+        </select>
+      </div>
+      <div style="padding-bottom:2px; display:flex; align-items:flex-end; gap:10px;">
+        <div class="toggle-wrap active" id="flipPremiumToggle" onclick="this.classList.toggle('active'); updateFlipPremiumLabel();">
+          <div class="toggle-switch"></div>
+          <span class="toggle-label">Conta Premium</span>
+        </div>
+        <button class="btn-primary" onclick="scanFlips()" style="min-height:36px; padding:8px 18px; font-size:13px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          Escanear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="overflow-x:auto;">
+    <table class="data-table" id="flipTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Rota</th>
+          <th>Compra</th>
+          <th>Venda</th>
+          <th>Lucro Líquido</th>
+          <th>Volume</th>
+          <th>Atualizado</th>
+        </tr>
+      </thead>
+      <tbody id="flipTableBody">
+        <tr><td colspan="7" class="empty-state small" style="text-align:center;padding:40px;"><p>Escolha o item e clique em <strong>Escanear</strong></p><span>Ex: claymore, bolsa, capa, cajado de fogo...</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========== PAGE: BUSCAR ITEM ========== -->
+<div id="page-buscar" class="page">
+  <div style="padding-top:32px;">
+    <div class="section-label">Consulta de Preços</div>
+    <h1 class="section-title">BUSCAR ITEM</h1>
+    <p class="section-subtitle">Escolha um item e compare compra e venda nas sete cidades, além do Black Market de Caerleon.</p>
+  </div>
+
+  <div class="search-layout">
+    <div class="search-sidebar">
+      <div style="position:relative;">
+        <input type="text" class="form-input" id="buscarInput" placeholder="Buscar item..." autocomplete="off" style="border-radius:8px;">
+        <div id="buscarSugestoes" class="sugestoes-box" style="border-radius:0 0 8px 8px;margin-top:0;border-top:none;"></div>
+      </div>
+      <div style="margin-top:12px; margin-bottom:8px;">
+        <span class="form-label" style="margin-bottom:8px;">Itens Populares</span>
+      </div>
+      <div class="search-list" id="buscarLista"></div>
+    </div>
+
+    <div class="card" id="buscarDetalhes">
+      <div class="empty-state small">
+        <p>Digite um item para buscar preços</p>
+        <span>Exemplos: bolsa, espada, capa, poção, arco, claymore</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE: BLACK MARKET ========== -->
+<div id="page-bm" class="page">
+  <div style="padding-top:32px;">
+    <div class="section-label">Caerleon</div>
+    <h1 class="section-title">BLACK MARKET SCANNER</h1>
+    <p class="section-subtitle">Compre barato nas cidades reais e despeje no Black Market. O lucro já vem líquido de imposto e taxa de anúncio.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="bm-filters" style="margin-bottom:0;">
+      <div>
+        <label class="form-label">Filtrar Item</label>
+        <input type="text" class="form-input" id="bmInput" placeholder="Filtrar por nome..." oninput="filtrarBM()">
+      </div>
+      <div style="position:relative;">
+        <div class="range-label"><span>Lucro Mínimo</span><span id="bmMinProfitLabel">0</span></div>
+        <div class="range-track">
+          <div class="range-fill" id="bmRangeFill" style="width:0%"></div>
+          <div class="range-thumb" id="bmRangeThumb" style="left:0%"></div>
+        </div>
+        <input type="range" id="bmMinProfit" min="0" max="5000000" value="0" step="50000" style="position:absolute;opacity:0;width:100%;height:20px;cursor:pointer;top:20px;" oninput="updateBmRange(this.value)">
+      </div>
+      <div style="padding-bottom:2px; display:flex; align-items:flex-end; gap:12px;">
+        <div class="toggle-wrap active" id="bmPremiumToggle" onclick="this.classList.toggle('active'); scanBM();">
+          <div class="toggle-switch"></div>
+          <span class="toggle-label">Conta Premium</span>
+        </div>
+        <button class="btn-primary" onclick="scanBM()" style="min-height:36px; padding:8px 18px; font-size:13px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          Escanear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bm-grid" id="bmGrid">
+    <div class="empty-state" style="grid-column:1/-1;"><p>Clique em <strong>Escanear</strong> para buscar oportunidades no Black Market</p></div>
+  </div>
+</div>
+
+<!-- ========== PAGE: CRAFT & REFINO ========== -->
+<div id="page-craft" class="page">
+  <div style="padding-top:32px;">
+    <div class="section-label">Produção</div>
+    <h1 class="section-title">CRAFT & REFINO</h1>
+    <p class="section-subtitle">Simule o lucro de refinar recursos: retorno da cidade, taxa da estação e imposto de venda já entram na conta.</p>
+  </div>
+
+  <div class="craft-layout">
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Receita</label>
+        <select class="form-select" id="craftRecipe" onchange="updateRecipeDesc()">
+          <option value="T4_METALBAR">Barra de Aço (T4)</option>
+          <option value="T5_METALBAR">Barra de Aço (T5)</option>
+          <option value="T6_METALBAR">Barra de Aço (T6)</option>
+          <option value="T7_METALBAR">Barra de Aço (T7)</option>
+          <option value="T8_METALBAR">Barra de Aço (T8)</option>
+          <option value="T4_LEATHER">Couro (T4)</option>
+          <option value="T5_LEATHER">Couro (T5)</option>
+          <option value="T6_LEATHER">Couro (T6)</option>
+          <option value="T7_LEATHER">Couro (T7)</option>
+          <option value="T8_LEATHER">Couro (T8)</option>
+          <option value="T4_CLOTH">Tecido (T4)</option>
+          <option value="T5_CLOTH">Tecido (T5)</option>
+          <option value="T6_CLOTH">Tecido (T6)</option>
+          <option value="T7_CLOTH">Tecido (T7)</option>
+          <option value="T8_CLOTH">Tecido (T8)</option>
+          <option value="T4_PLANKS">Tábua (T4)</option>
+          <option value="T5_PLANKS">Tábua (T5)</option>
+          <option value="T6_PLANKS">Tábua (T6)</option>
+          <option value="T7_PLANKS">Tábua (T7)</option>
+          <option value="T8_PLANKS">Tábua (T8)</option>
+          <option value="T4_STONEBLOCK">Bloco de Pedra (T4)</option>
+          <option value="T5_STONEBLOCK">Bloco de Pedra (T5)</option>
+          <option value="T6_STONEBLOCK">Bloco de Pedra (T6)</option>
+          <option value="T7_STONEBLOCK">Bloco de Pedra (T7)</option>
+          <option value="T8_STONEBLOCK">Bloco de Pedra (T8)</option>
+        </select>
+        <div class="recipe-desc" id="recipeDesc">2× Minério de Cobre → 1× Barra de Aço T4 (usa 1× Barra T3)</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Preço do Bruto (unidade)</label>
+          <input type="number" class="form-input" id="craftRawPrice" value="2400">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preço do Refinado (unidade)</label>
+          <input type="number" class="form-input" id="craftRefinedPrice" value="9800">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quantidade</label>
+          <input type="number" class="form-input" id="craftQty" value="100">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="position:relative;">
+          <div class="range-label"><span>Taxa de Retorno (RRR)</span><span id="craftRrrLabel">36.7%</span></div>
+          <div class="range-track">
+            <div class="range-fill" id="craftRrrFill" style="width:36.7%"></div>
+            <div class="range-thumb" id="craftRrrThumb" style="left:36.7%"></div>
+          </div>
+          <input type="range" id="craftRrr" min="0" max="100" value="36.7" step="0.1" style="position:absolute;opacity:0;width:100%;height:20px;cursor:pointer;top:20px;" oninput="updateCraftRrr(this.value)">
+        </div>
+        <div class="form-group" style="position:relative;">
+          <div class="range-label"><span>Taxa da Estação (prata)</span><span id="craftStationLabel">600</span></div>
+          <div class="range-track">
+            <div class="range-fill" id="craftStationFill" style="width:12%"></div>
+            <div class="range-thumb" id="craftStationThumb" style="left:12%"></div>
+          </div>
+          <input type="range" id="craftStation" min="0" max="5000" value="600" style="position:absolute;opacity:0;width:100%;height:20px;cursor:pointer;top:20px;" oninput="updateCraftStation(this.value)">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:8px;">
+        <div class="toggle-wrap active" id="craftPremiumToggle" onclick="this.classList.toggle('active'); calcularCraftRefino();">
+          <div class="toggle-switch"></div>
+          <span class="toggle-label">Conta Premium (imposto 4%)</span>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-full" style="margin-top:8px;" onclick="calcularCraftRefino()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+        Calcular Lucro
+      </button>
+    </div>
+
+    <div class="result-panel" id="craftResultPanel">
+      <div class="result-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <h3>Resultado</h3>
+      </div>
+      <div id="craftResultContent">
+        <div class="empty-state small">
+          <p>Configure os valores e clique em calcular</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  <p>Dados fornecidos por <a href="https://www.albion-online-data.com" target="_blank">Albion Online Data Project</a></p>
+  <p>SilverForge — Ferramentas de Mercado Albion</p>
+</footer>
+
+<!-- ========== LOADING ========== -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <p>Carregando dados...</p>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
