@@ -8,6 +8,89 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+.api-tag {
+  position: absolute;
+  right: 12px;
+  top: 38px;
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  pointer-events: none;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+.craft-material-row {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.craft-material-row .form-input {
+  margin-bottom: 0 !important;
+}
+.craft-material-row .btn-ghost {
+  white-space: nowrap;
+  padding: 6px 10px;
+  font-size: 11px;
+}
+.btn-api {
+  background: rgba(201, 168, 76, 0.15);
+  color: #c9a84c;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-api:hover {
+  background: rgba(201, 168, 76, 0.3);
+}
+.btn-api:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-api-buscar {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-api-buscar:hover {
+  background: rgba(74, 222, 128, 0.2);
+}
+.btn-api-buscar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.form-group-api {
+  position: relative;
+}
+.form-row-api {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.form-row-api .form-group {
+  flex: 1;
+  min-width: 120px;
+}
+.form-row-api .btn-api {
+  margin-bottom: 4px;
+}
+</style>
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
@@ -269,23 +352,55 @@
   <!-- REFINO -->
   <div class="craft-layout" id="craftRefinoPanel">
     <div class="card">
-      <div class="form-group">
-        <label class="form-label">Receita</label>
-        <select class="form-select" id="refinoReceita" onchange="atualizarDescRefino()">
-          <option value="metal">Minério → Barra de Metal</option>
-          <option value="couro">Pele → Couro</option>
-          <option value="tecido">Fibra → Tecido</option>
-          <option value="tabua">Tronco → Tábua</option>
-          <option value="pedra">Pedra Bruta → Bloco de Pedra</option>
-        </select>
-        <p class="recipe-desc" id="refinoDesc">2× Minério de Cobre → 1× Barra de Aço T4 (usa 1× Barra T3)</p>
-      </div>
       <div class="form-row">
         <div class="form-group">
+          <label class="form-label">Receita</label>
+          <select class="form-select" id="refinoReceita" onchange="atualizarDescRefino()">
+            <option value="metal">Minério → Barra de Metal</option>
+            <option value="couro">Pele → Couro</option>
+            <option value="tecido">Fibra → Tecido</option>
+            <option value="tabua">Tronco → Tábua</option>
+            <option value="pedra">Pedra Bruta → Bloco de Pedra</option>
+          </select>
+          <p class="recipe-desc" id="refinoDesc">2× Minério de Cobre → 1× Barra de Aço T4 (usa 1× Barra T3)</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tier</label>
+          <select class="form-select" id="refinoTier" onchange="atualizarDescRefino()">
+            <option value="2">T2</option>
+            <option value="3">T3</option>
+            <option value="4" selected>T4</option>
+            <option value="5">T5</option>
+            <option value="6">T6</option>
+            <option value="7">T7</option>
+            <option value="8">T8</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cidade</label>
+          <select class="form-select" id="refinoCidade">
+            <option value="Bridgewatch">Bridgewatch</option>
+            <option value="Caerleon">Caerleon</option>
+            <option value="Fort Sterling" selected>Fort Sterling</option>
+            <option value="Lymhurst">Lymhurst</option>
+            <option value="Martlock">Martlock</option>
+            <option value="Thetford">Thetford</option>
+            <option value="Brecilien">Brecilien</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-api" style="margin-bottom:12px;">
+        <button class="btn-api" id="btnBuscarRefino" onclick="buscarPrecosRefino()">
+          <span id="btnBuscarRefinoText">🔍 Buscar Preços da API</span>
+        </button>
+        <span style="color:var(--gray);font-size:12px;align-self:center;">Preenche bruto e refinado automaticamente</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group form-group-api">
           <label class="form-label">Preço do Bruto (unidade)</label>
           <input type="number" class="form-input" id="refinoPrecoBruto" placeholder="0" value="150">
         </div>
-        <div class="form-group">
+        <div class="form-group form-group-api">
           <label class="form-label">Preço do Refinado (unidade)</label>
           <input type="number" class="form-input" id="refinoPrecoRefinado" placeholder="0" value="500">
         </div>
@@ -350,31 +465,35 @@
   <!-- CRAFT -->
   <div class="craft-layout" id="craftCraftPanel" style="display:none;">
     <div class="card">
-      <div class="form-group">
-        <label class="form-label">Item para Craftar</label>
-        <div style="position:relative;">
-          <input type="text" class="form-input" id="craftItemInput" placeholder="Ex.: Adaga Bruxa, Capa, Arco..." oninput="onCraftInput(this.value)">
-          <div class="sugestoes-box" id="craftSugestoes"></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Receita (materiais)</label>
-        <div id="craftMateriais">
-          <div class="craft-material-row">
-            <input type="text" class="form-input" placeholder="Material 1" style="flex:1;" id="craftMat1Nome" value="Barra de Metal T4">
-            <input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat1Qtd" value="16">
-            <input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat1Preco" value="500">
-          </div>
-          <div class="craft-material-row">
-            <input type="text" class="form-input" placeholder="Material 2" style="flex:1;" id="craftMat2Nome" value="Couro T4">
-            <input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat2Qtd" value="8">
-            <input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat2Preco" value="450">
-          </div>
-        </div>
-        <button class="btn-ghost" style="margin-top:10px; font-size:12px;" onclick="addMaterialRow()">+ Adicionar material</button>
-      </div>
       <div class="form-row">
         <div class="form-group">
+          <label class="form-label">Item para Craftar</label>
+          <div style="position:relative;">
+            <input type="text" class="form-input" id="craftItemInput" placeholder="Ex.: Adaga Bruxa, Capa, Arco..." oninput="onCraftInput(this.value)">
+            <div class="sugestoes-box" id="craftSugestoes"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cidade</label>
+          <select class="form-select" id="craftCidade">
+            <option value="Bridgewatch">Bridgewatch</option>
+            <option value="Caerleon">Caerleon</option>
+            <option value="Fort Sterling" selected>Fort Sterling</option>
+            <option value="Lymhurst">Lymhurst</option>
+            <option value="Martlock">Martlock</option>
+            <option value="Thetford">Thetford</option>
+            <option value="Brecilien">Brecilien</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-api" style="margin-bottom:12px;">
+        <button class="btn-api" id="btnBuscarCraftVenda" onclick="buscarPrecoVendaCraft()">
+          <span id="btnBuscarCraftVendaText">🔍 Buscar Preço de Venda</span>
+        </button>
+        <span style="color:var(--gray);font-size:12px;align-self:center;">Busca o preço do item craftado na cidade selecionada</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group form-group-api">
           <label class="form-label">Preço de Venda (unidade)</label>
           <input type="number" class="form-input" id="craftPrecoVenda" placeholder="0" value="25000">
         </div>
@@ -382,6 +501,26 @@
           <label class="form-label">Quantidade</label>
           <input type="number" class="form-input" id="craftQuantidade" placeholder="0" value="10">
         </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Receita (materiais)</label>
+        <div id="craftMateriais">
+          <div class="craft-material-row" id="craftMatRow1">
+            <input type="text" class="form-input" placeholder="Material 1" style="flex:1;" id="craftMat1Nome" value="Barra de Metal T4">
+            <input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat1Qtd" value="16">
+            <input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat1Preco" value="500">
+            <button class="btn-api-buscar" onclick="buscarPrecoMaterial(1)" title="Buscar preço na API">🔍</button>
+            <button class="btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="removeMaterialRow(1)">✕</button>
+          </div>
+          <div class="craft-material-row" id="craftMatRow2">
+            <input type="text" class="form-input" placeholder="Material 2" style="flex:1;" id="craftMat2Nome" value="Couro T4">
+            <input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat2Qtd" value="8">
+            <input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat2Preco" value="450">
+            <button class="btn-api-buscar" onclick="buscarPrecoMaterial(2)" title="Buscar preço na API">🔍</button>
+            <button class="btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="removeMaterialRow(2)">✕</button>
+          </div>
+        </div>
+        <button class="btn-ghost" style="margin-top:10px; font-size:12px;" onclick="addMaterialRow()">+ Adicionar material</button>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -1355,30 +1494,190 @@ function filtrarBM() {
 // CRAFT & REFINO
 // ============================================
 
-function switchCraftTab(tab) {
-  document.querySelectorAll('.craft-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('craftRefinoPanel').style.display = tab === 'refino' ? 'grid' : 'none';
-  document.getElementById('craftCraftPanel').style.display = tab === 'craft' ? 'grid' : 'none';
+// ===== Mapeamento de IDs de materiais para API =====
+const REFINO_IDS = {
+  metal: {
+    bruto: { 2: 'T2_ORE', 3: 'T3_ORE', 4: 'T4_ORE', 5: 'T5_ORE', 6: 'T6_ORE', 7: 'T7_ORE', 8: 'T8_ORE' },
+    refinado: { 2: 'T2_METALBAR', 3: 'T3_METALBAR', 4: 'T4_METALBAR', 5: 'T5_METALBAR', 6: 'T6_METALBAR', 7: 'T7_METALBAR', 8: 'T8_METALBAR' },
+    nomes: { bruto: 'Minério', refinado: 'Barra de Metal' }
+  },
+  couro: {
+    bruto: { 2: 'T2_HIDE', 3: 'T3_HIDE', 4: 'T4_HIDE', 5: 'T5_HIDE', 6: 'T6_HIDE', 7: 'T7_HIDE', 8: 'T8_HIDE' },
+    refinado: { 2: 'T2_LEATHER', 3: 'T3_LEATHER', 4: 'T4_LEATHER', 5: 'T5_LEATHER', 6: 'T6_LEATHER', 7: 'T7_LEATHER', 8: 'T8_LEATHER' },
+    nomes: { bruto: 'Pele', refinado: 'Couro' }
+  },
+  tecido: {
+    bruto: { 2: 'T2_FIBER', 3: 'T3_FIBER', 4: 'T4_FIBER', 5: 'T5_FIBER', 6: 'T6_FIBER', 7: 'T7_FIBER', 8: 'T8_FIBER' },
+    refinado: { 2: 'T2_CLOTH', 3: 'T3_CLOTH', 4: 'T4_CLOTH', 5: 'T5_CLOTH', 6: 'T6_CLOTH', 7: 'T7_CLOTH', 8: 'T8_CLOTH' },
+    nomes: { bruto: 'Fibra', refinado: 'Tecido' }
+  },
+  tabua: {
+    bruto: { 2: 'T2_WOOD', 3: 'T3_WOOD', 4: 'T4_WOOD', 5: 'T5_WOOD', 6: 'T6_WOOD', 7: 'T7_WOOD', 8: 'T8_WOOD' },
+    refinado: { 2: 'T2_PLANKS', 3: 'T3_PLANKS', 4: 'T4_PLANKS', 5: 'T5_PLANKS', 6: 'T6_PLANKS', 7: 'T7_PLANKS', 8: 'T8_PLANKS' },
+    nomes: { bruto: 'Tronco', refinado: 'Tábua' }
+  },
+  pedra: {
+    bruto: { 2: 'T2_ROCK', 3: 'T3_ROCK', 4: 'T4_ROCK', 5: 'T5_ROCK', 6: 'T6_ROCK', 7: 'T7_ROCK', 8: 'T8_ROCK' },
+    refinado: { 2: 'T2_STONEBLOCK', 3: 'T3_STONEBLOCK', 4: 'T4_STONEBLOCK', 5: 'T5_STONEBLOCK', 6: 'T6_STONEBLOCK', 7: 'T7_STONEBLOCK', 8: 'T8_STONEBLOCK' },
+    nomes: { bruto: 'Pedra Bruta', refinado: 'Bloco de Pedra' }
+  }
+};
+
+const MATERIAL_NOME_PARA_ID = {
+  'barra de metal t2': 'T2_METALBAR', 'barra t2': 'T2_METALBAR', 'metalbar t2': 'T2_METALBAR',
+  'barra de metal t3': 'T3_METALBAR', 'barra t3': 'T3_METALBAR', 'metalbar t3': 'T3_METALBAR',
+  'barra de metal t4': 'T4_METALBAR', 'barra t4': 'T4_METALBAR', 'metalbar t4': 'T4_METALBAR',
+  'barra de metal t5': 'T5_METALBAR', 'barra t5': 'T5_METALBAR', 'metalbar t5': 'T5_METALBAR',
+  'barra de metal t6': 'T6_METALBAR', 'barra t6': 'T6_METALBAR', 'metalbar t6': 'T6_METALBAR',
+  'barra de metal t7': 'T7_METALBAR', 'barra t7': 'T7_METALBAR', 'metalbar t7': 'T7_METALBAR',
+  'barra de metal t8': 'T8_METALBAR', 'barra t8': 'T8_METALBAR', 'metalbar t8': 'T8_METALBAR',
+  'minério t2': 'T2_ORE', 'ore t2': 'T2_ORE', 'minério t3': 'T3_ORE', 'ore t3': 'T3_ORE',
+  'minério t4': 'T4_ORE', 'ore t4': 'T4_ORE', 'minério t5': 'T5_ORE', 'ore t5': 'T5_ORE',
+  'minério t6': 'T6_ORE', 'ore t6': 'T6_ORE', 'minério t7': 'T7_ORE', 'ore t7': 'T7_ORE',
+  'minério t8': 'T8_ORE', 'ore t8': 'T8_ORE',
+  'couro t2': 'T2_LEATHER', 'leather t2': 'T2_LEATHER', 'couro t3': 'T3_LEATHER', 'leather t3': 'T3_LEATHER',
+  'couro t4': 'T4_LEATHER', 'leather t4': 'T4_LEATHER', 'couro t5': 'T5_LEATHER', 'leather t5': 'T5_LEATHER',
+  'couro t6': 'T6_LEATHER', 'leather t6': 'T6_LEATHER', 'couro t7': 'T7_LEATHER', 'leather t7': 'T7_LEATHER',
+  'couro t8': 'T8_LEATHER', 'leather t8': 'T8_LEATHER',
+  'pele t2': 'T2_HIDE', 'hide t2': 'T2_HIDE', 'pele t3': 'T3_HIDE', 'hide t3': 'T3_HIDE',
+  'pele t4': 'T4_HIDE', 'hide t4': 'T4_HIDE', 'pele t5': 'T5_HIDE', 'hide t5': 'T5_HIDE',
+  'pele t6': 'T6_HIDE', 'hide t6': 'T6_HIDE', 'pele t7': 'T7_HIDE', 'hide t7': 'T7_HIDE',
+  'pele t8': 'T8_HIDE', 'hide t8': 'T8_HIDE',
+  'tecido t2': 'T2_CLOTH', 'cloth t2': 'T2_CLOTH', 'tecido t3': 'T3_CLOTH', 'cloth t3': 'T3_CLOTH',
+  'tecido t4': 'T4_CLOTH', 'cloth t4': 'T4_CLOTH', 'tecido t5': 'T5_CLOTH', 'cloth t5': 'T5_CLOTH',
+  'tecido t6': 'T6_CLOTH', 'cloth t6': 'T6_CLOTH', 'tecido t7': 'T7_CLOTH', 'cloth t7': 'T7_CLOTH',
+  'tecido t8': 'T8_CLOTH', 'cloth t8': 'T8_CLOTH',
+  'fibra t2': 'T2_FIBER', 'fiber t2': 'T2_FIBER', 'fibra t3': 'T3_FIBER', 'fiber t3': 'T3_FIBER',
+  'fibra t4': 'T4_FIBER', 'fiber t4': 'T4_FIBER', 'fibra t5': 'T5_FIBER', 'fiber t5': 'T5_FIBER',
+  'fibra t6': 'T6_FIBER', 'fiber t6': 'T6_FIBER', 'fibra t7': 'T7_FIBER', 'fiber t7': 'T7_FIBER',
+  'fibra t8': 'T8_FIBER', 'fiber t8': 'T8_FIBER',
+  'tábua t2': 'T2_PLANKS', 'tabua t2': 'T2_PLANKS', 'planks t2': 'T2_PLANKS',
+  'tábua t3': 'T3_PLANKS', 'tabua t3': 'T3_PLANKS', 'planks t3': 'T3_PLANKS',
+  'tábua t4': 'T4_PLANKS', 'tabua t4': 'T4_PLANKS', 'planks t4': 'T4_PLANKS',
+  'tábua t5': 'T5_PLANKS', 'tabua t5': 'T5_PLANKS', 'planks t5': 'T5_PLANKS',
+  'tábua t6': 'T6_PLANKS', 'tabua t6': 'T6_PLANKS', 'planks t6': 'T6_PLANKS',
+  'tábua t7': 'T7_PLANKS', 'tabua t7': 'T7_PLANKS', 'planks t7': 'T7_PLANKS',
+  'tábua t8': 'T8_PLANKS', 'tabua t8': 'T8_PLANKS', 'planks t8': 'T8_PLANKS',
+  'tronco t2': 'T2_WOOD', 'wood t2': 'T2_WOOD', 'tronco t3': 'T3_WOOD', 'wood t3': 'T3_WOOD',
+  'tronco t4': 'T4_WOOD', 'wood t4': 'T4_WOOD', 'tronco t5': 'T5_WOOD', 'wood t5': 'T5_WOOD',
+  'tronco t6': 'T6_WOOD', 'wood t6': 'T6_WOOD', 'tronco t7': 'T7_WOOD', 'wood t7': 'T7_WOOD',
+  'tronco t8': 'T8_WOOD', 'wood t8': 'T8_WOOD',
+  'bloco de pedra t2': 'T2_STONEBLOCK', 'stoneblock t2': 'T2_STONEBLOCK',
+  'bloco de pedra t3': 'T3_STONEBLOCK', 'stoneblock t3': 'T3_STONEBLOCK',
+  'bloco de pedra t4': 'T4_STONEBLOCK', 'stoneblock t4': 'T4_STONEBLOCK',
+  'bloco de pedra t5': 'T5_STONEBLOCK', 'stoneblock t5': 'T5_STONEBLOCK',
+  'bloco de pedra t6': 'T6_STONEBLOCK', 'stoneblock t6': 'T6_STONEBLOCK',
+  'bloco de pedra t7': 'T7_STONEBLOCK', 'stoneblock t7': 'T7_STONEBLOCK',
+  'bloco de pedra t8': 'T8_STONEBLOCK', 'stoneblock t8': 'T8_STONEBLOCK',
+  'pedra bruta t2': 'T2_ROCK', 'rock t2': 'T2_ROCK', 'pedra bruta t3': 'T3_ROCK', 'rock t3': 'T3_ROCK',
+  'pedra bruta t4': 'T4_ROCK', 'rock t4': 'T4_ROCK', 'pedra bruta t5': 'T5_ROCK', 'rock t5': 'T5_ROCK',
+  'pedra bruta t6': 'T6_ROCK', 'rock t6': 'T6_ROCK', 'pedra bruta t7': 'T7_ROCK', 'rock t7': 'T7_ROCK',
+  'pedra bruta t8': 'T8_ROCK', 'rock t8': 'T8_ROCK',
+};
+
+async function buscarPrecoItem(itemId, cidade) {
+  const url = API_BASE + '/' + itemId + '.json?locations=' + encodeURIComponent(cidade) + '&qualities=1';
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    if (Array.isArray(data) && data.length > 0) {
+      const item = data[0];
+      return item.sell_price_min || item.SellPriceMin || 0;
+    }
+  } catch (e) {
+    console.warn('Erro ao buscar preço de', itemId, ':', e.message);
+  }
+  return 0;
+}
+
+function nomeParaIdMaterial(nome) {
+  const chave = nome.toLowerCase().trim();
+  if (MATERIAL_NOME_PARA_ID[chave]) return MATERIAL_NOME_PARA_ID[chave];
+  for (const [key, id] of Object.entries(MATERIAL_NOME_PARA_ID)) {
+    if (chave.includes(key) || key.includes(chave)) return id;
+  }
+  return null;
+}
+
+async function buscarPrecosRefino() {
+  const btn = document.getElementById('btnBuscarRefino');
+  const btnText = document.getElementById('btnBuscarRefinoText');
+  const tipo = document.getElementById('refinoReceita').value;
+  const tier = parseInt(document.getElementById('refinoTier').value);
+  const cidade = document.getElementById('refinoCidade').value;
+  const map = REFINO_IDS[tipo];
+  if (!map) return;
+  const idBruto = map.bruto[tier];
+  const idRefinado = map.refinado[tier];
+  btn.disabled = true;
+  btnText.textContent = 'Buscando...';
+  const [precoBruto, precoRefinado] = await Promise.all([
+    buscarPrecoItem(idBruto, cidade),
+    buscarPrecoItem(idRefinado, cidade)
+  ]);
+  btn.disabled = false;
+  btnText.textContent = '🔍 Buscar Preços da API';
+  if (precoBruto > 0) document.getElementById('refinoPrecoBruto').value = precoBruto;
+  if (precoRefinado > 0) document.getElementById('refinoPrecoRefinado').value = precoRefinado;
+  if (precoBruto > 0 || precoRefinado > 0) calcularRefino();
+}
+
+async function buscarPrecoVendaCraft() {
+  const btn = document.getElementById('btnBuscarCraftVenda');
+  const btnText = document.getElementById('btnBuscarCraftVendaText');
+  const itemNome = document.getElementById('craftItemInput').value.trim();
+  const cidade = document.getElementById('craftCidade').value;
+  if (!itemNome) { alert('Digite o nome do item primeiro.'); return; }
+  const itemId = TRADUCOES[itemNome.toLowerCase()];
+  if (!itemId) { alert('Item não encontrado no dicionário. Verifique o nome ou digite o preço manualmente.'); return; }
+  btn.disabled = true;
+  btnText.textContent = 'Buscando...';
+  const preco = await buscarPrecoItem(itemId, cidade);
+  btn.disabled = false;
+  btnText.textContent = '🔍 Buscar Preço de Venda';
+  if (preco > 0) document.getElementById('craftPrecoVenda').value = preco;
+  else alert('Preço não encontrado na API para este item nesta cidade.');
+}
+
+async function buscarPrecoMaterial(n) {
+  const nomeEl = document.getElementById('craftMat' + n + 'Nome');
+  const precoEl = document.getElementById('craftMat' + n + 'Preco');
+  const cidade = document.getElementById('craftCidade').value;
+  if (!nomeEl || !precoEl) return;
+  const nome = nomeEl.value.trim();
+  if (!nome) { alert('Digite o nome do material primeiro.'); return; }
+  let itemId = TRADUCOES[nome.toLowerCase()] || nomeParaIdMaterial(nome);
+  if (!itemId) { alert('Material não reconhecido. Use nomes como "Barra de Metal T4", "Couro T5", etc.'); return; }
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '...';
+  const preco = await buscarPrecoItem(itemId, cidade);
+  btn.disabled = false;
+  btn.textContent = originalText;
+  if (preco > 0) precoEl.value = preco;
+  else alert('Preço não encontrado na API para este material nesta cidade.');
 }
 
 const REFINO_RECEITAS = {
-  metal: { nome: 'Minério → Barra de Metal', bruto: 'Minério', refinado: 'Barra de Metal', ratio: 2, tierAnterior: true, desc: '2× Minério de Cobre → 1× Barra de Aço T4 (usa 1× Barra T3)' },
-  couro: { nome: 'Pele → Couro', bruto: 'Pele', refinado: 'Couro', ratio: 2, tierAnterior: true, desc: '2× Pele Bruta → 1× Couro T4 (usa 1× Couro T3)' },
-  tecido: { nome: 'Fibra → Tecido', bruto: 'Fibra', refinado: 'Tecido', ratio: 2, tierAnterior: true, desc: '2× Fibra Bruta → 1× Tecido T4 (usa 1× Tecido T3)' },
-  tabua: { nome: 'Tronco → Tábua', bruto: 'Tronco', refinado: 'Tábua', ratio: 2, tierAnterior: true, desc: '2× Tronco → 1× Tábua T4 (usa 1× Tábua T3)' },
-  pedra: { nome: 'Pedra Bruta → Bloco de Pedra', bruto: 'Pedra Bruta', refinado: 'Bloco de Pedra', ratio: 2, tierAnterior: false, desc: '2× Pedra Bruta → 1× Bloco de Pedra T4' }
+  metal: { nome: 'Minério → Barra de Metal', bruto: 'Minério', refinado: 'Barra de Metal', ratio: 2, tierAnterior: true },
+  couro: { nome: 'Pele → Couro', bruto: 'Pele', refinado: 'Couro', ratio: 2, tierAnterior: true },
+  tecido: { nome: 'Fibra → Tecido', bruto: 'Fibra', refinado: 'Tecido', ratio: 2, tierAnterior: true },
+  tabua: { nome: 'Tronco → Tábua', bruto: 'Tronco', refinado: 'Tábua', ratio: 2, tierAnterior: true },
+  pedra: { nome: 'Pedra Bruta → Bloco de Pedra', bruto: 'Pedra Bruta', refinado: 'Bloco de Pedra', ratio: 2, tierAnterior: false }
 };
 
 function atualizarDescRefino() {
   const tipo = document.getElementById('refinoReceita').value;
-  document.getElementById('refinoDesc').textContent = REFINO_RECEITAS[tipo].desc;
-}
-
-function updateRefinoPremiumLabel() {
-  const toggle = document.getElementById('refinoPremiumToggle');
-  const label = toggle.querySelector('.toggle-label');
-  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
+  const tier = parseInt(document.getElementById('refinoTier').value);
+  const rec = REFINO_RECEITAS[tipo];
+  const map = REFINO_IDS[tipo];
+  let desc = '';
+  if (tier === 2) desc = '1× ' + map.nomes.bruto + ' T2 → 1× ' + map.nomes.refinado + ' T2';
+  else if (tier === 3) desc = '2× ' + map.nomes.bruto + ' T3 → 1× ' + map.nomes.refinado + ' T3';
+  else desc = '2× ' + map.nomes.bruto + ' T' + tier + ' + 1× ' + map.nomes.refinado + ' T' + (tier-1) + ' → 1× ' + map.nomes.refinado + ' T' + tier;
+  document.getElementById('refinoDesc').textContent = desc;
 }
 
 function calcularRefino() {
@@ -1389,7 +1688,6 @@ function calcularRefino() {
   const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
   const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
   const taxaVenda = premium ? 0.04 : 0.08;
-
   const ratio = 2;
   const custoMP = precoBruto * ratio * quantidade;
   const receitaBruta = precoRefinado * quantidade;
@@ -1399,7 +1697,6 @@ function calcularRefino() {
   const custoTotal = custoMP + taxaTotal - retornoValor;
   const lucroLiquido = receitaBruta - imposto - custoTotal;
   const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
-
   document.getElementById('refinoCustoTotal').textContent = formatSilver(custoTotal);
   document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
   document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
@@ -1409,15 +1706,93 @@ function calcularRefino() {
   document.getElementById('refinoLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
   document.getElementById('refinoLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
   document.getElementById('refinoLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
-  document.getElementById('refinoLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red)';
-  document.getElementById('refinoNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado por lote de ' + quantidade + ' unidades' : 'Prejuízo estimado por lote de ' + quantidade + ' unidades';
+  document.getElementById('refinoLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red-dim)';
+  document.getElementById('refinoNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado com dados atuais' : 'Prejuízo estimado — revise os preços';
 }
 
-// ============================================
-// CRAFT
-// ============================================
+function calcularCraft() {
+  const precoVenda = parseFloat(document.getElementById('craftPrecoVenda').value) || 0;
+  const quantidade = parseFloat(document.getElementById('craftQuantidade').value) || 0;
+  const rrr = parseFloat(document.getElementById('craftRRR').value) || 0;
+  const taxaEstacao = parseFloat(document.getElementById('craftTaxaEstacao').value) || 0;
+  const premium = document.getElementById('craftPremiumToggle').classList.contains('active');
+  const taxaVenda = premium ? 0.04 : 0.08;
+  const materiais = [];
+  let custoMP = 0;
+  for (let i = 1; i <= craftMaterialCount; i++) {
+    const nomeEl = document.getElementById('craftMat' + i + 'Nome');
+    const qtdEl = document.getElementById('craftMat' + i + 'Qtd');
+    const precoEl = document.getElementById('craftMat' + i + 'Preco');
+    if (nomeEl && qtdEl && precoEl) {
+      const nome = nomeEl.value || 'Material ' + i;
+      const qtd = parseFloat(qtdEl.value) || 0;
+      const preco = parseFloat(precoEl.value) || 0;
+      const custo = qtd * preco * quantidade;
+      custoMP += custo;
+      materiais.push({ nome, qtd, preco, custo });
+    }
+  }
+  const receitaBruta = precoVenda * quantidade;
+  const taxaTotal = taxaEstacao * quantidade;
+  const retornoValor = custoMP * (rrr / 100);
+  const imposto = receitaBruta * taxaVenda;
+  const custoTotal = custoMP + taxaTotal - retornoValor;
+  const lucroLiquido = receitaBruta - imposto - custoTotal;
+  const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
+  document.getElementById('craftCustoTotal').textContent = formatSilver(custoTotal);
+  document.getElementById('craftReceitaBruta').textContent = formatSilver(receitaBruta);
+  const breakdownHTML = materiais.map(m =>
+    '<div class="breakdown-row"><span class="label">' + escapeHtml(m.nome) + ' (' + m.qtd + '×' + formatSilver(m.preco) + ')</span><span class="amount">' + formatSilver(m.custo) + '</span></div>'
+  ).join('');
+  document.getElementById('craftBreakdownMateriais').innerHTML = breakdownHTML;
+  document.getElementById('craftTaxa').textContent = formatSilver(taxaTotal);
+  document.getElementById('craftRetorno').textContent = '+' + formatSilver(retornoValor);
+  document.getElementById('craftImposto').textContent = '-' + formatSilver(imposto);
+  document.getElementById('craftLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
+  document.getElementById('craftLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('craftLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
+  document.getElementById('craftLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red-dim)';
+  document.getElementById('craftNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado com dados atuais' : 'Prejuízo estimado — revise os preços';
+}
 
-let craftMaterialCount = 2;
+function switchCraftTab(tab) {
+  document.querySelectorAll('.craft-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('craftRefinoPanel').style.display = tab === 'refino' ? 'grid' : 'none';
+  document.getElementById('craftCraftPanel').style.display = tab === 'craft' ? 'grid' : 'none';
+}
+
+function updateRefinoPremiumLabel() {
+  const toggle = document.getElementById('refinoPremiumToggle');
+  const label = toggle.querySelector('.toggle-label');
+  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
+}
+
+function updateCraftPremiumLabel() {
+  const toggle = document.getElementById('craftPremiumToggle');
+  const label = toggle.querySelector('.toggle-label');
+  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
+}
+
+function addMaterialRow() {
+  craftMaterialCount++;
+  const container = document.getElementById('craftMateriais');
+  const row = document.createElement('div');
+  row.className = 'craft-material-row';
+  row.id = 'craftMatRow' + craftMaterialCount;
+  row.innerHTML =
+    '<input type="text" class="form-input" placeholder="Material ' + craftMaterialCount + '" style="flex:1;" id="craftMat' + craftMaterialCount + 'Nome">' +
+    '<input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat' + craftMaterialCount + 'Qtd" value="1">' +
+    '<input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat' + craftMaterialCount + 'Preco" value="0">' +
+    '<button class="btn-api-buscar" onclick="buscarPrecoMaterial(' + craftMaterialCount + ')" title="Buscar preço na API">🔍</button>' +
+    '<button class="btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="removeMaterialRow(' + craftMaterialCount + ')">✕</button>';
+  container.appendChild(row);
+}
+
+function removeMaterialRow(n) {
+  const row = document.getElementById('craftMatRow' + n);
+  if (row) row.remove();
+}
 
 function onCraftInput(val) {
   const sugestoesBox = document.getElementById('craftSugestoes');
@@ -1440,100 +1815,7 @@ function selecionarCraftSugestao(texto) {
   document.getElementById('craftSugestoes').style.display = 'none';
 }
 
-function addMaterialRow() {
-  craftMaterialCount++;
-  const container = document.getElementById('craftMateriais');
-  const row = document.createElement('div');
-  row.className = 'craft-material-row';
-  row.id = 'craftMatRow' + craftMaterialCount;
-  row.innerHTML =
-    '<input type="text" class="form-input" placeholder="Material ' + craftMaterialCount + '" style="flex:1;" id="craftMat' + craftMaterialCount + 'Nome">' +
-    '<input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat' + craftMaterialCount + 'Qtd" value="1">' +
-    '<input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat' + craftMaterialCount + 'Preco" value="0">' +
-    '<button class="btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="removeMaterialRow(' + craftMaterialCount + ')">✕</button>';
-  container.appendChild(row);
-}
-
-function removeMaterialRow(index) {
-  const row = document.getElementById('craftMatRow' + index);
-  if (row) row.remove();
-}
-
-function updateCraftPremiumLabel() {
-  const toggle = document.getElementById('craftPremiumToggle');
-  const label = toggle.querySelector('.toggle-label');
-  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
-}
-
-function calcularCraft() {
-  const precoVenda = parseFloat(document.getElementById('craftPrecoVenda').value) || 0;
-  const quantidade = parseFloat(document.getElementById('craftQuantidade').value) || 0;
-  const rrr = parseFloat(document.getElementById('craftRRR').value) || 0;
-  const taxaEstacao = parseFloat(document.getElementById('craftTaxaEstacao').value) || 0;
-  const premium = document.getElementById('craftPremiumToggle').classList.contains('active');
-  const taxaVenda = premium ? 0.04 : 0.08;
-
-  const materiais = [];
-  let custoMP = 0;
-  for (let i = 1; i <= craftMaterialCount; i++) {
-    const nomeEl = document.getElementById('craftMat' + i + 'Nome');
-    const qtdEl = document.getElementById('craftMat' + i + 'Qtd');
-    const precoEl = document.getElementById('craftMat' + i + 'Preco');
-    if (nomeEl && qtdEl && precoEl) {
-      const nome = nomeEl.value || 'Material ' + i;
-      const qtd = parseFloat(qtdEl.value) || 0;
-      const preco = parseFloat(precoEl.value) || 0;
-      const custo = qtd * preco * quantidade;
-      custoMP += custo;
-      materiais.push({ nome, qtd, preco, custo });
-    }
-  }
-
-  const receitaBruta = precoVenda * quantidade;
-  const taxaTotal = taxaEstacao * quantidade;
-  const retornoValor = custoMP * (rrr / 100);
-  const imposto = receitaBruta * taxaVenda;
-  const custoTotal = custoMP + taxaTotal - retornoValor;
-  const lucroLiquido = receitaBruta - imposto - custoTotal;
-  const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
-
-  document.getElementById('craftCustoTotal').textContent = formatSilver(custoTotal);
-  document.getElementById('craftReceitaBruta').textContent = formatSilver(receitaBruta);
-
-  const breakdownHTML = materiais.map(m =>
-    '<div class="breakdown-row"><span class="label">' + escapeHtml(m.nome) + ' (' + m.qtd + '×' + formatSilver(m.preco) + ')</span><span class="amount">' + formatSilver(m.custo) + '</span></div>'
-  ).join('');
-  document.getElementById('craftBreakdownMateriais').innerHTML = breakdownHTML;
-
-  document.getElementById('craftTaxa').textContent = formatSilver(taxaTotal);
-  document.getElementById('craftRetorno').textContent = '+' + formatSilver(retornoValor);
-  document.getElementById('craftImposto').textContent = '-' + formatSilver(imposto);
-  document.getElementById('craftLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
-  document.getElementById('craftLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('craftLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
-  document.getElementById('craftLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red)';
-  document.getElementById('craftNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado por lote de ' + quantidade + ' unidades craftadas' : 'Prejuízo estimado por lote de ' + quantidade + ' unidades craftadas';
-}
-
-// ============================================
-// TESTE DE CONECTIVIDADE
-// ============================================
-
-async function testarAPI() {
-  try {
-    const r = await fetch(API_BASE + '/T4_BAG.json?locations=Caerleon&qualities=1');
-    if (r.ok) {
-      
-      return true;
-    } else {
-      console.warn('[API] Conectividade falhou — Status ' + r.status);
-      return false;
-    }
-  } catch (e) {
-    console.warn('[API] Conectividade falhou — ' + e.message);
-    return false;
-  }
-}
+let craftMaterialCount = 2;
 
 // ============================================
 // INICIALIZAÇÃO
