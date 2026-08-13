@@ -37,7 +37,7 @@
 - [x] **Busca individual por material** no craft (botão 🔍 em cada linha)
 - [x] Descrição dinâmica da receita conforme tier selecionado
 - [x] Simulação genérica de craft com múltiplos materiais customizáveis
-- [x] RRR (Taxa de Retorno de Recursos) — slider/input numérico
+- [x] RRR (Taxa de Retorno de Recursos) — slider/input numérico **MANUAL**
 - [x] Taxa da estação/lojinha de craft — valor em prata
 - [x] Cálculo de lucro líquido com imposto de venda
 - [x] Painel de resultado com grid e detalhamento completo
@@ -59,6 +59,34 @@
 
 ---
 
+## ❌ O que NÃO EXISTE ainda (gaps importantes)
+
+### 1. Spec / Especialização
+- Não há campo para nível de spec do personagem (0-100/400)
+- O RRR é 100% manual — o usuário precisa saber de cabeça quanto a spec dele adiciona
+- Spec afeta diretamente o RRR real no jogo
+
+### 2. Foco (Focus)
+- Não há toggle "Usar Foco"
+- Com foco ativado, o RRR dobra (ex: 36% → 72%+) e o custo de refino/craft cai drasticamente
+- Isso muda completamente a viabilidade econômica de uma receita
+
+### 3. Bônus de Cidade
+- O site não informa qual cidade tem bônus nativo para qual material/item
+- Bônus de cidade aumentam o RRR base antes mesmo de contar spec/foco
+- O usuário pode estar calculando refino de Metal em Fort Sterling (sem bônus) quando deveria estar em Bridgewatch (com bônus)
+
+### Bônus de Cidade no Albion:
+| Cidade | Bônus de Refino | Bônus de Craft |
+|--------|----------------|----------------|
+| Bridgewatch | Metal | Arco, Besta, Machado |
+| Caerleon | Couro | Adaga, Capa, Cajado Maldito |
+| Fort Sterling | Tecido | Espada, Martelo, Cajado Sagrado |
+| Lymhurst | Tábua | Cajado de Fogo, Cajado Arcano, Cajado da Natureza |
+| Martlock | Pedra | Lança, Maça, Cajado de Gelo |
+
+---
+
 ## 🚧 Próximo Upgrade — Refino Avançado v3.0
 
 **Objetivo:** Tornar o cálculo de refino **matematicamente correto** e adicionar **otimização de rotas entre cidades**.
@@ -69,6 +97,7 @@ O refino T4+ exige, além do material bruto do tier atual, **1 unidade do materi
 - ✅ Busca o preço do refinado (Couro T6)
 - ❌ **Não inclui o custo do material do tier anterior** (Couro T5) no cálculo
 - ❌ **Só opera com uma cidade** — não permite otimizar rotas tipo "compro em Bridgewatch, refino em Martlock, vendo em Thetford"
+- ❌ **Não considera spec, foco nem bônus de cidade** no RRR
 
 ### O que será implementado
 
@@ -85,18 +114,27 @@ O refino T4+ exige, além do material bruto do tier atual, **1 unidade do materi
   - **Cidade de Compra do Tier Anterior** — onde compra o catalisador (T-1)
   - **Cidade de Venda do Refinado** — onde vende o produto final
 - [ ] **Botão "Otimizar Rota"**: busca os preços nas 3 cidades e calcula o lucro real da rota
-- [ ] **Custo de transporte** (input manual opcional): prata por slot de inventário ou por viagem, para o jogador ajustar o lucro líquido real
+- [ ] **Custo de transporte** (input manual opcional): prata por slot de inventário ou por viagem
 
-#### 3. Otimização automática (futuro)
-- [ ] **Scan de todas as combinações** de cidades possíveis (7 cidades × 7 cidades × 7 cidades = 343 rotas)
+#### 3. Spec, Foco e Bônus de Cidade (v3.1 ou integrado no v3.0)
+- [ ] **Select de Spec**: nível 0-100/400 que ajusta o RRR automaticamente
+- [ ] **Toggle Foco**: ON/OFF — quando ativado, aplica o multiplicador de RRR do foco
+- [ ] **Indicador de Bônus de Cidade**: mostra na interface qual cidade tem bônus para o material selecionado
+- [ ] **RRR Automático**: calcula `RRR base da cidade + bônus de spec + bônus de foco` automaticamente, com opção de override manual
+- [ ] **Tabela de RRR base por cidade e material** embutida no código (não precisa de API)
+
+#### 4. Otimização automática (futuro)
+- [ ] **Scan de todas as combinações** de cidades possíveis (7×7×7 = 343 rotas)
 - [ ] Mostrar as **top 3 rotas** com maior lucro líquido
 - [ ] Card de resumo por rota: "Compre em X, refine em Y, venda em Z = Lucro Líquido: N"
 
 ### APIs necessárias
-- `GET /api/v2/stats/prices/{item_id}.json?locations={city}&qualities=1` — já usada, só expandir para 3 chamadas independentes
+- `GET /api/v2/stats/prices/{item_id}.json?locations={city}&qualities=1` — já usada, só expandir para múltiplas chamadas independentes
 
-### Itens a mapear adicionalmente
-- IDs dos materiais refinados por tier (T2-T8) para cada categoria — **já mapeados em `REFINO_IDS`**
+### Dados já mapeados no código
+- `REFINO_IDS` — IDs de bruto e refinado por tier (T2-T8) para 5 categorias
+- `MATERIAL_NOME_PARA_ID` — dicionário de tradução de nomes de materiais para IDs
+- `TRADUCOES` — dicionário PT-BR → ID do jogo (200+ itens)
 
 ---
 
@@ -138,4 +176,4 @@ O refino T4+ exige, além do material bruto do tier atual, **1 unidade do materi
 ## 📅 Última atualização
 
 Data: 13/08/2026
-Chat: Upgrade Craft & Refino com valores automáticos via API
+Chat: Upgrade Craft & Refino com valores automáticos via API + documentação de gaps (spec, foco, bônus de cidade)
