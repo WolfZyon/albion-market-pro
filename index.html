@@ -12,6 +12,7 @@
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -127,15 +128,7 @@
         <option value="4">Obra-prima</option>
       </select>
     </div>
-    <div class="form-group" style="margin-bottom:0;">
-      <label class="form-label">Qualidade</label>
-      <select class="form-select" id="flipQuality" onchange="scanFlips()">
-        <option value="1">Normal</option>
-        <option value="2">Boa</option>
-        <option value="3">Excelente</option>
-        <option value="4">Obra-prima</option>
-      </select>
-    </div>
+    
     <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:0;">
       <div class="toggle-wrap active" id="flipPremiumToggle" onclick="this.classList.toggle('active'); updateFlipPremiumLabel(); scanFlips();">
         <div class="toggle-switch"></div>
@@ -193,6 +186,15 @@
           <input type="text" class="form-input" id="buscarInput" placeholder="Buscar item..." oninput="onBuscarInput(this.value)">
           <div class="sugestoes-box" id="buscarSugestoes"></div>
         </div>
+      <div class="form-group" style="margin-top:12px;">
+        <label class="form-label">Qualidade</label>
+        <select class="form-select" id="buscarQuality" onchange="if(buscarItemSelecionado) selecionarBuscarItem(buscarItemSelecionado)">
+          <option value="1">Normal</option>
+          <option value="2">Boa</option>
+          <option value="3">Excelente</option>
+          <option value="4">Obra-prima</option>
+        </select>
+      </div>
       </div>
       <div class="search-list" id="buscarListaItens"></div>
     </div>
@@ -514,27 +516,37 @@ function escapeHtml(text) {
 function getItemIconUrl(id) {
   return 'https://render.albiononline.com/v1/item/' + id + '.png';
 }
-
 async function fetchPrices(items, locations, qualities) {
   if (!items || !items.length) return [];
   const locStr = locations.join(',');
   const qualStr = (qualities || [1]).join(',');
   const chunkSize = 200;
   const allData = [];
+  
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+  
   for (let i = 0; i < items.length; i += chunkSize) {
     const chunk = items.slice(i, i + chunkSize);
     const url = API_BASE + '/' + chunk.join(',') + '.json?locations=' + encodeURIComponent(locStr) + '&qualities=' + qualStr;
     
-    try {
-      const r = await fetch(url);
-      
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const data = await r.json();
-      
-      if (Array.isArray(data)) allData.push(...data);
-    } catch (e) {
-      console.warn('Fetch error:', e.message);
+    let lastError = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const r = await fetch(url);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        if (Array.isArray(data)) {
+          allData.push(...data);
+          lastError = null;
+          break;
+        }
+      } catch (e) {
+        lastError = e;
+        console.warn('Fetch attempt ' + attempt + ' failed:', e.message);
+        if (attempt < 3) await delay(1000);
+      }
     }
+    if (lastError) console.warn('Fetch failed after 3 attempts:', lastError.message);
   }
   return allData;
 }
@@ -567,12 +579,15 @@ function getPricesForItem(data, itemId, quality) {
 function timeSince(dateStr) {
   if (!dateStr) return '?';
   const date = new Date(dateStr);
+  // Verificar se a data é inválida ou muito antiga (antes de 2020 = provavelmente sem dados)
   const now = new Date();
+  if (isNaN(date.getTime()) || date.getFullYear() < 2020) return 'Sem dados';
   const diff = Math.floor((now - date) / 60000);
   if (diff < 1) return 'Agora';
   if (diff < 60) return diff + 'min';
   if (diff < 1440) return Math.floor(diff / 60) + 'h';
-  return Math.floor(diff / 1440) + 'd';
+  if (diff < 10080) return Math.floor(diff / 1440) + 'd';
+  return Math.floor(diff / 10080) + 'sem';
 }
 
 const NOMES_ITENS = {
@@ -1100,13 +1115,15 @@ async function selecionarBuscarItem(itemId) {
   const tier = itemId.match(/^T([4-8])/)?.[1] || '4';
   const enchant = itemId.match(/@([1-3])$/)?.[1] || '';
   const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
-  const nome = getNomeItem(itemId);
+  const qualitySelect = document.getElementById('buscarQuality');
+  const quality = qualitySelect ? parseInt(qualitySelect.value) : 1;
+  const nome = getNomeItem(itemId, quality);
   const cat = getCategoria(itemId);
 
   try {
     const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
-    const data = await fetchPrices([itemId], allLocations, [1]);
-    const prices = getPricesForItem(data, itemId, 1);
+    const data = await fetchPrices([itemId], allLocations, [quality]);
+    const prices = getPricesForItem(data, itemId, quality);
 
     let menorVenda = Infinity;
     let maiorCompra = 0;
@@ -1142,7 +1159,7 @@ async function selecionarBuscarItem(itemId) {
           '<span class="tier-badge" style="font-size:12px;padding:4px 10px;">' + tierStr + '</span>' +
           '<div>' +
             '<div class="item-detail-title">' + escapeHtml(nome.toUpperCase()) + '</div>' +
-            '<div class="item-detail-category">' + cat + ' · Qualidade 1</div>' +
+            '<div class="item-detail-category">' + cat + ' · ' + (QUALIDADES[quality] || 'Qualidade ' + quality) + '</div>' +
           '</div>' +
         '</div>' +
         '<div class="price-summary">' +
