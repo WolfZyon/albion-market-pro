@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/style.css">
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -114,6 +115,15 @@
         <option>Martlock</option>
         <option>Thetford</option>
         <option>Brecilien</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Qualidade</label>
+      <select class="form-select" id="flipQuality" onchange="scanFlips()">
+        <option value="1">Normal</option>
+        <option value="2">Boa</option>
+        <option value="3">Excelente</option>
+        <option value="4">Obra-prima</option>
       </select>
     </div>
     <div class="form-group" style="margin-bottom:0;">
@@ -437,6 +447,13 @@
 const API_BASE = 'https://west.albion-online-data.com/api/v2/stats/prices';
 const CIDADES = ['Bridgewatch','Caerleon','Fort Sterling','Lymhurst','Martlock','Thetford'];
 const CIDADES_COM_BRECILIEN = ['Bridgewatch','Caerleon','Fort Sterling','Lymhurst','Martlock','Thetford','Brecilien'];
+
+const QUALIDADES = {
+  1: 'Normal',
+  2: 'Boa',
+  3: 'Excelente',
+  4: 'Obra-prima'
+};
 
 const QUALIDADES = {
   1: 'Normal',
