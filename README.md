@@ -1,21 +1,21 @@
-# 🛡️ SilverForge — Albion Market Tools v2.0
+# 🛡️ SilverForge — Albion Market Tools v2.1
 
-Ferramenta web para jogadores de **Albion Online** focada em análise de mercado, flip de itens, Black Market e simulação de craft/refino.
+Ferramenta web para jogadores de **Albion Online** focada em análise de mercado, flip de itens, Black Market e simulação de craft/refino com **dados em tempo real**.
 
-🔗 **Dados em tempo real** via [Albion Online Data Project](https://www.albion-online-data.com)
+🔗 **Dados em tempo real** via Albion Online Data Project
 
----
+* * *
 
 ## ⚔️ Módulos
 
 | Módulo | Status | Descrição |
-|--------|--------|-----------|
+| --- | --- | --- |
 | **Flipper** | ✅ Pronto | Compara preços entre 7 cidades + Brecilien, calcula lucro líquido com taxas de anúncio e imposto de venda |
 | **Buscar Item** | ✅ Pronto | Consulta preços de compra/venda em todas as cidades + Black Market de Caerleon, com filtro por qualidade |
 | **Black Market Scanner** | ✅ Pronto | Escaneia ~60 itens populares, encontra oportunidades de lucro comprando nas cidades e vendendo no BM de Caerleon |
-| **Craft & Refino** | ✅ Pronto | Simula lucro de refino (Metal, Couro, Tecido, Tábua, Pedra T2-T8) e craft genérico com múltiplos materiais, RRR, taxa de estação e imposto de venda |
+| **Craft & Refino** | ✅ v2.1 | Simula lucro de refino (Metal, Couro, Tecido, Tábua, Pedra T2-T8) e craft genérico com múltiplos materiais, RRR, taxa de estação e imposto de venda. **Preços de bruto, refinado e materiais de craft preenchidos automaticamente via API** com fallback manual. |
 
----
+* * *
 
 ## 🎨 Design
 
@@ -24,7 +24,7 @@ Ferramenta web para jogadores de **Albion Online** focada em análise de mercado
 - **Responsivo:** Mobile-first, adapta de desktop a celular
 - **Estilo:** Cards com bordas arredondadas, glassmorphism na navbar, animações suaves, empty states ilustrados
 
----
+* * *
 
 ## 🛠️ Tecnologias
 
@@ -33,20 +33,19 @@ Ferramenta web para jogadores de **Albion Online** focada em análise de mercado
 - **JavaScript vanilla** (ES6+), sem frameworks
 - **API REST:** Albion Online Data Project
 
----
+* * *
 
 ## 📂 Estrutura
 albion-market-pro/
-├── index.html          # Página principal (SPA) — HTML + JS embutido (~90 KB)
+├── index.html          # Página principal (SPA) — HTML + JS embutido
 ├── css/
 │   └── style.css       # Estilos completos
 ├── README.md           # Este arquivo
 └── CONTEXT.md          # Estado atual e próximos passos do projeto
 
+> **Nota:** O projeto foi unificado em um único arquivo `index.html`. A lógica JavaScript que antes ficava em `js/app.js` foi totalmente embutida no HTML para facilitar deploy e eliminar problemas de path/CORS em abertura local.
 
-> **Nota:** O projeto foi unificado em um único arquivo `index.html`. A lógica JavaScript que antes ficava em `js/app.js` foi totalmente embutida no HTML para facilitar deploy e eliminar problemas de path/ CORS em abertura local.
-
----
+* * *
 
 ## 🚀 Como usar
 
@@ -57,7 +56,7 @@ albion-market-pro/
 4. Digite o nome do item em **português** (ex: "claymore", "bolsa", "capa", "machado")
 5. O sistema traduz automaticamente para o ID do jogo e busca os preços reais
 
----
+* * *
 
 ## 🔧 Funcionalidades Detalhadas
 
@@ -82,14 +81,24 @@ albion-market-pro/
 - Toggle Premium
 - Cache de resultados para filtro rápido
 
-### Craft & Refino
-- **Refino:** 25 receitas (Metal, Couro, Tecido, Tábua, Pedra) T2-T8
-- **Craft:** Simulação genérica com múltiplos materiais customizáveis (adicionar/remover linhas)
-- Simulação com RRR (Taxa de Retorno de Recursos)
-- Taxa de estação customizável
-- Cálculo de lucro líquido com imposto de venda
+### Craft & Refino (v2.1)
+- **Refino:** 5 categorias × 7 tiers (T2-T8) = 35 receitas
+  - Select de receita + Tier + Cidade
+  - Botão **"Buscar Preços da API"** preenche automaticamente:
+    - Preço do material **bruto** (ex: Pele T6)
+    - Preço do material **refinado** (ex: Couro T6)
+  - Cálculo com RRR, taxa de estação e imposto de venda
+  - Descrição dinâmica da receita conforme tier selecionado
+  - **Fallback manual:** todos os campos continuam editáveis se a API falhar
+- **Craft:** Simulação genérica com múltiplos materiais customizáveis
+  - Select de cidade para referência de preços
+  - Botão **"Buscar Preço de Venda"** para o item craftado
+  - Botão **🔍 individual** em cada linha de material para buscar preço automático
+  - Sistema de sugestões de itens do dicionário PT-BR
+  - Adicionar/remover linhas de material dinamicamente
 - Painel de resultado com grid e detalhamento completo
 - Toggle Premium
+- Abas separadas: Refino / Craft
 
 ### Geral
 - Dicionário de tradução PT-BR → ID do jogo (200+ itens)
@@ -99,6 +108,20 @@ albion-market-pro/
 - Fechar sugestões ao clicar fora
 - Atalho Enter nos inputs de busca
 
----
+* * *
 
-> 💡 Veja `CONTEXT.md` para o estado atual, bugs conhecidos e próximos passos do projeto.
+## 🗺️ Roadmap
+
+- [ ] **Refino Avançado v3.0** — Cálculo real com material do tier anterior (ex: Couro T5 para refinar Couro T6) + otimização de rotas entre cidades
+- [ ] Adicionar mais itens ao dicionário de tradução
+- [ ] Gráficos de histórico de preços
+- [ ] Página de "Sobre" / tutorial
+- [ ] Sistema de favoritos / watchlist
+- [ ] Exportar resultados (CSV/JSON)
+- [ ] Cache local dos dados da API (localStorage)
+- [ ] Animações de entrada mais elaboradas
+- [ ] Tema claro (light mode)
+
+* * *
+
+> 💡 Veja `CONTEXT.md` para o estado atual, bugs conhecidos e próximos passos detalhados do projeto.

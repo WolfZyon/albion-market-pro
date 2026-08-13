@@ -30,21 +30,26 @@
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
 
-### Craft & Refino
-- [x] **Refino:** 25 receitas (Metal, Couro, Tecido, Tábua, Pedra) T2-T8
-- [x] **Craft:** Simulação genérica com múltiplos materiais customizáveis (adicionar/remover linhas dinamicamente)
-- [x] Simulação com RRR (Taxa de Retorno de Recursos)
-- [x] Taxa de estação customizável (slider/input)
+### Craft & Refino (v2.1 — ATUAL)
+- [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
+- [x] **Busca automática de preços via API** para bruto e refinado no refino
+- [x] **Busca automática de preço de venda** no craft pelo nome do item
+- [x] **Busca individual por material** no craft (botão 🔍 em cada linha)
+- [x] Descrição dinâmica da receita conforme tier selecionado
+- [x] Simulação genérica de craft com múltiplos materiais customizáveis
+- [x] RRR (Taxa de Retorno de Recursos) — slider/input numérico
+- [x] Taxa da estação/lojinha de craft — valor em prata
 - [x] Cálculo de lucro líquido com imposto de venda
 - [x] Painel de resultado com grid e detalhamento completo
 - [x] Toggle Premium
 - [x] Abas separadas: Refino / Craft
+- [x] Fallback manual em todos os campos de preço
 
 ### Geral
 - [x] Navbar sticky com glassmorphism
 - [x] Navegação SPA entre 4 páginas
 - [x] Loading overlay
-- [x] Sistema de tradução PT-BR → ID do jogo (200+ itens, dicionário embutido no HTML)
+- [x] Sistema de tradução PT-BR → ID do jogo (200+ itens)
 - [x] Formatação de prata (k, M, completo)
 - [x] Design responsivo (mobile, tablet, desktop)
 - [x] Footer com créditos
@@ -54,47 +59,45 @@
 
 ---
 
-## 🚧 Em andamento / Melhorias futuras
+## 🚧 Próximo Upgrade — Refino Avançado v3.0
 
-- [ ] Adicionar mais itens ao dicionário de tradução
-- [ ] Gráficos de histórico de preços
-- [ ] Página de "Sobre" / tutorial
-- [ ] Sistema de favoritos / watchlist
-- [ ] Exportar resultados (CSV/JSON)
-- [ ] Cache local dos dados da API (localStorage)
-- [ ] Animações de entrada mais elaboradas
-- [ ] Tema claro (light mode)
+**Objetivo:** Tornar o cálculo de refino **matematicamente correto** e adicionar **otimização de rotas entre cidades**.
 
-## 🔄 Integração Automática — Craft & Refino
+### Problema atual (v2.1)
+O refino T4+ exige, além do material bruto do tier atual, **1 unidade do material refinado do tier anterior** (ex: para fazer Couro T6, precisa de 2× Pele T6 + 1× Couro T5). A ferramenta atual:
+- ✅ Busca o preço do bruto (Pele T6)
+- ✅ Busca o preço do refinado (Couro T6)
+- ❌ **Não inclui o custo do material do tier anterior** (Couro T5) no cálculo
+- ❌ **Só opera com uma cidade** — não permite otimizar rotas tipo "compro em Bridgewatch, refino em Martlock, vendo em Thetford"
 
-**Objetivo:** O módulo **Craft & Refino** deve puxar os preços de mercado em tempo real via API do Albion Online Data Project, eliminando a necessidade de digitar valores manualmente.
+### O que será implementado
 
-### O que ficará automático (API)
-- [ ] Preço do material **bruto** (ex: Minério de Cobre T4)
-- [ ] Preço do material **refinado** (ex: Barra de Aço T4)
-- [ ] Preço de **múltiplos materiais** no módulo Craft
+#### 1. Cálculo real do refino (T4+)
+- [ ] Adicionar **busca automática do material do tier anterior** na API
+- [ ] Incluir o custo do tier anterior no **Custo Total** do detalhamento
+- [ ] Ajustar a descrição da receita para mostrar os 3 componentes quando aplicável
+- [ ] Para T2 e T3, manter o cálculo atual (sem tier anterior)
 
-### O que continuará manual (input do usuário)
-- [ ] Toggle **Premium** (imposto 4% vs 8%)
-- [ ] **Taxa de Retorno de Recursos (RRR)** — slider/input numérico
-- [ ] **Taxa da estação/lojinha de craft** — valor em prata
-- [ ] **Quantidade** do lote a produzir
-- [ ] **Nível/tier** da receita selecionada
+#### 2. Otimização de rotas entre cidades
+- [ ] **Modo Simples** (padrão): tudo na mesma cidade (comportamento atual)
+- [ ] **Modo Avançado** (toggle/expand): três selects independentes:
+  - **Cidade de Compra do Bruto** — onde compra a matéria-prima bruta
+  - **Cidade de Compra do Tier Anterior** — onde compra o catalisador (T-1)
+  - **Cidade de Venda do Refinado** — onde vende o produto final
+- [ ] **Botão "Otimizar Rota"**: busca os preços nas 3 cidades e calcula o lucro real da rota
+- [ ] **Custo de transporte** (input manual opcional): prata por slot de inventário ou por viagem, para o jogador ajustar o lucro líquido real
 
-### Como funciona
-1. Usuário seleciona a receita (ex: Metal T4 → T5) e a cidade de referência
-2. Sistema consulta a API para buscar o preço atual do bruto e do refinado naquela cidade
-3. Preços são preenchidos automaticamente nos campos (com opção de override manual)
-4. Cálculo de lucro usa os valores da API + inputs manuais do usuário
+#### 3. Otimização automática (futuro)
+- [ ] **Scan de todas as combinações** de cidades possíveis (7 cidades × 7 cidades × 7 cidades = 343 rotas)
+- [ ] Mostrar as **top 3 rotas** com maior lucro líquido
+- [ ] Card de resumo por rota: "Compre em X, refine em Y, venda em Z = Lucro Líquido: N"
 
 ### APIs necessárias
-- `GET /api/v2/stats/prices/{item_id}.json?locations={city}&qualities=1` — preço do material bruto
-- `GET /api/v2/stats/prices/{item_id}.json?locations={city}&qualities=1` — preço do material refinado
+- `GET /api/v2/stats/prices/{item_id}.json?locations={city}&qualities=1` — já usada, só expandir para 3 chamadas independentes
 
-### Itens a mapear
-- Dicionário de IDs dos materiais brutos e refinados por tier (T2-T8) para cada categoria: Metal, Couro, Tecido, Tábua, Pedra
+### Itens a mapear adicionalmente
+- IDs dos materiais refinados por tier (T2-T8) para cada categoria — **já mapeados em `REFINO_IDS`**
 
-&gt; 💡 **Nota:** Essa integração será implementada em chat futuro. Manter os campos manuais como fallback caso a API falhe ou o usuário queira simular com preços hipotéticos.
 ---
 
 ## 🐛 Bugs conhecidos
@@ -122,15 +125,17 @@
 
 ## 🏗️ Mudanças Recentes (último commit)
 
-- **Removido `js/app.js`**: toda a lógica JavaScript foi embutida no `index.html`
-- **Projeto monolítico**: agora basta abrir `index.html` no navegador, sem dependências de arquivo JS externo
-- **Adicionado módulo Craft**: simulação genérica com múltiplos materiais, além do Refino já existente
-- **Adicionado teste de conectividade** (`testarAPI`) para diagnóstico de problemas de rede
-- **Navbar atualizada**: removido botão de "dados reais" (agora todos os dados são sempre reais)
+- **Craft & Refino v2.1**: preços automáticos via API
+  - Refino: select de Tier + Cidade + botão "Buscar Preços da API"
+  - Craft: select de Cidade + botão "Buscar Preço de Venda" + botão 🔍 por material
+  - Dicionário `MATERIAL_NOME_PARA_ID` para traduzir nomes de materiais básicos
+  - Funções assíncronas: `buscarPrecosRefino()`, `buscarPrecoVendaCraft()`, `buscarPrecoMaterial(n)`
+- **CSS novo**: classes `.btn-api`, `.btn-api-buscar`, `.form-row-api`, `.form-group-api`
+- **HTML reestruturado**: campos de cidade e botões de API adicionados sem quebrar layout existente
 
 ---
 
 ## 📅 Última atualização
 
 Data: 13/08/2026
-Chat: Atualização de README e CONTEXT
+Chat: Upgrade Craft & Refino com valores automáticos via API
