@@ -64,7 +64,7 @@
 
 ## 🐛 Bugs conhecidos
 
-- [Nenhum reportado no momento]
+- [falta de conexão, os dados não estavam sendo puxados]
 
 ---
 
@@ -85,4 +85,4 @@
 ## 📅 Última atualização
 
 Data: 12/08/2026
-Chat: #4
+Chat: #6
