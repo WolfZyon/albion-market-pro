@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -113,6 +114,15 @@
         <option>Martlock</option>
         <option>Thetford</option>
         <option>Brecilien</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Qualidade</label>
+      <select class="form-select" id="flipQuality" onchange="scanFlips()">
+        <option value="1">Normal</option>
+        <option value="2">Boa</option>
+        <option value="3">Excelente</option>
+        <option value="4">Obra-prima</option>
       </select>
     </div>
     <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:0;">
@@ -427,6 +437,13 @@
 const API_BASE = 'https://west.albion-online-data.com/api/v2/stats/prices';
 const CIDADES = ['Bridgewatch','Caerleon','Fort Sterling','Lymhurst','Martlock','Thetford'];
 const CIDADES_COM_BRECILIEN = ['Bridgewatch','Caerleon','Fort Sterling','Lymhurst','Martlock','Thetford','Brecilien'];
+
+const QUALIDADES = {
+  1: 'Normal',
+  2: 'Boa',
+  3: 'Excelente',
+  4: 'Obra-prima'
+};
 const BLACK_MARKET = 'Black Market';
 
 // Itens populares para scan automático
@@ -765,12 +782,16 @@ function aplicarEnchant(idBase, enchant) {
   return idBase + '@' + enchant;
 }
 
-function getNomeItem(itemId) {
+function getNomeItem(itemId, quality) {
   const idSemEnchant = itemId.replace(/@\d+$/, '');
   const nomeBase = NOMES_ITENS[idSemEnchant] || idSemEnchant;
   const enchantMatch = itemId.match(/@([1-3])$/);
-  if (enchantMatch) return nomeBase + ' .' + enchantMatch[1];
-  return nomeBase;
+  let nome = nomeBase;
+  if (enchantMatch) nome += ' .' + enchantMatch[1];
+  if (quality && quality > 1) {
+    nome += ' — ' + (QUALIDADES[quality] || 'Q' + quality);
+  }
+  return nome;
 }
 
 function getCategoria(id) {
@@ -885,6 +906,8 @@ async function scanFlips() {
   const inputRaw = document.getElementById('flipItemInput').value.trim();
   const fromCity = document.getElementById('flipFrom').value;
   const toCity = document.getElementById('flipTo').value;
+  const qualitySelect = document.getElementById('flipQuality');
+  const quality = qualitySelect ? parseInt(qualitySelect.value) : 1;
   const tbody = document.getElementById('flipTableBody');
   const tax = getTaxaVenda();
 
@@ -911,12 +934,12 @@ async function scanFlips() {
 
   try {
     const allCities = [...new Set([...fromCities, ...toCities])];
-    const data = await fetchPrices(itemsToScan, allCities, [1]);
+    const data = await fetchPrices(itemsToScan, allCities, [quality]);
 
     const oportunidades = [];
 
     for (const itemId of itemsToScan) {
-      const prices = getPricesForItem(data, itemId, 1);
+      const prices = getPricesForItem(data, itemId, quality);
 
       for (const fc of fromCities) {
         for (const tc of toCities) {
@@ -938,7 +961,8 @@ async function scanFlips() {
               buy: buyCost, sell: sellRevenue,
               profit, profitPct,
               volume: '-',
-              updated: timeSince(fromPrice.sellDate || toPrice.buyDate)
+              updated: timeSince(fromPrice.sellDate || toPrice.buyDate),
+              quality: quality
             });
           }
         }
@@ -981,7 +1005,7 @@ function renderFlipResults(oportunidades, tax) {
     tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Nenhuma oportunidade de lucro encontrada</p><span>Tente outras cidades ou verifique se os itens tem volume no mercado</span></div></td></tr>';
   } else {
     tbody.innerHTML = oportunidades.map(o => {
-      const nome = getNomeItem(o.itemId);
+      const nome = getNomeItem(o.itemId, o.quality);
       const cat = getCategoria(o.itemId);
       const tier = o.itemId.match(/^T([4-8])/)?.[1] || '4';
       const enchant = o.itemId.match(/@([1-3])$/)?.[1] || '';
@@ -1071,7 +1095,7 @@ async function selecionarBuscarItem(itemId) {
   try {
     const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
     const data = await fetchPrices([itemId], allLocations, [1]);
-    const prices = getPricesForItem(data, itemId, 1);
+    const prices = getPricesForItem(data, itemId, quality);
 
     let menorVenda = Infinity;
     let maiorCompra = 0;
@@ -1207,7 +1231,7 @@ async function scanBlackMarket() {
     const resultados = [];
 
     for (const itemId of ITENS_BLACK_MARKET) {
-      const prices = getPricesForItem(data, itemId, 1);
+      const prices = getPricesForItem(data, itemId, quality);
       const bmEntry = prices[BLACK_MARKET];
       const bmPrice = bmEntry?.sell || 0;
 
