@@ -11,6 +11,7 @@
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -1105,7 +1106,7 @@ async function selecionarBuscarItem(itemId) {
   try {
     const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
     const data = await fetchPrices([itemId], allLocations, [1]);
-    const prices = getPricesForItem(data, itemId, quality);
+    const prices = getPricesForItem(data, itemId, 1);
 
     let menorVenda = Infinity;
     let maiorCompra = 0;
@@ -1241,7 +1242,7 @@ async function scanBlackMarket() {
     const resultados = [];
 
     for (const itemId of ITENS_BLACK_MARKET) {
-      const prices = getPricesForItem(data, itemId, quality);
+      const prices = getPricesForItem(data, itemId, 1);
       const bmEntry = prices[BLACK_MARKET];
       const bmPrice = bmEntry?.sell || 0;
 
