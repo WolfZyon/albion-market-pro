@@ -395,7 +395,7 @@
         </button>
         <span style="color:var(--gray);font-size:12px;align-self:center;">Preenche bruto e refinado automaticamente</span>
       </div>
-      <div class="form-row">
+            <div class="form-row">
         <div class="form-group form-group-api">
           <label class="form-label">Preço do Bruto (unidade)</label>
           <input type="number" class="form-input" id="refinoPrecoBruto" placeholder="0" value="150">
@@ -403,6 +403,11 @@
         <div class="form-group form-group-api">
           <label class="form-label">Preço do Refinado (unidade)</label>
           <input type="number" class="form-input" id="refinoPrecoRefinado" placeholder="0" value="500">
+        </div>
+        <div class="form-group form-group-api" id="refinoTierAnteriorGroup" style="display:none;">
+          <label class="form-label">Preço do Tier Anterior (unidade)</label>
+          <input type="number" class="form-input" id="refinoPrecoTierAnterior" placeholder="0" value="0">
+          <span class="api-tag" id="refinoTierAnteriorTag">T-1</span>
         </div>
         <div class="form-group">
           <label class="form-label">Quantidade</label>
@@ -443,9 +448,10 @@
           <div class="value" id="refinoReceitaBruta">-</div>
         </div>
       </div>
-      <div class="result-breakdown">
+            <div class="result-breakdown">
         <h4>Detalhamento</h4>
-        <div class="breakdown-row"><span class="label">Custo matéria-prima</span><span class="amount" id="refinoCustoMP">-</span></div>
+        <div class="breakdown-row"><span class="label">Custo matéria-prima bruta</span><span class="amount" id="refinoCustoMP">-</span></div>
+        <div class="breakdown-row" id="refinoCustoTierAnteriorRow" style="display:none;"><span class="label">Custo tier anterior (T-1)</span><span class="amount" id="refinoCustoTierAnterior">-</span></div>
         <div class="breakdown-row"><span class="label">Taxa da estação</span><span class="amount" id="refinoTaxa">-</span></div>
         <div class="breakdown-row"><span class="label">Retorno de recursos</span><span class="amount positive" id="refinoRetorno">-</span></div>
         <div class="breakdown-row"><span class="label">Imposto de venda</span><span class="amount negative" id="refinoImposto">-</span></div>
@@ -1606,21 +1612,36 @@ async function buscarPrecosRefino() {
   const tipo = document.getElementById('refinoReceita').value;
   const tier = parseInt(document.getElementById('refinoTier').value);
   const cidade = document.getElementById('refinoCidade').value;
+  const rec = REFINO_RECEITAS[tipo];
   const map = REFINO_IDS[tipo];
   if (!map) return;
   const idBruto = map.bruto[tier];
   const idRefinado = map.refinado[tier];
+  const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
+  const idTierAnterior = usaTierAnterior ? map.refinado[tier - 1] : null;
+
   btn.disabled = true;
   btnText.textContent = 'Buscando...';
-  const [precoBruto, precoRefinado] = await Promise.all([
+
+  const promises = [
     buscarPrecoItem(idBruto, cidade),
     buscarPrecoItem(idRefinado, cidade)
-  ]);
+  ];
+  if (idTierAnterior) {
+    promises.push(buscarPrecoItem(idTierAnterior, cidade));
+  }
+
+  const resultados = await Promise.all(promises);
+  const precoBruto = resultados[0];
+  const precoRefinado = resultados[1];
+  const precoTierAnterior = idTierAnterior ? (resultados[2] || 0) : 0;
+
   btn.disabled = false;
   btnText.textContent = '🔍 Buscar Preços da API';
   if (precoBruto > 0) document.getElementById('refinoPrecoBruto').value = precoBruto;
   if (precoRefinado > 0) document.getElementById('refinoPrecoRefinado').value = precoRefinado;
-  if (precoBruto > 0 || precoRefinado > 0) calcularRefino();
+  if (precoTierAnterior > 0) document.getElementById('refinoPrecoTierAnterior').value = precoTierAnterior;
+  if (precoBruto > 0 || precoRefinado > 0 || precoTierAnterior > 0) calcularRefino();
 }
 
 async function buscarPrecoVendaCraft() {
@@ -1678,28 +1699,69 @@ function atualizarDescRefino() {
   else if (tier === 3) desc = '2× ' + map.nomes.bruto + ' T3 → 1× ' + map.nomes.refinado + ' T3';
   else desc = '2× ' + map.nomes.bruto + ' T' + tier + ' + 1× ' + map.nomes.refinado + ' T' + (tier-1) + ' → 1× ' + map.nomes.refinado + ' T' + tier;
   document.getElementById('refinoDesc').textContent = desc;
-}
 
+  // Mostrar/esconder campo de tier anterior
+  const tierAnteriorGroup = document.getElementById('refinoTierAnteriorGroup');
+  const custoTierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
+  if (tier >= 4 && rec.tierAnterior) {
+    tierAnteriorGroup.style.display = 'block';
+    if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'flex';
+    const tag = document.getElementById('refinoTierAnteriorTag');
+    if (tag) tag.textContent = map.nomes.refinado + ' T' + (tier-1);
+  } else {
+    tierAnteriorGroup.style.display = 'none';
+    if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'none';
+    document.getElementById('refinoPrecoTierAnterior').value = 0;
+  }
+}
 function calcularRefino() {
+  const tipo = document.getElementById('refinoReceita').value;
+  const tier = parseInt(document.getElementById('refinoTier').value);
+  const rec = REFINO_RECEITAS[tipo];
   const precoBruto = parseFloat(document.getElementById('refinoPrecoBruto').value) || 0;
   const precoRefinado = parseFloat(document.getElementById('refinoPrecoRefinado').value) || 0;
+  const precoTierAnterior = parseFloat(document.getElementById('refinoPrecoTierAnterior').value) || 0;
   const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
   const rrr = parseFloat(document.getElementById('refinoRRR').value) || 0;
   const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
   const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
   const taxaVenda = premium ? 0.04 : 0.08;
-  const ratio = 2;
+  const ratio = rec ? rec.ratio : 2;
+
+  // Custo da matéria-prima bruta
   const custoMP = precoBruto * ratio * quantidade;
+
+  // Custo do tier anterior (T4+)
+  const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
+  const custoTierAnterior = usaTierAnterior ? (precoTierAnterior * quantidade) : 0;
+
+  // Custo total de materiais (para cálculo do retorno)
+  const custoMateriaisTotal = custoMP + custoTierAnterior;
+
   const receitaBruta = precoRefinado * quantidade;
   const taxaTotal = taxaEstacao * quantidade;
-  const retornoValor = custoMP * (rrr / 100);
+  const retornoValor = custoMateriaisTotal * (rrr / 100);
   const imposto = receitaBruta * taxaVenda;
-  const custoTotal = custoMP + taxaTotal - retornoValor;
+  const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
   const lucroLiquido = receitaBruta - imposto - custoTotal;
   const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
+
   document.getElementById('refinoCustoTotal').textContent = formatSilver(custoTotal);
   document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
   document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
+
+  // Mostrar/esconder linha do tier anterior
+  const tierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
+  const tierAnteriorVal = document.getElementById('refinoCustoTierAnterior');
+  if (tierAnteriorRow && tierAnteriorVal) {
+    if (usaTierAnterior) {
+      tierAnteriorRow.style.display = 'flex';
+      tierAnteriorVal.textContent = formatSilver(custoTierAnterior);
+    } else {
+      tierAnteriorRow.style.display = 'none';
+    }
+  }
+
   document.getElementById('refinoTaxa').textContent = formatSilver(taxaTotal);
   document.getElementById('refinoRetorno').textContent = '+' + formatSilver(retornoValor);
   document.getElementById('refinoImposto').textContent = '-' + formatSilver(imposto);
