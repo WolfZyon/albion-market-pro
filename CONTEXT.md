@@ -30,17 +30,19 @@
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
 
-### Craft & Refino (v2.1 — ATUAL)
+### Craft & Refino (v3.0 — ATUAL)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
-- [x] **Busca automática de preços via API** para bruto e refinado no refino
-- [x] **Busca automática de preço de venda** no craft pelo nome do item
-- [x] **Busca individual por material** no craft (botão 🔍 em cada linha)
-- [x] Descrição dinâmica da receita conforme tier selecionado
+- [x] **Busca automática de preços via API** para bruto, refinado e tier anterior
+- [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior (T-1)
+- [x] **Descrição dinâmica com quantidades reais** conforme tier e quantidade selecionados
+- [x] **Bônus de Cidade** com banner verde e RRR base automático
+- [x] **Botão "⚡ Aplicar RRR Automático"** que preenche o RRR correto (base + bônus da cidade)
+- [x] **Tabela de bônus de cidade embutida** no código
 - [x] Simulação genérica de craft com múltiplos materiais customizáveis
-- [x] RRR (Taxa de Retorno de Recursos) — slider/input numérico **MANUAL**
+- [x] RRR (Taxa de Retorno de Recursos) — slider/input numérico com opção de override manual
 - [x] Taxa da estação/lojinha de craft — valor em prata
 - [x] Cálculo de lucro líquido com imposto de venda
-- [x] Painel de resultado com grid e detalhamento completo
+- [x] Painel de resultado com grid e detalhamento completo (inclui linha do T-1)
 - [x] Toggle Premium
 - [x] Abas separadas: Refino / Craft
 - [x] Fallback manual em todos os campos de preço
@@ -63,51 +65,39 @@
 
 ### 1. Spec / Especialização
 - Não há campo para nível de spec do personagem (0-100/400)
-- O RRR é 100% manual — o usuário precisa saber de cabeça quanto a spec dele adiciona
 - Spec afeta diretamente o RRR real no jogo
+- O RRR automático atual só considera base + bônus de cidade
 
 ### 2. Foco (Focus)
 - Não há toggle "Usar Foco"
-- Com foco ativado, o RRR dobra (ex: 36% → 72%+) e o custo de refino/craft cai drasticamente
-- Isso muda completamente a viabilidade econômica de uma receita
+- Com foco ativado, o RRR dobra e o custo de refino/craft cai drasticamente
 
-### 3. Bônus de Cidade
-- O site não informa qual cidade tem bônus nativo para qual material/item
-- Bônus de cidade aumentam o RRR base antes mesmo de contar spec/foco
-- O usuário pode estar calculando refino de Metal em Fort Sterling (sem bônus) quando deveria estar em Bridgewatch (com bônus)
+### 3. Otimização de Rotas entre Cidades
+- Só opera com uma cidade — não permite otimizar rotas tipo "compro em Bridgewatch, refino em Martlock, vendo em Thetford"
+- Não há cálculo de custo de transporte entre cidades
 
-### Bônus de Cidade no Albion:
-| Cidade | Bônus de Refino | Bônus de Craft |
-|--------|----------------|----------------|
-| Bridgewatch | Metal | Arco, Besta, Machado |
-| Caerleon | Couro | Adaga, Capa, Cajado Maldito |
-| Fort Sterling | Tecido | Espada, Martelo, Cajado Sagrado |
-| Lymhurst | Tábua | Cajado de Fogo, Cajado Arcano, Cajado da Natureza |
-| Martlock | Pedra | Lança, Maça, Cajado de Gelo |
+### Bônus de Cidade no Albion (Refino):
+| Cidade | Bônus de Refino | RRR Total |
+|--------|-----------------|-----------|
+| Bridgewatch | Pedra | 36.7% |
+| Caerleon | Nenhum | 15.2% |
+| Fort Sterling | Nenhum | 15.2% |
+| Lymhurst | Fibra → Tecido | 36.7% |
+| Martlock | Peles → Couro | 36.7% |
+| Thetford | Minério → Metal | 36.7% |
+| Brecilien | Nenhum | 15.2% |
+
+**Valores oficiais do Albion:**
+- Cidade sem bônus: **15.2%**
+- Cidade com bônus/especializada: **36.7%**
+- Com Foco (sem bônus): **43.5%**
+- Com Foco (com bônus): **53.9%**
 
 ---
 
-## 🚧 Próximo Upgrade — Refino Avançado v3.0
+## 🚧 Próximo Upgrade — Refino Avançado v3.1 / v4.0
 
-**Objetivo:** Tornar o cálculo de refino **matematicamente correto** e adicionar **otimização de rotas entre cidades**.
-
-### Problema atual (v2.1)
-O refino T4+ exige, além do material bruto do tier atual, **1 unidade do material refinado do tier anterior** (ex: para fazer Couro T6, precisa de 2× Pele T6 + 1× Couro T5). A ferramenta atual:
-- ✅ Busca o preço do bruto (Pele T6)
-- ✅ Busca o preço do refinado (Couro T6)
-- ❌ **Não inclui o custo do material do tier anterior** (Couro T5) no cálculo
-- ❌ **Só opera com uma cidade** — não permite otimizar rotas tipo "compro em Bridgewatch, refino em Martlock, vendo em Thetford"
-- ❌ **Não considera spec, foco nem bônus de cidade** no RRR
-
-### O que será implementado
-
-#### 1. Cálculo real do refino (T4+)
-- [ ] Adicionar **busca automática do material do tier anterior** na API
-- [ ] Incluir o custo do tier anterior no **Custo Total** do detalhamento
-- [ ] Ajustar a descrição da receita para mostrar os 3 componentes quando aplicável
-- [ ] Para T2 e T3, manter o cálculo atual (sem tier anterior)
-
-#### 2. Otimização de rotas entre cidades
+### Fase 3 — Otimização de Rotas entre Cidades
 - [ ] **Modo Simples** (padrão): tudo na mesma cidade (comportamento atual)
 - [ ] **Modo Avançado** (toggle/expand): três selects independentes:
   - **Cidade de Compra do Bruto** — onde compra a matéria-prima bruta
@@ -115,31 +105,23 @@ O refino T4+ exige, além do material bruto do tier atual, **1 unidade do materi
   - **Cidade de Venda do Refinado** — onde vende o produto final
 - [ ] **Botão "Otimizar Rota"**: busca os preços nas 3 cidades e calcula o lucro real da rota
 - [ ] **Custo de transporte** (input manual opcional): prata por slot de inventário ou por viagem
-
-#### 3. Spec, Foco e Bônus de Cidade (v3.1 ou integrado no v3.0)
-- [ ] **Select de Spec**: nível 0-100/400 que ajusta o RRR automaticamente
-- [ ] **Toggle Foco**: ON/OFF — quando ativado, aplica o multiplicador de RRR do foco
-- [ ] **Indicador de Bônus de Cidade**: mostra na interface qual cidade tem bônus para o material selecionado
-- [ ] **RRR Automático**: calcula `RRR base da cidade + bônus de spec + bônus de foco` automaticamente, com opção de override manual
-- [ ] **Tabela de RRR base por cidade e material** embutida no código (não precisa de API)
-
-#### 4. Otimização automática (futuro)
 - [ ] **Scan de todas as combinações** de cidades possíveis (7×7×7 = 343 rotas)
 - [ ] Mostrar as **top 3 rotas** com maior lucro líquido
+
+### Fase 4 — Spec do Personagem
+- [ ] **Input de Spec**: nível 0-400 que ajusta o RRR automaticamente
+- [ ] Cada ponto de spec adiciona RRR conforme fórmula do jogo
+
+### Fase 5 — Toggle de Foco
+- [ ] **Toggle "Usar Foco"**: ON/OFF
+- [ ] Quando ativado, aplica multiplicador de RRR do foco (dobra o valor)
+
+### Fase 6 — Otimização Automática (futuro)
 - [ ] Card de resumo por rota: "Compre em X, refine em Y, venda em Z = Lucro Líquido: N"
-
-### APIs necessárias
-- `GET /api/v2/stats/prices/{item_id}.json?locations={city}&qualities=1` — já usada, só expandir para múltiplas chamadas independentes
-
-### Dados já mapeados no código
-- `REFINO_IDS` — IDs de bruto e refinado por tier (T2-T8) para 5 categorias
-- `MATERIAL_NOME_PARA_ID` — dicionário de tradução de nomes de materiais para IDs
-- `TRADUCOES` — dicionário PT-BR → ID do jogo (200+ itens)
 
 ---
 
 ## 🐛 Bugs conhecidos
-
 - [x] ~~Falta de conexão impedia dados de serem puxados~~ → Adicionado `testarAPI()` para diagnóstico
 - [ ] Múltiplas tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;` do `index.html` (5x) — não quebra funcionalidade, mas polui o markup
 - [ ] Em conexões lentas, o loading pode travar se a API demorar muito — considerar timeout
@@ -147,7 +129,6 @@ O refino T4+ exige, além do material bruto do tier atual, **1 unidade do materi
 ---
 
 ## 🎨 Decisões de Design
-
 - **Fontes:** Cinzel (títulos), Inter (corpo)
 - **Cores principais:**
   - Fundo: `#0b0f19`
@@ -163,17 +144,26 @@ O refino T4+ exige, além do material bruto do tier atual, **1 unidade do materi
 
 ## 🏗️ Mudanças Recentes (último commit)
 
-- **Craft & Refino v2.1**: preços automáticos via API
-  - Refino: select de Tier + Cidade + botão "Buscar Preços da API"
-  - Craft: select de Cidade + botão "Buscar Preço de Venda" + botão 🔍 por material
-  - Dicionário `MATERIAL_NOME_PARA_ID` para traduzir nomes de materiais básicos
-  - Funções assíncronas: `buscarPrecosRefino()`, `buscarPrecoVendaCraft()`, `buscarPrecoMaterial(n)`
-- **CSS novo**: classes `.btn-api`, `.btn-api-buscar`, `.form-row-api`, `.form-group-api`
-- **HTML reestruturado**: campos de cidade e botões de API adicionados sem quebrar layout existente
+### Craft & Refino v3.0 — Refino Avançado
+- **Fase 1 — Cálculo real do refino T4+:**
+  - Adicionado campo "Preço do Tier Anterior" (T-1)
+  - Cálculo inclui custo do material do tier anterior no custo total
+  - Busca automática de 3 preços na API (bruto + refinado + T-1)
+  - Detalhamento do resultado mostra linha separada para custo T-1
+  - Descrição da receita mostra quantidades reais (ex: "200× Minério T4 + 100× Barra T3 → 100× Barra T4")
+
+- **Fase 2 — Bônus de Cidade + RRR Automático:**
+  - Tabela `BONUS_CIDADE_REFINO` embutida no código
+  - Banner verde aparece quando a cidade tem bônus nativo para o material
+  - Botão "⚡ Aplicar RRR Automático" calcula RRR real do jogo:
+    - Sem bônus: **15.2%**
+    - Com bônus de cidade: **36.7%**
+  - Info "Base: X.X%" mostra o valor base abaixo do botão
+  - Tabela de bônus corrigida conforme dados oficiais do Albion
 
 ---
 
 ## 📅 Última atualização
 
-Data: 13/08/2026
-Chat: Upgrade Craft & Refino com valores automáticos via API + documentação de gaps (spec, foco, bônus de cidade)
+Data: 14/08/2026
+Chat: Upgrade Refino Avançado v3.0 — Fase 1 (Tier Anterior) + Fase 2 (Bônus de Cidade + RRR Automático)
