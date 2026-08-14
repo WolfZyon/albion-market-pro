@@ -443,6 +443,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
         Calcular Lucro
       </button>
+      <button class="btn-api btn-full" id="btnBuscarVendaRefino" onclick="buscarMelhorPrecoVendaRefino()" style="margin-top:10px;">
+        <span id="btnBuscarVendaRefinoText">🔍 Ver preço de venda em todas as cidades</span>
+      </button>
+      <div id="refinoPrecosVendaGrid" style="margin-top:12px;display:none;"></div>
     </div>
     <div class="result-panel" id="refinoResultado">
       <div class="result-header">
@@ -1795,6 +1799,58 @@ function aplicarRRRAutomatico() {
   calcularRefino();
 }
 
+
+async function buscarMelhorPrecoVendaRefino() {
+  const btn = document.getElementById('btnBuscarVendaRefino');
+  const btnText = document.getElementById('btnBuscarVendaRefinoText');
+  const tipo = document.getElementById('refinoReceita').value;
+  const tier = parseInt(document.getElementById('refinoTier').value);
+  const map = REFINO_IDS[tipo];
+  if (!map) return;
+
+  const idRefinado = map.refinado[tier];
+  const grid = document.getElementById('refinoPrecosVendaGrid');
+  grid.style.display = 'block';
+  btn.disabled = true;
+  btnText.textContent = 'Buscando preços...';
+
+  const cidades = ['Bridgewatch', 'Caerleon', 'Fort Sterling', 'Lymhurst', 'Martlock', 'Thetford', 'Brecilien'];
+  const precos = await Promise.all(
+    cidades.map(c => buscarPrecoItem(idRefinado, c).then(p => ({ cidade: c, preco: p })))
+  );
+
+  precos.sort((a, b) => b.preco - a.preco);
+
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px;">';
+  precos.forEach((p, i) => {
+    const destaque = i === 0 ? 'border:1px solid #4ade80;background:rgba(74,222,128,0.08);' : 'border:1px solid rgba(255,255,255,0.05);';
+    html += '<div style="padding:10px 8px;border-radius:8px;background:#111827;' + destaque + 'text-align:center;">' +
+      '<div style="font-size:11px;color:var(--gray);margin-bottom:4px;">' + p.cidade + '</div>' +
+      '<div style="font-size:15px;font-weight:700;color:' + (i === 0 ? '#4ade80' : '#fff') + ';">' + formatSilver(p.preco) + '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+
+  const melhor = precos[0];
+  const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
+  const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
+  const taxaVenda = premium ? 0.04 : 0.08;
+  const receitaMelhor = melhor.preco * quantidade * (1 - taxaVenda);
+
+  const custoTotalText = document.getElementById('refinoCustoTotal').textContent;
+  const custoTotal = parseFloat(custoTotalText.replace(/[^0-9.]/g, '')) || 0;
+  const lucroMelhor = receitaMelhor - custoTotal;
+
+  html += '<div style="padding:12px;border-radius:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);">' +
+    '<div style="font-size:12px;color:var(--gray);margin-bottom:4px;">Lucro se vender em ' + melhor.cidade + '</div>' +
+    '<div style="font-size:20px;font-weight:700;color:' + (lucroMelhor >= 0 ? '#4ade80' : '#ef4444') + ';">' + (lucroMelhor >= 0 ? '+' : '') + formatSilver(lucroMelhor) + '</div>' +
+    '</div>';
+
+  grid.innerHTML = html;
+  btn.disabled = false;
+  btnText.textContent = '🔍 Ver preço de venda em todas as cidades';
+}
+
 function calcularRefino() {
   const tipo = document.getElementById('refinoReceita').value;
   const tier = parseInt(document.getElementById('refinoTier').value);
@@ -1816,9 +1872,7 @@ function calcularRefino() {
 
   const receitaBruta = precoRefinado * quantidade;
   const taxaTotal = taxaEstacao * quantidade;
-  const rrrDecimal = rrr / 100;
-const retornoEfetivo = rrrDecimal / (1 - rrrDecimal);
-const retornoValor = custoMateriaisTotal * retornoEfetivo;
+  const retornoValor = custoMateriaisTotal * (rrr / 100);
   const imposto = receitaBruta * taxaVenda;
   const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
   const lucroLiquido = receitaBruta - imposto - custoTotal;
