@@ -1729,33 +1729,6 @@ function getNomeCategoria(tipo) {
   const map = { metal: 'Metal', couro: 'Couro', tecido: 'Tecido', tabua: 'Tábua', pedra: 'Pedra' };
   return map[tipo] || tipo;
 }
-
-
-// ===== BÔNUS DE CIDADE & RRR BASE (v3.0) =====
-const BONUS_CIDADE_REFINO = {
-  Bridgewatch:  { metal: true,  couro: false, tecido: false, tabua: false, pedra: false },
-  Caerleon:     { metal: false, couro: true,  tecido: false, tabua: false, pedra: false },
-  'Fort Sterling': { metal: false, couro: false, tecido: true,  tabua: false, pedra: false },
-  Lymhurst:     { metal: false, couro: false, tecido: false, tabua: true,  pedra: false },
-  Martlock:     { metal: false, couro: false, tecido: false, tabua: false, pedra: true  },
-  Thetford:     { metal: false, couro: false, tecido: false, tabua: false, pedra: false },
-  Brecilien:    { metal: false, couro: false, tecido: false, tabua: false, pedra: false }
-};
-
-const RRR_BASE = { t2: 0, t3: 0, t4: 15, t5: 15, t6: 15, t7: 15, t8: 15 };
-const RRR_BONUS_CIDADE = 10;
-
-function getCidadeBonus(tipo, cidade) {
-  const map = BONUS_CIDADE_REFINO[cidade];
-  return map && map[tipo] === true;
-}
-
-function getRRRBase(tier, tipo, cidade) {
-  const base = RRR_BASE['t' + tier] || 0;
-  const bonus = getCidadeBonus(tipo, cidade) ? RRR_BONUS_CIDADE : 0;
-  return base + bonus;
-}
-
 function getNomeCategoria(tipo) {
   const map = { metal: 'Metal', couro: 'Couro', tecido: 'Tecido', tabua: 'Tábua', pedra: 'Pedra' };
   return map[tipo] || tipo;
