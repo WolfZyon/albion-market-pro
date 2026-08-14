@@ -1850,57 +1850,60 @@ async function buscarMelhorPrecoVendaRefino() {
   btn.disabled = false;
   btnText.textContent = '🔍 Ver preço de venda em todas as cidades';
 }
-
 function calcularRefino() {
-  const tipo = document.getElementById('refinoReceita').value;
-  const tier = parseInt(document.getElementById('refinoTier').value);
-  const rec = REFINO_RECEITAS[tipo];
-  const precoBruto = parseFloat(document.getElementById('refinoPrecoBruto').value) || 0;
-  const precoRefinado = parseFloat(document.getElementById('refinoPrecoRefinado').value) || 0;
-  const precoTierAnterior = parseFloat(document.getElementById('refinoPrecoTierAnterior').value) || 0;
-  const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
-  const rrr = parseFloat(document.getElementById('refinoRRR').value) || 0;
-  const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
-  const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
-  const taxaVenda = premium ? 0.04 : 0.08;
-  const ratio = rec ? rec.ratio : 2;
+  try {
+    const tipo = document.getElementById('refinoReceita').value;
+    const tier = parseInt(document.getElementById('refinoTier').value);
+    const rec = REFINO_RECEITAS[tipo];
+    const precoBruto = parseFloat(document.getElementById('refinoPrecoBruto').value) || 0;
+    const precoRefinado = parseFloat(document.getElementById('refinoPrecoRefinado').value) || 0;
+    const precoTierAnterior = parseFloat(document.getElementById('refinoPrecoTierAnterior').value) || 0;
+    const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
+    const rrr = parseFloat(document.getElementById('refinoRRR').value) || 0;
+    const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
+    const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
+    const taxaVenda = premium ? 0.04 : 0.08;
+    const ratio = rec ? rec.ratio : 2;
 
-  const custoMP = precoBruto * ratio * quantidade;
-  const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
-  const custoTierAnterior = usaTierAnterior ? (precoTierAnterior * quantidade) : 0;
-  const custoMateriaisTotal = custoMP + custoTierAnterior;
+    const custoMP = precoBruto * ratio * quantidade;
+    const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
+    const custoTierAnterior = usaTierAnterior ? (precoTierAnterior * quantidade) : 0;
+    const custoMateriaisTotal = custoMP + custoTierAnterior;
 
-  const receitaBruta = precoRefinado * quantidade;
-  const taxaTotal = taxaEstacao * quantidade;
-  const retornoValor = custoMateriaisTotal * (rrr / 100);
-  const imposto = receitaBruta * taxaVenda;
-  const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
-  const lucroLiquido = receitaBruta - imposto - custoTotal;
-  const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
+    const receitaBruta = precoRefinado * quantidade;
+    const taxaTotal = taxaEstacao * quantidade;
+    const retornoValor = custoMateriaisTotal * (rrr / 100);
+    const imposto = receitaBruta * taxaVenda;
+    const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
+    const lucroLiquido = receitaBruta - imposto - custoTotal;
+    const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
 
-  document.getElementById('refinoCustoTotal').textContent = formatSilver(custoTotal);
-  document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
-  document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
+    document.getElementById('refinoCustoTotal').textContent = formatSilver(custoTotal);
+    document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
+    document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
 
-  const tierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
-  const tierAnteriorVal = document.getElementById('refinoCustoTierAnterior');
-  if (tierAnteriorRow && tierAnteriorVal) {
-    if (usaTierAnterior) {
-      tierAnteriorRow.style.display = 'flex';
-      tierAnteriorVal.textContent = formatSilver(custoTierAnterior);
-    } else {
-      tierAnteriorRow.style.display = 'none';
+    const tierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
+    const tierAnteriorVal = document.getElementById('refinoCustoTierAnterior');
+    if (tierAnteriorRow && tierAnteriorVal) {
+      if (usaTierAnterior) {
+        tierAnteriorRow.style.display = 'flex';
+        tierAnteriorVal.textContent = formatSilver(custoTierAnterior);
+      } else {
+        tierAnteriorRow.style.display = 'none';
+      }
     }
-  }
 
-  document.getElementById('refinoTaxa').textContent = formatSilver(taxaTotal);
-  document.getElementById('refinoRetorno').textContent = '+' + formatSilver(retornoValor);
-  document.getElementById('refinoImposto').textContent = '-' + formatSilver(imposto);
-  document.getElementById('refinoLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
-  document.getElementById('refinoLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('refinoLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
-  document.getElementById('refinoLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red-dim)';
-  document.getElementById('refinoNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado com dados atuais' : 'Prejuízo estimado — revise os preços';
+    document.getElementById('refinoTaxa').textContent = formatSilver(taxaTotal);
+    document.getElementById('refinoRetorno').textContent = '+' + formatSilver(retornoValor);
+    document.getElementById('refinoImposto').textContent = '-' + formatSilver(imposto);
+    document.getElementById('refinoLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
+    document.getElementById('refinoLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
+    document.getElementById('refinoLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
+    document.getElementById('refinoLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red-dim)';
+    document.getElementById('refinoNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado com dados atuais' : 'Prejuízo estimado — revise os preços';
+  } catch (e) {
+    console.warn('Erro em calcularRefino:', e);
+  }
 }
 
 function calcularCraft() {
