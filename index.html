@@ -1816,7 +1816,9 @@ function calcularRefino() {
 
   const receitaBruta = precoRefinado * quantidade;
   const taxaTotal = taxaEstacao * quantidade;
-  const retornoValor = custoMateriaisTotal * (rrr / 100);
+  const rrrDecimal = rrr / 100;
+const retornoEfetivo = rrrDecimal / (1 - rrrDecimal);
+const retornoValor = custoMateriaisTotal * retornoEfetivo;
   const imposto = receitaBruta * taxaVenda;
   const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
   const lucroLiquido = receitaBruta - imposto - custoTotal;
