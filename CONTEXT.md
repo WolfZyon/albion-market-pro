@@ -32,12 +32,16 @@
 
 ### Craft & Refino (v3.0 — ATUAL)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
-- [x] **Busca automática de preços via API** para bruto, refinado e tier anterior
-- [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior (T-1)
-- [x] **Descrição dinâmica com quantidades reais** conforme tier e quantidade selecionados
+- [x] **Busca automática de preços via API** para bruto, refinado e tier anterior (T-1)
+- [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior
+- [x] **Descrição dinâmica com quantidades reais** conforme tier e quantidade
+- [x] **Retorno de recursos composto realista** (88% do teórico, considerando refinamento em cadeia)
 - [x] **Bônus de Cidade** com banner verde e RRR base automático
-- [x] **Botão "⚡ Aplicar RRR Automático"** que preenche o RRR correto (base + bônus da cidade)
-- [x] **Tabela de bônus de cidade embutida** no código
+- [x] **Botão "⚡ Aplicar RRR Automático"** que preenche o RRR real do jogo:
+  - Sem bônus: **15.2%**
+  - Com bônus de cidade: **36.7%**
+- [x] **Botão "🔍 Ver preço de venda em todas as cidades"** — busca o preço do refinado nas 7 cidades e mostra o lucro se vender na mais cara
+- [x] **Tabela de bônus de cidade embutida** no código (corrigida conforme dados oficiais)
 - [x] Simulação genérica de craft com múltiplos materiais customizáveis
 - [x] RRR (Taxa de Retorno de Recursos) — slider/input numérico com opção de override manual
 - [x] Taxa da estação/lojinha de craft — valor em prata
@@ -70,10 +74,11 @@
 
 ### 2. Foco (Focus)
 - Não há toggle "Usar Foco"
-- Com foco ativado, o RRR dobra e o custo de refino/craft cai drasticamente
+- Com foco ativado, o RRR sobe para 43.5% (sem bônus) ou 53.9% (com bônus)
 
-### 3. Otimização de Rotas entre Cidades
-- Só opera com uma cidade — não permite otimizar rotas tipo "compro em Bridgewatch, refino em Martlock, vendo em Thetford"
+### 3. Otimização de Rotas entre Cidades (completa)
+- O botão "Ver preço de venda" já busca preços em todas as cidades
+- Mas não há: comprar em X, refinar em Y, vender em Z — tudo é na mesma cidade
 - Não há cálculo de custo de transporte entre cidades
 
 ### Bônus de Cidade no Albion (Refino):
@@ -97,13 +102,12 @@
 
 ## 🚧 Próximo Upgrade — Refino Avançado v3.1 / v4.0
 
-### Fase 3 — Otimização de Rotas entre Cidades
+### Fase 3 — Otimização de Rotas Completa
 - [ ] **Modo Simples** (padrão): tudo na mesma cidade (comportamento atual)
 - [ ] **Modo Avançado** (toggle/expand): três selects independentes:
   - **Cidade de Compra do Bruto** — onde compra a matéria-prima bruta
   - **Cidade de Compra do Tier Anterior** — onde compra o catalisador (T-1)
   - **Cidade de Venda do Refinado** — onde vende o produto final
-- [ ] **Botão "Otimizar Rota"**: busca os preços nas 3 cidades e calcula o lucro real da rota
 - [ ] **Custo de transporte** (input manual opcional): prata por slot de inventário ou por viagem
 - [ ] **Scan de todas as combinações** de cidades possíveis (7×7×7 = 343 rotas)
 - [ ] Mostrar as **top 3 rotas** com maior lucro líquido
@@ -114,9 +118,10 @@
 
 ### Fase 5 — Toggle de Foco
 - [ ] **Toggle "Usar Foco"**: ON/OFF
-- [ ] Quando ativado, aplica multiplicador de RRR do foco (dobra o valor)
+- [ ] Quando ativado, aplica multiplicador de RRR do foco (43.5% ou 53.9%)
 
 ### Fase 6 — Otimização Automática (futuro)
+- [ ] Integração real entre Refino e Flipper: sugestão automática de rota ótima
 - [ ] Card de resumo por rota: "Compre em X, refine em Y, venda em Z = Lucro Líquido: N"
 
 ---
@@ -150,20 +155,26 @@
   - Cálculo inclui custo do material do tier anterior no custo total
   - Busca automática de 3 preços na API (bruto + refinado + T-1)
   - Detalhamento do resultado mostra linha separada para custo T-1
-  - Descrição da receita mostra quantidades reais (ex: "200× Minério T4 + 100× Barra T3 → 100× Barra T4")
+  - Descrição da receita mostra quantidades reais
 
 - **Fase 2 — Bônus de Cidade + RRR Automático:**
-  - Tabela `BONUS_CIDADE_REFINO` embutida no código
+  - Tabela `BONUS_CIDADE_REFINO` embutida no código (valores corrigidos)
   - Banner verde aparece quando a cidade tem bônus nativo para o material
-  - Botão "⚡ Aplicar RRR Automático" calcula RRR real do jogo:
-    - Sem bônus: **15.2%**
-    - Com bônus de cidade: **36.7%**
+  - Botão "⚡ Aplicar RRR Automático" calcula RRR real do jogo (15.2% / 36.7%)
   - Info "Base: X.X%" mostra o valor base abaixo do botão
-  - Tabela de bônus corrigida conforme dados oficiais do Albion
+
+- **Melhoria extra — Retorno composto realista:**
+  - Retorno de recursos ajustado para 88% do valor composto teórico
+  - Considera refinamento em cadeia, mas com margem para arredondamentos do jogo
+
+- **Melhoria extra — Busca de preço de venda em todas as cidades:**
+  - Botão "🔍 Ver preço de venda em todas as cidades"
+  - Grid com preços do item refinado nas 7 cidades, ordenado do maior para o menor
+  - Card de lucro se vender na cidade mais cara
 
 ---
 
 ## 📅 Última atualização
 
 Data: 14/08/2026
-Chat: Upgrade Refino Avançado v3.0 — Fase 1 (Tier Anterior) + Fase 2 (Bônus de Cidade + RRR Automático)
+Chat: Upgrade Refino Avançado v3.0 — Fase 1 (Tier Anterior) + Fase 2 (Bônus de Cidade + RRR Automático) + Retorno Composto Realista + Busca de Preço de Venda em Todas as Cidades
