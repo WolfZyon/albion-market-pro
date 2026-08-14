@@ -96,6 +96,7 @@
 <base target="_blank">
 <base target="_blank">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
@@ -378,7 +379,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Cidade</label>
-                   <select class="form-select" id="refinoCidade" onchange="atualizarDescRefino()"></select>
+                   <select class="form-select" id="refinoCidade"></select>
             <option value="Bridgewatch">Bridgewatch</option>
             <option value="Caerleon">Caerleon</option>
             <option value="Fort Sterling" selected>Fort Sterling</option>
@@ -1697,7 +1698,38 @@ const REFINO_RECEITAS = {
   tecido: { nome: 'Fibra → Tecido', bruto: 'Fibra', refinado: 'Tecido', ratio: 2, tierAnterior: true },
   tabua: { nome: 'Tronco → Tábua', bruto: 'Tronco', refinado: 'Tábua', ratio: 2, tierAnterior: true },
   pedra: { nome: 'Pedra Bruta → Bloco de Pedra', bruto: 'Pedra Bruta', refinado: 'Bloco de Pedra', ratio: 2, tierAnterior: false }
+};;
+
+// ===== BÔNUS DE CIDADE & RRR BASE (v3.0) =====
+const BONUS_CIDADE_REFINO = {
+  Bridgewatch:  { metal: true,  couro: false, tecido: false, tabua: false, pedra: false },
+  Caerleon:     { metal: false, couro: true,  tecido: false, tabua: false, pedra: false },
+  'Fort Sterling': { metal: false, couro: false, tecido: true,  tabua: false, pedra: false },
+  Lymhurst:     { metal: false, couro: false, tecido: false, tabua: true,  pedra: false },
+  Martlock:     { metal: false, couro: false, tecido: false, tabua: false, pedra: true  },
+  Thetford:     { metal: false, couro: false, tecido: false, tabua: false, pedra: false },
+  Brecilien:    { metal: false, couro: false, tecido: false, tabua: false, pedra: false }
 };
+
+const RRR_BASE = { t2: 0, t3: 0, t4: 15, t5: 15, t6: 15, t7: 15, t8: 15 };
+const RRR_BONUS_CIDADE = 10;
+
+function getCidadeBonus(tipo, cidade) {
+  const map = BONUS_CIDADE_REFINO[cidade];
+  return map && map[tipo] === true;
+}
+
+function getRRRBase(tier, tipo, cidade) {
+  const base = RRR_BASE['t' + tier] || 0;
+  const bonus = getCidadeBonus(tipo, cidade) ? RRR_BONUS_CIDADE : 0;
+  return base + bonus;
+}
+
+function getNomeCategoria(tipo) {
+  const map = { metal: 'Metal', couro: 'Couro', tecido: 'Tecido', tabua: 'Tábua', pedra: 'Pedra' };
+  return map[tipo] || tipo;
+}
+
 
 // ===== BÔNUS DE CIDADE & RRR BASE (v3.0) =====
 const BONUS_CIDADE_REFINO = {
@@ -1730,54 +1762,68 @@ function getNomeCategoria(tipo) {
 }
 
 function atualizarDescRefino() {
+  try {
+    const tipo = document.getElementById('refinoReceita').value;
+    const tier = parseInt(document.getElementById('refinoTier').value);
+    const cidade = document.getElementById('refinoCidade').value;
+    const qtd = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
+    const rec = REFINO_RECEITAS[tipo];
+    const map = REFINO_IDS[tipo];
+    let desc = '';
+    if (tier === 2) {
+      desc = (qtd * 1) + '× ' + map.nomes.bruto + ' T2 → ' + qtd + '× ' + map.nomes.refinado + ' T2';
+    } else if (tier === 3) {
+      desc = (qtd * 2) + '× ' + map.nomes.bruto + ' T3 → ' + qtd + '× ' + map.nomes.refinado + ' T3';
+    } else {
+      desc = (qtd * 2) + '× ' + map.nomes.bruto + ' T' + tier + ' + ' + qtd + '× ' + map.nomes.refinado + ' T' + (tier-1) + ' → ' + qtd + '× ' + map.nomes.refinado + ' T' + tier;
+    }
+    document.getElementById('refinoDesc').textContent = desc;
+
+    const tierAnteriorGroup = document.getElementById('refinoTierAnteriorGroup');
+    const custoTierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
+    if (tier >= 4 && rec && rec.tierAnterior) {
+      if (tierAnteriorGroup) tierAnteriorGroup.style.display = 'block';
+      if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'flex';
+      const tag = document.getElementById('refinoTierAnteriorTag');
+      if (tag) tag.textContent = map.nomes.refinado + ' T' + (tier-1);
+    } else {
+      if (tierAnteriorGroup) tierAnteriorGroup.style.display = 'none';
+      if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'none';
+      const tainp = document.getElementById('refinoPrecoTierAnterior');
+      if (tainp) tainp.value = 0;
+    }
+
+    const banner = document.getElementById('refinoCidadeBonusBanner');
+    const bannerText = document.getElementById('refinoCidadeBonusText');
+    if (banner && bannerText) {
+      const temBonus = getCidadeBonus(tipo, cidade);
+      if (temBonus) {
+        banner.style.display = 'flex';
+        bannerText.textContent = cidade + ' tem bônus nativo de refino para ' + getNomeCategoria(tipo) + ' (+10% RRR)';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    const rrrInfo = document.getElementById('refinoRRRInfo');
+    if (rrrInfo) {
+      const base = getRRRBase(tier, tipo, cidade);
+      rrrInfo.textContent = 'Base: ' + base.toFixed(1) + '%';
+    }
+  } catch (e) {
+    console.warn('Erro em atualizarDescRefino:', e);
+  }
+}
+
+function aplicarRRRAutomatico() {
   const tipo = document.getElementById('refinoReceita').value;
   const tier = parseInt(document.getElementById('refinoTier').value);
   const cidade = document.getElementById('refinoCidade').value;
-  const qtd = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
-  const rec = REFINO_RECEITAS[tipo];
-  const map = REFINO_IDS[tipo];
-  let desc = '';
-  if (tier === 2) {
-    desc = (qtd * 1) + '× ' + map.nomes.bruto + ' T2 → ' + qtd + '× ' + map.nomes.refinado + ' T2';
-  } else if (tier === 3) {
-    desc = (qtd * 2) + '× ' + map.nomes.bruto + ' T3 → ' + qtd + '× ' + map.nomes.refinado + ' T3';
-  } else {
-    desc = (qtd * 2) + '× ' + map.nomes.bruto + ' T' + tier + ' + ' + qtd + '× ' + map.nomes.refinado + ' T' + (tier-1) + ' → ' + qtd + '× ' + map.nomes.refinado + ' T' + tier;
-  }
-  document.getElementById('refinoDesc').textContent = desc;
-
-  // Mostrar/esconder campo de tier anterior
-  const tierAnteriorGroup = document.getElementById('refinoTierAnteriorGroup');
-  const custoTierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
-  if (tier >= 4 && rec.tierAnterior) {
-    tierAnteriorGroup.style.display = 'block';
-    if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'flex';
-    const tag = document.getElementById('refinoTierAnteriorTag');
-    if (tag) tag.textContent = map.nomes.refinado + ' T' + (tier-1);
-  } else {
-    tierAnteriorGroup.style.display = 'none';
-    if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'none';
-    document.getElementById('refinoPrecoTierAnterior').value = 0;
-  }
-
-  // Banner de bônus de cidade
-  const banner = document.getElementById('refinoCidadeBonusBanner');
-  const bannerText = document.getElementById('refinoCidadeBonusText');
-  const temBonus = getCidadeBonus(tipo, cidade);
-  if (temBonus) {
-    banner.style.display = 'flex';
-    bannerText.textContent = cidade + ' tem bônus nativo de refino para ' + getNomeCategoria(tipo) + ' (+10% RRR)';
-  } else {
-    banner.style.display = 'none';
-  }
-
-  // Info do RRR base
-  const rrrInfo = document.getElementById('refinoRRRInfo');
-  if (rrrInfo) {
-    const base = getRRRBase(tier, tipo, cidade);
-    rrrInfo.textContent = 'Base: ' + base.toFixed(1) + '%';
-  }
+  const rrrAuto = getRRRBase(tier, tipo, cidade);
+  document.getElementById('refinoRRR').value = rrrAuto.toFixed(1);
+  calcularRefino();
 }
+
 function calcularRefino() {
   const tipo = document.getElementById('refinoReceita').value;
   const tier = parseInt(document.getElementById('refinoTier').value);
@@ -1982,7 +2028,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('craftItemInput')?.addEventListener('keypress', e => {
     if (e.key === 'Enter') { document.getElementById('craftSugestoes').style.display = 'none'; }
   });
-});
+
+  const cidadeSelect = document.getElementById('refinoCidade');
+  if (cidadeSelect) {
+    cidadeSelect.addEventListener('change', atualizarDescRefino);
+  }});
 
 </script>
 </body>
