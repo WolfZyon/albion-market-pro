@@ -30,16 +30,23 @@
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
 
-### Craft & Refino (v3.0 — ATUAL)
+### Craft & Refino (v3.1 — ATUAL)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
 - [x] **Busca automática de preços via API** para bruto, refinado e tier anterior (T-1)
 - [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior
 - [x] **Descrição dinâmica com quantidades reais** conforme tier e quantidade
 - [x] **Retorno de recursos composto realista** (88% do teórico, considerando refinamento em cadeia)
 - [x] **Bônus de Cidade** com banner verde e RRR base automático
+- [x] **Toggle "Usar Foco"** — quando ativado, RRR sobe para 43.5% (sem bônus) ou 53.9% (com bônus)
+- [x] **Otimização de Rotas (Avançado)** — 3 selects independentes:
+  - Cidade de Compra do Bruto
+  - Cidade de Compra do Tier Anterior (T-1)
+  - Cidade de Venda do Refinado
 - [x] **Botão "⚡ Aplicar RRR Automático"** que preenche o RRR real do jogo:
   - Sem bônus: **15.2%**
   - Com bônus de cidade: **36.7%**
+  - Com Foco (sem bônus): **43.5%**
+  - Com Foco (com bônus): **53.9%**
 - [x] **Botão "🔍 Ver preço de venda em todas as cidades"** — busca o preço do refinado nas 7 cidades e mostra o lucro se vender na mais cara
 - [x] **Tabela de bônus de cidade embutida** no código (corrigida conforme dados oficiais)
 - [x] Simulação genérica de craft com múltiplos materiais customizáveis
@@ -50,6 +57,7 @@
 - [x] Toggle Premium
 - [x] Abas separadas: Refino / Craft
 - [x] Fallback manual em todos os campos de preço
+- [x] **Try-catch** em todas as funções que manipulam DOM no módulo de refino
 
 ### Geral
 - [x] Navbar sticky com glassmorphism
@@ -67,30 +75,32 @@
 
 ## ❌ O que NÃO EXISTE ainda (gaps importantes)
 
-### 1. Spec / Especialização
-- Não há campo para nível de spec do personagem (0-100/400)
-- Spec afeta diretamente o RRR real no jogo
-- O RRR automático atual só considera base + bônus de cidade
+### 1. Spec / Especialização do Personagem
+- ~~Foi implementado e depois removido~~ — **Spec NÃO afeta o RRR no Albion Online**
+- Spec/Refining Mastery (0-100) só reduz o **custo de Focus** por craft (Focus Cost Efficiency)
+- O RRR é fixo e depende apenas de: cidade + bônus de cidade + uso de focus
+- **NÃO adicionar input de spec** — daria informação falsa pro usuário
 
-### 2. Foco (Focus)
-- Não há toggle "Usar Foco"
-- Com foco ativado, o RRR sobe para 43.5% (sem bônus) ou 53.9% (com bônus)
+### 2. Custo de Transporte entre Cidades
+- A otimização de rotas mostra preços de 3 cidades diferentes, mas não calcula custo de viagem
+- Transporte entre cidades reais custa tempo + risco de PvP (zona vermelha/preta)
+- Poderia adicionar input manual de "custo de transporte por unidade" no futuro
 
-### 3. Otimização de Rotas entre Cidades (completa)
+### 3. Otimização Automática Completa
 - O botão "Ver preço de venda" já busca preços em todas as cidades
-- Mas não há: comprar em X, refinar em Y, vender em Z — tudo é na mesma cidade
-- Não há cálculo de custo de transporte entre cidades
+- Mas não há scan automático das 343 combinações possíveis (7×7×7) de rotas
+- Não há ranking automático das top N rotas com maior lucro
 
 ### Bônus de Cidade no Albion (Refino):
-| Cidade | Bônus de Refino | RRR Total |
-|--------|-----------------|-----------|
-| Bridgewatch | Pedra | 36.7% |
-| Caerleon | Nenhum | 15.2% |
-| Fort Sterling | Nenhum | 15.2% |
-| Lymhurst | Fibra → Tecido | 36.7% |
-| Martlock | Peles → Couro | 36.7% |
-| Thetford | Minério → Metal | 36.7% |
-| Brecilien | Nenhum | 15.2% |
+| Cidade | Bônus de Refino | RRR Total (sem foco) | RRR Total (com foco) |
+|--------|-----------------|----------------------|----------------------|
+| Bridgewatch | Pedra | 36.7% | 53.9% |
+| Caerleon | Nenhum | 15.2% | 43.5% |
+| Fort Sterling | Nenhum | 15.2% | 43.5% |
+| Lymhurst | Fibra → Tecido | 36.7% | 53.9% |
+| Martlock | Peles → Couro | 36.7% | 53.9% |
+| Thetford | Minério → Metal | 36.7% | 53.9% |
+| Brecilien | Nenhum | 15.2% | 43.5% |
 
 **Valores oficiais do Albion:**
 - Cidade sem bônus: **15.2%**
@@ -100,29 +110,26 @@
 
 ---
 
-## 🚧 Próximo Upgrade — Refino Avançado v3.1 / v4.0
+## 🚧 Próximo Upgrade — v3.2 / v4.0
 
-### Fase 3 — Otimização de Rotas Completa
-- [ ] **Modo Simples** (padrão): tudo na mesma cidade (comportamento atual)
-- [ ] **Modo Avançado** (toggle/expand): três selects independentes:
-  - **Cidade de Compra do Bruto** — onde compra a matéria-prima bruta
-  - **Cidade de Compra do Tier Anterior** — onde compra o catalisador (T-1)
-  - **Cidade de Venda do Refinado** — onde vende o produto final
-- [ ] **Custo de transporte** (input manual opcional): prata por slot de inventário ou por viagem
-- [ ] **Scan de todas as combinações** de cidades possíveis (7×7×7 = 343 rotas)
-- [ ] Mostrar as **top 3 rotas** com maior lucro líquido
+### Fase 6 — Custo de Transporte
+- [ ] Input manual de "custo de transporte por unidade" ou "custo por viagem"
+- [ ] Checkbox "Considerar custo de transporte no lucro líquido"
+- [ ] Aviso visual quando a rota envolver cidades de zona perigosa (Caerleon, Brecilien)
 
-### Fase 4 — Spec do Personagem
-- [ ] **Input de Spec**: nível 0-400 que ajusta o RRR automaticamente
-- [ ] Cada ponto de spec adiciona RRR conforme fórmula do jogo
+### Fase 7 — Scan Automático de Rotas
+- [ ] Botão "🚀 Otimizar Rota" que busca preços nas 343 combinações possíveis
+- [ ] Mostrar top 3 rotas com maior lucro líquido
+- [ ] Card por rota: "Compre em X, refine em Y, venda em Z = Lucro: N"
 
-### Fase 5 — Toggle de Foco
-- [ ] **Toggle "Usar Foco"**: ON/OFF
-- [ ] Quando ativado, aplica multiplicador de RRR do foco (43.5% ou 53.9%)
+### Fase 8 — Cache Local
+- [ ] Salvar resultados de busca no `localStorage` por 5 minutos
+- [ ] Evitar requisições repetidas à API para o mesmo item/cidade
+- [ ] Indicador visual de "dados em cache" vs "dados frescos"
 
-### Fase 6 — Otimização Automática (futuro)
-- [ ] Integração real entre Refino e Flipper: sugestão automática de rota ótima
-- [ ] Card de resumo por rota: "Compre em X, refine em Y, venda em Z = Lucro Líquido: N"
+### Fase 9 — Gráficos de Histórico
+- [ ] Gráfico de preço do item ao longo do tempo (se API permitir)
+- [ ] Média móvel de 7 dias para identificar tendência
 
 ---
 
@@ -149,32 +156,33 @@
 
 ## 🏗️ Mudanças Recentes (último commit)
 
-### Craft & Refino v3.0 — Refino Avançado
-- **Fase 1 — Cálculo real do refino T4+:**
-  - Adicionado campo "Preço do Tier Anterior" (T-1)
-  - Cálculo inclui custo do material do tier anterior no custo total
-  - Busca automática de 3 preços na API (bruto + refinado + T-1)
-  - Detalhamento do resultado mostra linha separada para custo T-1
-  - Descrição da receita mostra quantidades reais
+### Craft & Refino v3.1 — Foco + Otimização de Rotas
+- **Fase 3 — Otimização de Rotas:**
+  - Adicionados 3 selects independentes: Cidade do Bruto, Cidade do T-1, Cidade de Venda
+  - Busca de preços nas 3 cidades separadamente via API
+  - Seção visual destacada com fundo dourado e label "🗺️ Otimização de Rotas (Avançado)"
 
-- **Fase 2 — Bônus de Cidade + RRR Automático:**
-  - Tabela `BONUS_CIDADE_REFINO` embutida no código (valores corrigidos)
-  - Banner verde aparece quando a cidade tem bônus nativo para o material
-  - Botão "⚡ Aplicar RRR Automático" calcula RRR real do jogo (15.2% / 36.7%)
-  - Info "Base: X.X%" mostra o valor base abaixo do botão
+- **Fase 5 — Toggle de Foco:**
+  - Toggle switch "Usar Foco" na aba Refino
+  - Quando ativado, sobrescreve o RRR para 43.5% (sem bônus) ou 53.9% (com bônus)
+  - Integrado com o botão "Aplicar RRR Automático" e o info text
 
-- **Melhoria extra — Retorno composto realista:**
-  - Retorno de recursos ajustado para 88% do valor composto teórico
-  - Considera refinamento em cadeia, mas com margem para arredondamentos do jogo
+- **Correção importante — Spec removido:**
+  - Input "Spec do Personagem (0-400)" foi implementado e depois removido
+  - Motivo: Spec/Refining Mastery NÃO afeta o RRR no Albion Online
+  - Spec só reduz o custo de Focus por craft (Focus Cost Efficiency)
+  - O RRR é fixo e depende apenas de: cidade + bônus + uso de focus
+  - Removido para não passar informação falsa pro usuário
 
-- **Melhoria extra — Busca de preço de venda em todas as cidades:**
-  - Botão "🔍 Ver preço de venda em todas as cidades"
-  - Grid com preços do item refinado nas 7 cidades, ordenado do maior para o menor
-  - Card de lucro se vender na cidade mais cara
+- **Try-catch em funções de refino:**
+  - `buscarPrecosRefino()` — try-catch + reset de estado do botão em caso de erro
+  - `aplicarRRRAutomatico()` — try-catch
+  - `calcularRefino()` — try-catch completo
+  - Previne travamento da interface se algum elemento DOM não for encontrado
 
 ---
 
 ## 📅 Última atualização
 
 Data: 14/08/2026
-Chat: Upgrade Refino Avançado v3.0 — Fase 1 (Tier Anterior) + Fase 2 (Bônus de Cidade + RRR Automático) + Retorno Composto Realista + Busca de Preço de Venda em Todas as Cidades
+Chat: Upgrade Refino v3.1 — Fase 3 (Otimização de Rotas) + Fase 5 (Toggle de Foco) + Correção (remoção de Spec falso) + Try-catch

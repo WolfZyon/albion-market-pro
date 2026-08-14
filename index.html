@@ -1851,8 +1851,12 @@ function atualizarDescRefino() {
     }
 
     const rrrInfo = document.getElementById('refinoRRRInfo');
+    const rrrInput = document.getElementById('refinoRRR');
+    const base = getRRRBase(tier, tipo, cidade);
+    if (rrrInput) {
+      rrrInput.value = base.toFixed(1);
+    }
     if (rrrInfo) {
-      const base = getRRRBase(tier, tipo, cidade);
       const focusEl = document.getElementById('refinoFocusToggle');
       const useFocus = focusEl ? focusEl.classList.contains('active') : false;
       let infoText = 'Base: ' + base.toFixed(1) + '%';
