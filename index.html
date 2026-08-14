@@ -1702,13 +1702,13 @@ const REFINO_RECEITAS = {
 
 // ===== BÔNUS DE CIDADE & RRR BASE (v3.0) =====
 const BONUS_CIDADE_REFINO = {
-  Bridgewatch:  { metal: true,  couro: false, tecido: false, tabua: false, pedra: false },
-  Caerleon:     { metal: false, couro: true,  tecido: false, tabua: false, pedra: false },
-  'Fort Sterling': { metal: false, couro: false, tecido: true,  tabua: false, pedra: false },
-  Lymhurst:     { metal: false, couro: false, tecido: false, tabua: true,  pedra: false },
-  Martlock:     { metal: false, couro: false, tecido: false, tabua: false, pedra: true  },
-  Thetford:     { metal: false, couro: false, tecido: false, tabua: false, pedra: false },
-  Brecilien:    { metal: false, couro: false, tecido: false, tabua: false, pedra: false }
+  Bridgewatch:  { metal: false, couro: false, tecido: false, tabua: false, pedra: true  },  // +40% Pedra
+  Caerleon:     { metal: false, couro: false, tecido: false, tabua: false, pedra: false },  // Sem bônus de refino
+  'Fort Sterling': { metal: false, couro: false, tecido: false, tabua: false, pedra: false },  // Sem bônus de refino
+  Lymhurst:     { metal: false, couro: false, tecido: true,  tabua: false, pedra: false },  // +40% Fibra/Tecido
+  Martlock:     { metal: false, couro: true,  tecido: false, tabua: false, pedra: false },  // +40% Peles/Couro
+  Thetford:     { metal: true,  couro: false, tecido: false, tabua: false, pedra: false },  // +40% Minério/Metal
+  Brecilien:    { metal: false, couro: false, tecido: false, tabua: false, pedra: false }   // Sem bônus de refino
 };
 
 const RRR_BASE = { t2: 0, t3: 0, t4: 15, t5: 15, t6: 15, t7: 15, t8: 15 };
