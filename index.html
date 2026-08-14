@@ -379,8 +379,8 @@
         </div>
         <div class="form-group">
           <label class="form-label">Cidade</label>
-<select class="form-select" id="refinoCidade" onchange="atualizarDescRefino()"></select>
-          <option value="Bridgewatch">Bridgewatch</option>
+          <select class="form-select" id="refinoCidade">
+            <option value="Bridgewatch">Bridgewatch</option>
             <option value="Caerleon">Caerleon</option>
             <option value="Fort Sterling" selected>Fort Sterling</option>
             <option value="Lymhurst">Lymhurst</option>
@@ -396,7 +396,7 @@
         </button>
         <span style="color:var(--gray);font-size:12px;align-self:center;">Preenche bruto e refinado automaticamente</span>
       </div>
-            <div class="form-row">
+      <div class="form-row">
         <div class="form-group form-group-api">
           <label class="form-label">Preço do Bruto (unidade)</label>
           <input type="number" class="form-input" id="refinoPrecoBruto" placeholder="0" value="150">
@@ -412,10 +412,10 @@
         </div>
         <div class="form-group">
           <label class="form-label">Quantidade</label>
-                   <input type="number" class="form-input" id="refinoQuantidade" placeholder="0" value="100" onchange="atualizarDescRefino()">
+          <input type="number" class="form-input" id="refinoQuantidade" placeholder="0" value="100" onchange="atualizarDescRefino()">
         </div>
       </div>
-         <div class="form-row">
+      <div class="form-row">
         <div class="form-group" style="position:relative;">
           <label class="form-label">Taxa de Retorno (RRR)</label>
           <input type="number" class="form-input" id="refinoRRR" placeholder="36.7" value="36.7" step="0.1">
@@ -459,7 +459,7 @@
           <div class="value" id="refinoReceitaBruta">-</div>
         </div>
       </div>
-            <div class="result-breakdown">
+      <div class="result-breakdown">
         <h4>Detalhamento</h4>
         <div class="breakdown-row"><span class="label">Custo matéria-prima bruta</span><span class="amount" id="refinoCustoMP">-</span></div>
         <div class="breakdown-row" id="refinoCustoTierAnteriorRow" style="display:none;"><span class="label">Custo tier anterior (T-1)</span><span class="amount" id="refinoCustoTierAnterior">-</span></div>
@@ -1729,10 +1729,7 @@ function getNomeCategoria(tipo) {
   const map = { metal: 'Metal', couro: 'Couro', tecido: 'Tecido', tabua: 'Tábua', pedra: 'Pedra' };
   return map[tipo] || tipo;
 }
-function getNomeCategoria(tipo) {
-  const map = { metal: 'Metal', couro: 'Couro', tecido: 'Tecido', tabua: 'Tábua', pedra: 'Pedra' };
-  return map[tipo] || tipo;
-}
+
 
 function atualizarDescRefino() {
   try {
@@ -1788,6 +1785,7 @@ function atualizarDescRefino() {
   }
 }
 
+
 function aplicarRRRAutomatico() {
   const tipo = document.getElementById('refinoReceita').value;
   const tier = parseInt(document.getElementById('refinoTier').value);
@@ -1811,14 +1809,9 @@ function calcularRefino() {
   const taxaVenda = premium ? 0.04 : 0.08;
   const ratio = rec ? rec.ratio : 2;
 
-  // Custo da matéria-prima bruta
   const custoMP = precoBruto * ratio * quantidade;
-
-  // Custo do tier anterior (T4+)
   const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
   const custoTierAnterior = usaTierAnterior ? (precoTierAnterior * quantidade) : 0;
-
-  // Custo total de materiais (para cálculo do retorno)
   const custoMateriaisTotal = custoMP + custoTierAnterior;
 
   const receitaBruta = precoRefinado * quantidade;
@@ -1833,7 +1826,6 @@ function calcularRefino() {
   document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
   document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
 
-  // Mostrar/esconder linha do tier anterior
   const tierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
   const tierAnteriorVal = document.getElementById('refinoCustoTierAnterior');
   if (tierAnteriorRow && tierAnteriorVal) {
@@ -2001,11 +1993,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('craftItemInput')?.addEventListener('keypress', e => {
     if (e.key === 'Enter') { document.getElementById('craftSugestoes').style.display = 'none'; }
   });
-
-  const cidadeSelect = document.getElementById('refinoCidade');
-  if (cidadeSelect) {
-    cidadeSelect.addEventListener('change', atualizarDescRefino);
-  }});
+});
 
 </script>
 </body>
