@@ -391,12 +391,8 @@
           </select>
         </div>
       </div>
-      <!-- FASE 4: Spec do Personagem -->
+      <!-- FASE 5: Toggle de Foco -->
       <div class="form-row" style="margin-top:8px;">
-        <div class="form-group" style="max-width:140px;">
-          <label class="form-label">Spec do Personagem (0-400)</label>
-          <input type="number" class="form-input" id="refinoSpec" min="0" max="400" value="0" onchange="atualizarDescRefino()" style="text-align:center;">
-        </div>
         <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:8px;">
           <label class="toggle-wrap" id="refinoFocusToggle" onclick="this.classList.toggle('active'); atualizarDescRefino();" style="cursor:pointer;">
             <div class="toggle-switch"></div>
@@ -1795,17 +1791,13 @@ function getCidadeBonus(tipo, cidade) {
 function getRRRBase(tier, tipo, cidade) {
   const base = RRR_BASE['t' + tier] || 0;
   const bonus = getCidadeBonus(tipo, cidade) ? RRR_BONUS_CIDADE : 0;
-  // FASE 4: Spec do Personagem (0.05% por ponto)
-  const specEl = document.getElementById('refinoSpec');
-  const spec = specEl ? (parseInt(specEl.value) || 0) : 0;
-  const specBonus = spec * 0.05;
   // FASE 5: Toggle de Foco
   const focusEl = document.getElementById('refinoFocusToggle');
   const useFocus = focusEl ? focusEl.classList.contains('active') : false;
   if (useFocus) {
     return bonus > 0 ? 53.9 : 43.5;
   }
-  return base + bonus + specBonus;
+  return base + bonus;
 }
 
 function getNomeCategoria(tipo) {
@@ -1861,15 +1853,11 @@ function atualizarDescRefino() {
     const rrrInfo = document.getElementById('refinoRRRInfo');
     if (rrrInfo) {
       const base = getRRRBase(tier, tipo, cidade);
-      const specEl = document.getElementById('refinoSpec');
-      const spec = specEl ? (parseInt(specEl.value) || 0) : 0;
       const focusEl = document.getElementById('refinoFocusToggle');
       const useFocus = focusEl ? focusEl.classList.contains('active') : false;
       let infoText = 'Base: ' + base.toFixed(1) + '%';
       if (useFocus) {
         infoText += ' (Foco ativo)';
-      } else if (spec > 0) {
-        infoText += ' (Spec +' + (spec * 0.05).toFixed(1) + '%)';
       }
       rrrInfo.textContent = infoText;
     }
