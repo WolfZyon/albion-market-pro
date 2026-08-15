@@ -30,7 +30,7 @@
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
 
-### Craft & Refino (v3.2 — ATUAL)
+### Craft & Refino (v4.0 — ATUAL)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
 - [x] **Busca automática de preços via API** para bruto, refinado e tier anterior (T-1)
 - [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior
@@ -66,6 +66,16 @@
 - [x] Linha de detalhamento no resultado mostrando o custo de transporte
 - [x] Funciona tanto em **Refino** quanto em **Craft**
 
+### Fase 7 — Scan Automático de Rotas (v4.0)
+- [x] **Botão "🚀 Otimizar Rota (343 combinações)"** na aba Refino
+- [x] Busca preços do bruto, refinado e T-1 nas **7 cidades em paralelo** (apenas 2-3 requisições à API)
+- [x] Calcula localmente as **343 combinações** possíveis (7×7×7)
+- [x] Mostra **top 3 rotas** em cards com medalhas 🥇🥈🥉
+- [x] Cada card exibe: cidade de compra + preço, cidade T-1 + preço, cidade de venda + preço, RRR aplicado, transporte, lucro líquido, margem %
+- [x] **Respeita todos os toggles existentes**: Premium, Foco, Custo de Transporte
+- [x] **Aviso 🚨 automático** em rotas que passam por Caerleon/Brecilien
+- [x] **Botão "✕ Cancelar Otimização"** — permite abortar o scan a qualquer momento
+
 ### Geral
 - [x] Navbar sticky com glassmorphism
 - [x] Navegação SPA entre 4 páginas
@@ -89,17 +99,12 @@
 - O RRR é fixo e depende apenas de: cidade + bônus de cidade + uso de focus
 - **NÃO adicionar input de spec** — daria informação falsa pro usuário
 
-### 2. Otimização Automática Completa
-- [ ] Botão "🚀 Otimizar Rota" que busca preços nas 343 combinações possíveis (7×7×7)
-- [ ] Mostrar top 3 rotas com maior lucro líquido
-- [ ] Card por rota: "Compre em X, refine em Y, venda em Z = Lucro: N"
-
-### 3. Cache Local
+### 2. Cache Local
 - [ ] Salvar resultados de busca no `localStorage` por 5 minutos
 - [ ] Evitar requisições repetidas à API para o mesmo item/cidade
 - [ ] Indicador visual de "dados em cache" vs "dados frescos"
 
-### 4. Gráficos de Histórico
+### 3. Gráficos de Histórico
 - [ ] Gráfico de preço do item ao longo do tempo (se API permitir)
 - [ ] Média móvel de 7 dias para identificar tendência
 
@@ -129,6 +134,16 @@
 
 ## 🏗️ Mudanças Recentes (último commit)
 
+### v4.0 — Fase 7 (Scan Automático de Rotas)
+- **Fase 7 — Otimização Automática Completa:**
+  - Botão "🚀 Otimizar Rota (343 combinações)" na aba Refino
+  - Busca paralela de preços nas 7 cidades (2-3 requisições apenas)
+  - Cálculo local de todas as 343 combinações possíveis
+  - Top 3 rotas exibidas em cards com medalhas, lucro líquido e margem %
+  - Respeita toggles Premium, Foco e Custo de Transporte
+  - Aviso 🚨 automático para rotas com Caerleon/Brecilien
+  - Botão "✕ Cancelar Otimização" para abortar o scan
+
 ### v3.2 — Fase 6 (Custo de Transporte) + Bug Fixes
 - **Fase 6 — Custo de Transporte:**
   - Input numérico opcional "Custo por viagem (prata)" em Refino e Craft
@@ -145,4 +160,4 @@
 ## 📅 Última atualização
 
 Data: 15/08/2026
-Chat: Upgrade Refino v3.2 — Fase 6 (Custo de Transporte) + Correção de Bugs
+Chat: Upgrade Refino v4.0 — Fase 6 (Custo de Transporte) + Fase 7 (Scan Automático de Rotas) + Correção de Bugs
