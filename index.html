@@ -123,12 +123,6 @@
 </style>
 <base target="_blank">
 <base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
 </head>
 <body>
 
@@ -773,9 +767,28 @@ function navigateTo(page) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+let loadingTimeout = null;
+
 function setLoading(show) {
   const el = document.getElementById('loading');
   if (el) el.classList.toggle('active', show);
+
+  // BUG FIX: Timeout automático de 15s para evitar travamento
+  if (show) {
+    if (loadingTimeout) clearTimeout(loadingTimeout);
+    loadingTimeout = setTimeout(() => {
+      const loadingEl = document.getElementById('loading');
+      if (loadingEl && loadingEl.classList.contains('active')) {
+        loadingEl.classList.remove('active');
+        console.warn('Loading timeout: API demorou mais de 15s. Verifique sua conexão.');
+      }
+    }, 15000);
+  } else {
+    if (loadingTimeout) {
+      clearTimeout(loadingTimeout);
+      loadingTimeout = null;
+    }
+  }
 }
 
 function formatSilver(n) {

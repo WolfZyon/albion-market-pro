@@ -1,7 +1,7 @@
 # 📝 Contexto Atual — SilverForge
 
-> **ATUALIZE este arquivo** a cada mudança no projeto.
-> Serve para que o assistente (Kimi) entenda rapidamente o estado do código em novos chats.
+&gt; **ATUALIZE este arquivo** a cada mudança no projeto.
+&gt; Serve para que o assistente (Kimi) entenda rapidamente o estado do código em novos chats.
 
 ---
 
@@ -30,7 +30,7 @@
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
 
-### Craft & Refino (v3.1 — ATUAL)
+### Craft & Refino (v3.2 — ATUAL)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
 - [x] **Busca automática de preços via API** para bruto, refinado e tier anterior (T-1)
 - [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior
@@ -38,7 +38,6 @@
 - [x] **Retorno de recursos composto realista** (88% do teórico, considerando refinamento em cadeia)
 - [x] **Bônus de Cidade** com banner verde e RRR base automático
 - [x] **Toggle "Usar Foco"** — quando ativado, RRR sobe para 43.5% (sem bônus) ou 53.9% (com bônus)
-  - **Input RRR atualiza automaticamente** quando o toggle muda (via `atualizarDescRefino()`)
 - [x] **Otimização de Rotas (Avançado)** — 3 selects independentes:
   - Cidade de Compra do Bruto
   - Cidade de Compra do Tier Anterior (T-1)
@@ -60,10 +59,17 @@
 - [x] Fallback manual em todos os campos de preço
 - [x] **Try-catch** em todas as funções que manipulam DOM no módulo de refino
 
+### Fase 6 — Custo de Transporte (v3.2)
+- [x] **Input numérico** "Custo por viagem (prata)" — opcional
+- [x] **Checkbox toggle** "Descontar transporte do lucro" — quando ativado, subtrai do lucro líquido final
+- [x] **Aviso visual 🚨** automático quando a rota envolve Caerleon ou Brecilien (cidades de zona perigosa)
+- [x] Linha de detalhamento no resultado mostrando o custo de transporte
+- [x] Funciona tanto em **Refino** quanto em **Craft**
+
 ### Geral
 - [x] Navbar sticky com glassmorphism
 - [x] Navegação SPA entre 4 páginas
-- [x] Loading overlay
+- [x] Loading overlay com **timeout automático de 15s** (bug fix)
 - [x] Sistema de tradução PT-BR → ID do jogo (200+ itens)
 - [x] Formatação de prata (k, M, completo)
 - [x] Design responsivo (mobile, tablet, desktop)
@@ -71,6 +77,7 @@
 - [x] Teste de conectividade com a API (`testarAPI()`)
 - [x] Fechar sugestões ao clicar fora do input
 - [x] Atalho Enter nos inputs para acionar busca
+- [x] **`&lt;base target="_blank"&gt;` única** no `&lt;head&gt;` (bug fix — removidas 6 duplicatas)
 
 ---
 
@@ -82,62 +89,27 @@
 - O RRR é fixo e depende apenas de: cidade + bônus de cidade + uso de focus
 - **NÃO adicionar input de spec** — daria informação falsa pro usuário
 
-### 2. Custo de Transporte entre Cidades
-- A otimização de rotas mostra preços de 3 cidades diferentes, mas não calcula custo de viagem
-- Transporte entre cidades reais custa tempo + risco de PvP (zona vermelha/preta)
-- Poderia adicionar input manual de "custo de transporte por unidade" no futuro
-
-### 3. Otimização Automática Completa
-- O botão "Ver preço de venda" já busca preços em todas as cidades
-- Mas não há scan automático das 343 combinações possíveis (7×7×7) de rotas
-- Não há ranking automático das top N rotas com maior lucro
-
-### Bônus de Cidade no Albion (Refino):
-| Cidade | Bônus de Refino | RRR Total (sem foco) | RRR Total (com foco) |
-|--------|-----------------|----------------------|----------------------|
-| Bridgewatch | Pedra | 36.7% | 53.9% |
-| Caerleon | Nenhum | 15.2% | 43.5% |
-| Fort Sterling | Nenhum | 15.2% | 43.5% |
-| Lymhurst | Fibra → Tecido | 36.7% | 53.9% |
-| Martlock | Peles → Couro | 36.7% | 53.9% |
-| Thetford | Minério → Metal | 36.7% | 53.9% |
-| Brecilien | Nenhum | 15.2% | 43.5% |
-
-**Valores oficiais do Albion:**
-- Cidade sem bônus: **15.2%**
-- Cidade com bônus/especializada: **36.7%**
-- Com Foco (sem bônus): **43.5%**
-- Com Foco (com bônus): **53.9%**
-
----
-
-## 🚧 Próximo Upgrade — v3.2 / v4.0
-
-### Fase 6 — Custo de Transporte
-- [ ] Input manual de "custo de transporte por unidade" ou "custo por viagem"
-- [ ] Checkbox "Considerar custo de transporte no lucro líquido"
-- [ ] Aviso visual quando a rota envolver cidades de zona perigosa (Caerleon, Brecilien)
-
-### Fase 7 — Scan Automático de Rotas
-- [ ] Botão "🚀 Otimizar Rota" que busca preços nas 343 combinações possíveis
+### 2. Otimização Automática Completa
+- [ ] Botão "🚀 Otimizar Rota" que busca preços nas 343 combinações possíveis (7×7×7)
 - [ ] Mostrar top 3 rotas com maior lucro líquido
 - [ ] Card por rota: "Compre em X, refine em Y, venda em Z = Lucro: N"
 
-### Fase 8 — Cache Local
+### 3. Cache Local
 - [ ] Salvar resultados de busca no `localStorage` por 5 minutos
 - [ ] Evitar requisições repetidas à API para o mesmo item/cidade
 - [ ] Indicador visual de "dados em cache" vs "dados frescos"
 
-### Fase 9 — Gráficos de Histórico
+### 4. Gráficos de Histórico
 - [ ] Gráfico de preço do item ao longo do tempo (se API permitir)
 - [ ] Média móvel de 7 dias para identificar tendência
 
 ---
 
-## 🐛 Bugs conhecidos
+## 🐛 Bugs Conhecidos
+
 - [x] ~~Falta de conexão impedia dados de serem puxados~~ → Adicionado `testarAPI()` para diagnóstico
-- [ ] Múltiplas tags `<base target="_blank">` duplicadas no `<head>` do `index.html` (5x) — não quebra funcionalidade, mas polui o markup
-- [ ] Em conexões lentas, o loading pode travar se a API demorar muito — considerar timeout
+- [x] ~~Múltiplas tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;`~~ → Corrigido (7x → 1x)
+- [x] ~~Em conexões lentas, o loading podia travar se a API demorar muito~~ → Adicionado timeout de 15s no `setLoading()`
 
 ---
 
@@ -157,34 +129,20 @@
 
 ## 🏗️ Mudanças Recentes (último commit)
 
-### Craft & Refino v3.1 — Foco + Otimização de Rotas
-- **Fase 3 — Otimização de Rotas:**
-  - Adicionados 3 selects independentes: Cidade do Bruto, Cidade do T-1, Cidade de Venda
-  - Busca de preços nas 3 cidades separadamente via API
-  - Seção visual destacada com fundo dourado e label "🗺️ Otimização de Rotas (Avançado)"
+### v3.2 — Fase 6 (Custo de Transporte) + Bug Fixes
+- **Fase 6 — Custo de Transporte:**
+  - Input numérico opcional "Custo por viagem (prata)" em Refino e Craft
+  - Toggle "Descontar transporte do lucro" — subtrai do lucro líquido final quando ativo
+  - Aviso visual 🚨 automático quando rota envolve Caerleon ou Brecilien
+  - Linha de detalhamento no resultado mostrando custo de transporte
 
-- **Fase 5 — Toggle de Foco:**
-  - Toggle switch "Usar Foco" na aba Refino
-  - Quando ativado, sobrescreve o RRR para 43.5% (sem bônus) ou 53.9% (com bônus)
-  - **Correção de bug:** input RRR agora atualiza automaticamente quando o toggle muda (via `atualizarDescRefino()` chamando `getRRRBase()` e setando `rrrInput.value`)
-  - Integrado com o botão "Aplicar RRR Automático" e o info text
-
-- **Correção importante — Spec removido:**
-  - Input "Spec do Personagem (0-400)" foi implementado e depois removido
-  - Motivo: Spec/Refining Mastery NÃO afeta o RRR no Albion Online
-  - Spec só reduz o custo de Focus por craft (Focus Cost Efficiency)
-  - O RRR é fixo e depende apenas de: cidade + bônus + uso de focus
-  - Removido para não passar informação falsa pro usuário
-
-- **Try-catch em funções de refino:**
-  - `buscarPrecosRefino()` — try-catch + reset de estado do botão em caso de erro
-  - `aplicarRRRAutomatico()` — try-catch
-  - `calcularRefino()` — try-catch completo
-  - Previne travamento da interface se algum elemento DOM não for encontrado
+- **Bug Fixes:**
+  - Removidas 6 tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;`
+  - Adicionado timeout de 15 segundos no `setLoading()` para evitar travamento em conexões lentas
 
 ---
 
 ## 📅 Última atualização
 
-Data: 14/08/2026
-Chat: Upgrade Refino v3.1 — Fase 3 (Otimização de Rotas) + Fase 5 (Toggle de Foco) + Correção (remoção de Spec falso + bug fix foco auto-update) + Try-catch
+Data: 15/08/2026
+Chat: Upgrade Refino v3.2 — Fase 6 (Custo de Transporte) + Correção de Bugs
