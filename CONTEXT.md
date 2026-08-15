@@ -1,7 +1,7 @@
 # 📝 Contexto Atual — SilverForge
 
-&gt; **ATUALIZE este arquivo** a cada mudança no projeto.
-&gt; Serve para que o assistente (Kimi) entenda rapidamente o estado do código em novos chats.
+> **ATUALIZE este arquivo** a cada mudança no projeto.
+> Serve para que o assistente (Kimi) entenda rapidamente o estado do código em novos chats.
 
 ---
 
@@ -38,6 +38,7 @@
 - [x] **Retorno de recursos composto realista** (88% do teórico, considerando refinamento em cadeia)
 - [x] **Bônus de Cidade** com banner verde e RRR base automático
 - [x] **Toggle "Usar Foco"** — quando ativado, RRR sobe para 43.5% (sem bônus) ou 53.9% (com bônus)
+  - **Input RRR atualiza automaticamente** quando o toggle muda (via `atualizarDescRefino()`)
 - [x] **Otimização de Rotas (Avançado)** — 3 selects independentes:
   - Cidade de Compra do Bruto
   - Cidade de Compra do Tier Anterior (T-1)
@@ -135,7 +136,7 @@
 
 ## 🐛 Bugs conhecidos
 - [x] ~~Falta de conexão impedia dados de serem puxados~~ → Adicionado `testarAPI()` para diagnóstico
-- [ ] Múltiplas tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;` do `index.html` (5x) — não quebra funcionalidade, mas polui o markup
+- [ ] Múltiplas tags `<base target="_blank">` duplicadas no `<head>` do `index.html` (5x) — não quebra funcionalidade, mas polui o markup
 - [ ] Em conexões lentas, o loading pode travar se a API demorar muito — considerar timeout
 
 ---
@@ -165,6 +166,7 @@
 - **Fase 5 — Toggle de Foco:**
   - Toggle switch "Usar Foco" na aba Refino
   - Quando ativado, sobrescreve o RRR para 43.5% (sem bônus) ou 53.9% (com bônus)
+  - **Correção de bug:** input RRR agora atualiza automaticamente quando o toggle muda (via `atualizarDescRefino()` chamando `getRRRBase()` e setando `rrrInput.value`)
   - Integrado com o botão "Aplicar RRR Automático" e o info text
 
 - **Correção importante — Spec removido:**
@@ -185,4 +187,4 @@
 ## 📅 Última atualização
 
 Data: 14/08/2026
-Chat: Upgrade Refino v3.1 — Fase 3 (Otimização de Rotas) + Fase 5 (Toggle de Foco) + Correção (remoção de Spec falso) + Try-catch
+Chat: Upgrade Refino v3.1 — Fase 3 (Otimização de Rotas) + Fase 5 (Toggle de Foco) + Correção (remoção de Spec falso + bug fix foco auto-update) + Try-catch
