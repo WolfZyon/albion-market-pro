@@ -121,63 +121,74 @@
 }
 
 
-/* FASE 7: Cards de rota otimizada */
+.rotas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
 .rota-card {
-  background: rgba(17,24,39,0.8);
-  border: 1px solid rgba(74,222,128,0.2);
+  padding: 14px;
   border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
+  background: #111827;
+  border: 1px solid rgba(201,168,76,0.2);
   transition: all 0.2s;
 }
 .rota-card:hover {
-  border-color: rgba(74,222,128,0.4);
-  transform: translateY(-1px);
-}
-.rota-card.top1 {
   border-color: rgba(201,168,76,0.4);
-  background: rgba(201,168,76,0.06);
 }
-.rota-card.top1 .rota-rank {
-  color: #c9a84c;
-}
-.rota-rank {
-  font-size: 11px;
-  font-weight: 700;
-  color: #4ade80;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
-}
-.rota-desc {
+.rota-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
   font-size: 13px;
-  color: #e5e7eb;
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-.rota-desc .cidade {
-  color: #c9a84c;
   font-weight: 600;
+  color: var(--gold);
 }
-.rota-lucro {
+.rota-card-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: var(--gray);
+}
+.rota-card-row .value {
+  color: #fff;
+  font-weight: 500;
+}
+.rota-card-profit {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rota-card-profit .label {
+  font-size: 12px;
+  color: var(--gray);
+}
+.rota-card-profit .value {
   font-size: 18px;
   font-weight: 700;
 }
-.rota-lucro.positivo { color: #4ade80; }
-.rota-lucro.negativo { color: #ef4444; }
-.rota-detalhes {
-  font-size: 11px;
-  color: var(--gray);
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(255,255,255,0.05);
+.btn-cancelar {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.3);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
-.rota-detalhes span {
-  margin-right: 12px;
+.btn-cancelar:hover {
+  background: rgba(239,68,68,0.25);
 }
 
 </style>
-<base target="_blank">
 <base target="_blank">
 <base target="_blank">
 </head>
@@ -524,22 +535,7 @@
           </div>
         </div>
       </div>
-            <!-- FASE 7: Otimização Automática de Rotas -->
-      <div style="margin:16px 0 12px;padding:12px;border-radius:8px;background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.15);">
-        <div style="font-size:12px;color:#4ade80;font-weight:600;margin-bottom:8px;">🚀 Otimização Automática de Rotas</div>
-        <p style="font-size:12px;color:var(--gray);margin-bottom:10px;">Busca nas 343 combinações possíveis e mostra as top 3 rotas com maior lucro líquido real.</p>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <button class="btn-api" id="btnOtimizarRota" onclick="otimizarRotaRefino()" style="background:rgba(74,222,128,0.12);color:#4ade80;border-color:rgba(74,222,128,0.35);">
-            <span id="btnOtimizarRotaText">🚀 Otimizar Rota</span>
-          </button>
-          <button class="btn-api" id="btnCancelarOtimizacao" onclick="cancelarOtimizacao()" style="display:none;background:rgba(239,68,68,0.12);color:#ef4444;border-color:rgba(239,68,68,0.35);">
-            ❌ Cancelar
-          </button>
-          <span id="otimizacaoProgresso" style="font-size:12px;color:var(--gray);display:none;"></span>
-        </div>
-        <div id="otimizacaoResultados" style="margin-top:14px;display:none;"></div>
-      </div>
-<!-- FASE 6: Custo de Transporte -->
+      <!-- FASE 6: Custo de Transporte -->
       <div class="transporte-section">
         <div class="transporte-title">🚛 Custo de Transporte</div>
         <div class="form-row">
@@ -617,6 +613,14 @@
         <span id="btnBuscarVendaRefinoText">🔍 Ver preço de venda em todas as cidades</span>
       </button>
       <div id="refinoPrecosVendaGrid" style="margin-top:12px;display:none;"></div>
+      <button class="btn-primary btn-full" id="btnOtimizarRota" onclick="otimizarRotaRefino()" style="margin-top:10px;background:linear-gradient(135deg,#c9a84c,#a08030);border:none;">
+        <span id="btnOtimizarRotaText">🚀 Otimizar Rota (343 combinações)</span>
+      </button>
+      <button class="btn-cancelar btn-full" id="btnCancelarOtimizacao" onclick="cancelarOtimizacao()" style="margin-top:10px;display:none;">
+        <span id="btnCancelarOtimizacaoText">✕ Cancelar Otimização</span>
+      </button>
+      <div id="refinoOtimizacaoResultado" style="margin-top:16px;display:none;"></div>
+
     </div>
     <div class="result-panel" id="refinoResultado">
       <div class="result-header">
@@ -2096,6 +2100,229 @@ async function buscarMelhorPrecoVendaRefino() {
   btn.disabled = false;
   btnText.textContent = '🔍 Ver preço de venda em todas as cidades';
 }
+
+// ===== FASE 7: Scan Automático de Rotas =====
+let otimizacaoAbortada = false;
+
+async function buscarPrecoItemMultiCidades(itemId, cidades) {
+  try {
+    const data = await fetchPrices([itemId], cidades, [1]);
+    const result = {};
+    data.forEach(e => {
+      if (e.item_id === itemId && cidades.includes(e.city)) {
+        result[e.city] = e.sell_price_min || 0;
+      }
+    });
+    return result;
+  } catch (e) {
+    console.warn('Erro em buscarPrecoItemMultiCidades:', e);
+    return {};
+  }
+}
+
+function calcularLucroCombinacao(tipo, tier, quantidade, taxaEstacao, premium, useFocus, custoTransporte, descontarTransporte, cidadeRefino, precoBruto, precoT1, precoRefinado) {
+  const rec = REFINO_RECEITAS[tipo];
+  const ratio = rec ? rec.ratio : 2;
+  const taxaVenda = premium ? 0.04 : 0.08;
+  const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
+
+  const custoMP = precoBruto * ratio * quantidade;
+  const custoTierAnterior = usaTierAnterior ? (precoT1 * quantidade) : 0;
+  const custoMateriaisTotal = custoMP + custoTierAnterior;
+
+  const receitaBruta = precoRefinado * quantidade;
+  const taxaTotal = taxaEstacao * quantidade;
+
+  // RRR baseado na cidade de REFINO
+  const rrr = getRRRBase(tier, tipo, cidadeRefino);
+  const retornoValor = custoMateriaisTotal * (rrr / 100);
+  const imposto = receitaBruta * taxaVenda;
+  const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
+  const transporte = descontarTransporte ? custoTransporte : 0;
+  const lucroLiquido = receitaBruta - imposto - custoTotal - transporte;
+
+  return {
+    lucroLiquido,
+    lucroPct: custoTotal > 0 ? (lucroLiquido / custoTotal) : 0,
+    custoTotal,
+    receitaBruta,
+    imposto,
+    retornoValor,
+    taxaTotal,
+    custoMP,
+    custoTierAnterior,
+    rrr,
+    transporte
+  };
+}
+
+async function otimizarRotaRefino() {
+  try {
+    otimizacaoAbortada = false;
+    const btn = document.getElementById('btnOtimizarRota');
+    const btnText = document.getElementById('btnOtimizarRotaText');
+    const btnCancel = document.getElementById('btnCancelarOtimizacao');
+    const resultadoDiv = document.getElementById('refinoOtimizacaoResultado');
+
+    const tipo = document.getElementById('refinoReceita').value;
+    const tier = parseInt(document.getElementById('refinoTier').value);
+    const cidadeRefino = document.getElementById('refinoCidade').value;
+    const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
+    const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
+    const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
+    const useFocus = document.getElementById('refinoFocusToggle').classList.contains('active');
+    const custoTransporte = parseFloat(document.getElementById('refinoCustoTransporte').value) || 0;
+    const descontarTransporte = document.getElementById('refinoTransporteToggle').classList.contains('active');
+
+    const map = REFINO_IDS[tipo];
+    if (!map) return;
+
+    const idBruto = map.bruto[tier];
+    const idRefinado = map.refinado[tier];
+    const usaTierAnterior = (tier >= 4 && REFINO_RECEITAS[tipo] && REFINO_RECEITAS[tipo].tierAnterior);
+    const idTierAnterior = usaTierAnterior ? map.refinado[tier - 1] : null;
+
+    const cidades = ['Bridgewatch', 'Caerleon', 'Fort Sterling', 'Lymhurst', 'Martlock', 'Thetford', 'Brecilien'];
+
+    btn.disabled = true;
+    btnText.textContent = 'Buscando preços...';
+    btnCancel.style.display = 'block';
+    resultadoDiv.style.display = 'block';
+    resultadoDiv.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 12px;"></div><p>Buscando preços nas 7 cidades...</p><p style="font-size:12px;color:var(--gray);">Etapa 1/3: Bruto, Refinado' + (usaTierAnterior ? ', T-1' : '') + '</p></div>';
+
+    // Buscar preços em paralelo (3 requisições = cobre todas as 343 combinações)
+    const promises = [
+      buscarPrecoItemMultiCidades(idBruto, cidades),
+      buscarPrecoItemMultiCidades(idRefinado, cidades)
+    ];
+    if (idTierAnterior) {
+      promises.push(buscarPrecoItemMultiCidades(idTierAnterior, cidades));
+    }
+
+    const resultados = await Promise.all(promises);
+    if (otimizacaoAbortada) return;
+
+    const precosBruto = resultados[0];
+    const precosRefinado = resultados[1];
+    const precosT1 = idTierAnterior ? resultados[2] : {};
+
+    resultadoDiv.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 12px;"></div><p>Calculando 343 combinações...</p></div>';
+
+    // Calcular lucro para todas as combinações
+    const rotas = [];
+    for (const cb of cidades) {
+      const pb = precosBruto[cb];
+      if (!pb || pb <= 0) continue;
+      for (const cv of cidades) {
+        const pr = precosRefinado[cv];
+        if (!pr || pr <= 0) continue;
+
+        if (usaTierAnterior) {
+          for (const ct of cidades) {
+            if (otimizacaoAbortada) return;
+            const pt = precosT1[ct];
+            if (!pt || pt <= 0) continue;
+            const calc = calcularLucroCombinacao(tipo, tier, quantidade, taxaEstacao, premium, useFocus, custoTransporte, descontarTransporte, cidadeRefino, pb, pt, pr);
+            rotas.push({
+              cidadeBruto: cb, cidadeT1: ct, cidadeVenda: cv,
+              precoBruto: pb, precoT1: pt, precoRefinado: pr,
+              ...calc
+            });
+          }
+        } else {
+          if (otimizacaoAbortada) return;
+          const calc = calcularLucroCombinacao(tipo, tier, quantidade, taxaEstacao, premium, useFocus, custoTransporte, descontarTransporte, cidadeRefino, pb, 0, pr);
+          rotas.push({
+            cidadeBruto: cb, cidadeT1: null, cidadeVenda: cv,
+            precoBruto: pb, precoT1: 0, precoRefinado: pr,
+            ...calc
+          });
+        }
+      }
+    }
+
+    if (otimizacaoAbortada) return;
+
+    rotas.sort((a, b) => b.lucroLiquido - a.lucroLiquido);
+    const topRotas = rotas.slice(0, 3);
+
+    renderTopRotas(topRotas, rotas.length);
+
+    btn.disabled = false;
+    btnText.textContent = '🚀 Otimizar Rota (343 combinações)';
+    btnCancel.style.display = 'none';
+  } catch (e) {
+    console.warn('Erro em otimizarRotaRefino:', e);
+    const btn = document.getElementById('btnOtimizarRota');
+    const btnText = document.getElementById('btnOtimizarRotaText');
+    const btnCancel = document.getElementById('btnCancelarOtimizacao');
+    const resultadoDiv = document.getElementById('refinoOtimizacaoResultado');
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.textContent = '🚀 Otimizar Rota (343 combinações)';
+    if (btnCancel) btnCancel.style.display = 'none';
+    if (resultadoDiv) {
+      resultadoDiv.style.display = 'block';
+      resultadoDiv.innerHTML = '<div style="text-align:center;padding:20px;color:#ef4444;"><p>Erro ao otimizar rotas</p><p style="font-size:12px;">Verifique sua conexão e tente novamente</p></div>';
+    }
+  }
+}
+
+function cancelarOtimizacao() {
+  otimizacaoAbortada = true;
+  const btn = document.getElementById('btnOtimizarRota');
+  const btnText = document.getElementById('btnOtimizarRotaText');
+  const btnCancel = document.getElementById('btnCancelarOtimizacao');
+  const resultadoDiv = document.getElementById('refinoOtimizacaoResultado');
+  if (btn) btn.disabled = false;
+  if (btnText) btnText.textContent = '🚀 Otimizar Rota (343 combinações)';
+  if (btnCancel) btnCancel.style.display = 'none';
+  if (resultadoDiv) {
+    resultadoDiv.style.display = 'block';
+    resultadoDiv.innerHTML = '<div style="text-align:center;padding:16px;color:var(--gray);"><p>Otimização cancelada pelo usuário</p></div>';
+  }
+}
+
+function renderTopRotas(rotas, totalAnalisadas) {
+  const container = document.getElementById('refinoOtimizacaoResultado');
+  if (!container) return;
+
+  let html = '<div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Top 3 de ' + totalAnalisadas + ' combinações analisadas</div>';
+  html += '<div class="rotas-grid">';
+
+  rotas.forEach((r, i) => {
+    const rankColors = ['#c9a84c', '#a0a0a0', '#cd7f32']; // ouro, prata, bronze
+    const rankColor = rankColors[i] || '#888';
+    const perigoBruto = (r.cidadeBruto === 'Caerleon' || r.cidadeBruto === 'Brecilien') ? ' 🚨' : '';
+    const perigoT1 = (r.cidadeT1 === 'Caerleon' || r.cidadeT1 === 'Brecilien') ? ' 🚨' : '';
+    const perigoVenda = (r.cidadeVenda === 'Caerleon' || r.cidadeVenda === 'Brecilien') ? ' 🚨' : '';
+
+    html += '<div class="rota-card">';
+    html += '<div class="rota-card-header">';
+    html += '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:' + rankColor + ';color:#0b0f19;font-size:12px;font-weight:700;">' + (i + 1) + '</span>';
+    html += 'Melhor Rota #' + (i + 1);
+    html += '</div>';
+    html += '<div class="rota-card-row"><span>Comprar bruto</span><span class="value">' + r.cidadeBruto + perigoBruto + ' · ' + formatSilver(r.precoBruto) + '</span></div>';
+    if (r.cidadeT1) {
+      html += '<div class="rota-card-row"><span>Comprar T-1</span><span class="value">' + r.cidadeT1 + perigoT1 + ' · ' + formatSilver(r.precoT1) + '</span></div>';
+    }
+    html += '<div class="rota-card-row"><span>Vender refinado</span><span class="value">' + r.cidadeVenda + perigoVenda + ' · ' + formatSilver(r.precoRefinado) + '</span></div>';
+    html += '<div class="rota-card-row"><span>RRR aplicado</span><span class="value">' + r.rrr.toFixed(1) + '%</span></div>';
+    if (r.transporte > 0) {
+      html += '<div class="rota-card-row"><span>Transporte</span><span class="value" style="color:#ef4444;">-' + formatSilver(r.transporte) + '</span></div>';
+    }
+    html += '<div class="rota-card-profit">';
+    html += '<span class="label">Lucro Líquido</span>';
+    html += '<span class="value" style="color:' + (r.lucroLiquido >= 0 ? '#4ade80' : '#ef4444') + ';">' + (r.lucroLiquido >= 0 ? '+' : '') + formatSilver(r.lucroLiquido) + '</span>';
+    html += '</div>';
+    html += '<div style="text-align:right;font-size:11px;color:var(--gray-dim);margin-top:4px;">' + (r.lucroPct * 100).toFixed(1) + '% de margem</div>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+  container.style.display = 'block';
+}
+
 function calcularRefino() {
   try {
     const tipo = document.getElementById('refinoReceita').value;
@@ -2374,222 +2601,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
-
-// ===== FASE 7: Otimização Automática de Rotas =====
-let otimizacaoAbortController = null;
-
-async function otimizarRotaRefino() {
-  const btn = document.getElementById('btnOtimizarRota');
-  const btnText = document.getElementById('btnOtimizarRotaText');
-  const btnCancelar = document.getElementById('btnCancelarOtimizacao');
-  const progresso = document.getElementById('otimizacaoProgresso');
-  const resultados = document.getElementById('otimizacaoResultados');
-
-  if (!btn || btn.disabled) return;
-
-  const tipo = document.getElementById('refinoReceita').value;
-  const tier = parseInt(document.getElementById('refinoTier').value);
-  const rec = REFINO_RECEITAS[tipo];
-  const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 100;
-  const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
-  const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
-  const usaFoco = document.getElementById('refinoFocusToggle').classList.contains('active');
-  const taxaVenda = premium ? 0.04 : 0.08;
-  const ratio = rec ? rec.ratio : 2;
-  const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
-
-  const custoTransporteInput = parseFloat(document.getElementById('refinoCustoTransporte').value) || 0;
-  const descontarTransporte = document.getElementById('refinoTransporteToggle').classList.contains('active');
-  const custoTransporteBase = descontarTransporte ? custoTransporteInput : 0;
-
-  const cidades = ['Bridgewatch', 'Caerleon', 'Fort Sterling', 'Lymhurst', 'Martlock', 'Thetford', 'Brecilien'];
-  const totalCombinacoes = cidades.length * cidades.length * cidades.length;
-
-  btn.disabled = true;
-  btnText.textContent = '⏳ Buscando...';
-  btnCancelar.style.display = 'inline-block';
-  progresso.style.display = 'inline';
-  resultados.style.display = 'none';
-  resultados.innerHTML = '';
-
-  otimizacaoAbortController = new AbortController();
-  const signal = otimizacaoAbortController.signal;
-
-  try {
-    const rotas = [];
-    let processadas = 0;
-
-    for (let i = 0; i < cidades.length; i++) {
-      for (let j = 0; j < cidades.length; j++) {
-        for (let k = 0; k < cidades.length; k++) {
-          if (signal.aborted) throw new Error('Cancelado pelo usuário');
-
-          const cidadeBruto = cidades[i];
-          const cidadeTierAnterior = cidades[j];
-          const cidadeVenda = cidades[k];
-          const cidadeRefino = cidadeBruto; // Refino sempre na cidade do bruto (ou poderia ser outra, mas simplificamos)
-
-          // Determinar RRR baseado na cidade de refino
-          const temBonus = BONUS_CIDADE[tipo] && BONUS_CIDADE[tipo].includes(cidadeRefino);
-          let rrr;
-          if (usaFoco) {
-            rrr = temBonus ? 53.9 : 43.5;
-          } else {
-            rrr = temBonus ? 36.7 : 15.2;
-          }
-
-          // Buscar preços
-          let precoBruto = 0, precoTierAnterior = 0, precoRefinado = 0;
-
-          try {
-            const dadosBruto = await buscarPrecoItemAPI(getItemIdRefino(tipo, tier, 'bruto'), cidadeBruto, signal);
-            precoBruto = dadosBruto ? (dadosBruto.sellPriceMin || 0) : 0;
-          } catch (e) { precoBruto = 0; }
-
-          if (usaTierAnterior) {
-            try {
-              const dadosT1 = await buscarPrecoItemAPI(getItemIdRefino(tipo, tier - 1, 'refinado'), cidadeTierAnterior, signal);
-              precoTierAnterior = dadosT1 ? (dadosT1.sellPriceMin || 0) : 0;
-            } catch (e) { precoTierAnterior = 0; }
-          }
-
-          try {
-            const dadosRef = await buscarPrecoItemAPI(getItemIdRefino(tipo, tier, 'refinado'), cidadeVenda, signal);
-            precoRefinado = dadosRef ? (dadosRef.sellPriceMin || 0) : 0;
-          } catch (e) { precoRefinado = 0; }
-
-          // Calcular lucro
-          const custoMP = precoBruto * ratio * quantidade;
-          const custoT1 = usaTierAnterior ? (precoTierAnterior * quantidade) : 0;
-          const custoMateriaisTotal = custoMP + custoT1;
-          const receitaBruta = precoRefinado * quantidade;
-          const taxaTotal = taxaEstacao * quantidade;
-          const retornoValor = custoMateriaisTotal * (rrr / 100);
-          const imposto = receitaBruta * taxaVenda;
-          const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
-
-          // Custo de transporte: se qualquer cidade da rota for diferente, aplica
-          let custoTransporte = 0;
-          if (descontarTransporte && custoTransporteBase > 0) {
-            const viagens = (cidadeBruto !== cidadeRefino ? 1 : 0) +
-                           (usaTierAnterior && cidadeTierAnterior !== cidadeRefino ? 1 : 0) +
-                           (cidadeVenda !== cidadeRefino ? 1 : 0);
-            custoTransporte = custoTransporteBase * viagens;
-          }
-
-          const lucroLiquido = receitaBruta - imposto - custoTotal - custoTransporte;
-
-          rotas.push({
-            cidadeBruto, cidadeTierAnterior, cidadeRefino, cidadeVenda,
-            precoBruto, precoTierAnterior, precoRefinado,
-            custoMP, custoT1, custoTotal, imposto, retornoValor, custoTransporte,
-            lucroLiquido, receitaBruta, rrr, temBonus, usaTierAnterior
-          });
-
-          processadas++;
-          progresso.textContent = `(${processadas}/${totalCombinacoes})`;
-
-          // Pequeno delay para não sobrecarregar a API e permitir cancelamento
-          if (processadas % 10 === 0) {
-            await new Promise(r => setTimeout(r, 50));
-          }
-        }
-      }
-    }
-
-    // Ordenar por lucro líquido decrescente
-    rotas.sort((a, b) => b.lucroLiquido - a.lucroLiquido);
-    const top3 = rotas.slice(0, 3);
-
-    // Renderizar resultados
-    let htmlResult = '<div style="font-size:13px;color:var(--gray);margin-bottom:10px;">Top 3 rotas encontradas:</div>';
-    top3.forEach((r, idx) => {
-      const rankLabel = idx === 0 ? '🥇 Melhor Rota' : (idx === 1 ? '🥈 2ª Melhor' : '🥉 3ª Melhor');
-      const lucroClass = r.lucroLiquido >= 0 ? 'positivo' : 'negativo';
-      const lucroSign = r.lucroLiquido >= 0 ? '+' : '';
-
-      let desc = `Compre <b>${ratio * quantidade}×</b> bruto em <span class="cidade">${r.cidadeBruto}</span>`;
-      if (r.usaTierAnterior) {
-        desc += `, <b>${quantidade}×</b> T-${tier-1} em <span class="cidade">${r.cidadeTierAnterior}</span>`;
-      }
-      desc += `, refine em <span class="cidade">${r.cidadeRefino}</span>`;
-      desc += `, venda em <span class="cidade">${r.cidadeVenda}</span>`;
-
-      htmlResult += `
-        <div class="rota-card ${idx === 0 ? 'top1' : ''}">
-          <div class="rota-rank">${rankLabel}</div>
-          <div class="rota-desc">${desc}</div>
-          <div class="rota-lucro ${lucroClass}">${lucroSign}${formatSilver(r.lucroLiquido)}</div>
-          <div class="rota-detalhes">
-            <span>Bruto: ${formatSilver(r.precoBruto)}/un</span>
-            ${r.usaTierAnterior ? `<span>T-${tier-1}: ${formatSilver(r.precoTierAnterior)}/un</span>` : ''}
-            <span>Refinado: ${formatSilver(r.precoRefinado)}/un</span>
-            <span>RRR: ${r.rrr}%${r.temBonus ? ' (bônus)' : ''}</span>
-            ${r.custoTransporte > 0 ? `<span>Transporte: -${formatSilver(r.custoTransporte)}</span>` : ''}
-          </div>
-        </div>
-      `;
-    });
-
-    // Botão para aplicar a melhor rota nos selects
-    const melhor = top3[0];
-    if (melhor) {
-      htmlResult += `
-        <button class="btn-api" onclick="aplicarMelhorRota('${melhor.cidadeBruto}', '${melhor.cidadeTierAnterior}', '${melhor.cidadeVenda}')" style="margin-top:8px;width:100%;background:rgba(201,168,76,0.12);color:#c9a84c;border-color:rgba(201,168,76,0.35);">
-          📋 Aplicar Melhor Rota nos Campos
-        </button>
-      `;
-    }
-
-    resultados.innerHTML = htmlResult;
-    resultados.style.display = 'block';
-
-  } catch (err) {
-    if (err.message === 'Cancelado pelo usuário') {
-      resultados.innerHTML = '<p style="color:var(--gray);font-size:13px;">⛔ Otimização cancelada.</p>';
-      resultados.style.display = 'block';
-    } else {
-      resultados.innerHTML = '<p style="color:#ef4444;font-size:13px;">❌ Erro na otimização: ' + escapeHtml(err.message) + '</p>';
-      resultados.style.display = 'block';
-    }
-  } finally {
-    btn.disabled = false;
-    btnText.textContent = '🚀 Otimizar Rota';
-    btnCancelar.style.display = 'none';
-    progresso.style.display = 'none';
-    otimizacaoAbortController = null;
-  }
-}
-
-function cancelarOtimizacao() {
-  if (otimizacaoAbortController) {
-    otimizacaoAbortController.abort();
-  }
-}
-
-function aplicarMelhorRota(cidadeBruto, cidadeTierAnterior, cidadeVenda) {
-  const selBruto = document.getElementById('refinoCidadeBruto');
-  const selT1 = document.getElementById('refinoCidadeTierAnterior');
-  const selVenda = document.getElementById('refinoCidadeVenda');
-  if (selBruto) selBruto.value = cidadeBruto;
-  if (selT1) selT1.value = cidadeTierAnterior;
-  if (selVenda) selVenda.value = cidadeVenda;
-  // Disparar busca de preços para preencher os inputs
-  buscarPrecosRefino();
-}
-
-async function buscarPrecoItemAPI(itemId, cidade, signal) {
-  if (!itemId) return null;
-  const url = `https://www.albion-online-data.com/api/v2/stats/prices/${itemId}?locations=${encodeURIComponent(cidade)}&qualities=1`;
-  const res = await fetch(url, { signal });
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (data && data.length > 0) {
-    return data[0];
-  }
-  return null;
-}
-
 </body>
 </html>
