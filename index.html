@@ -188,6 +188,35 @@
   background: rgba(239,68,68,0.25);
 }
 
+
+.cache-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.cache-badge.fresh {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+.cache-badge.cached {
+  background: rgba(201, 168, 76, 0.1);
+  color: #c9a84c;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
+.cache-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.cache-dot.fresh { background: #4ade80; }
+.cache-dot.cached { background: #c9a84c; }
+
 </style>
 <base target="_blank">
 <base target="_blank">
@@ -344,6 +373,9 @@
       </tbody>
     </table>
   </div>
+  <div style="text-align:right;margin-top:8px;padding:0 16px;">
+    <span id="flipCacheBadge"></span>
+  </div>
 </div>
 
 <!-- ==================== BUSCAR ITEM ==================== -->
@@ -413,6 +445,9 @@
     </div>
   </div>
 
+  <div style="text-align:right;margin-bottom:8px;">
+    <span id="bmCacheBadge"></span>
+  </div>
   <div class="bm-grid" id="bmGrid">
     <div class="empty-state" style="grid-column:1/-1;">
       <p>Clique em <strong>Escanear</strong> para buscar oportunidades no Black Market</p>
@@ -623,6 +658,9 @@
 
     </div>
     <div class="result-panel" id="refinoResultado">
+      <div style="text-align:right;margin-bottom:8px;">
+        <span id="refinoCacheBadge"></span>
+      </div>
       <div class="result-header">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <h3>Resultado do Refino</h3>
@@ -796,7 +834,10 @@
 </div>
 
 <footer class="footer">
-  SilverForge — Ferramenta não oficial para Albion Online. Dados via <a href="https://www.albion-online-data.com/" target="_blank">Albion Online Data Project</a>.
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+    <span>SilverForge — Ferramenta não oficial para Albion Online. Dados via <a href="https://www.albion-online-data.com/" target="_blank">Albion Online Data Project</a>.</span>
+    <button class="btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="limparCache()">🗑️ Limpar Cache</button>
+  </div>
 </footer>
 
 <script>
@@ -893,6 +934,95 @@ function escapeHtml(text) {
 function getItemIconUrl(id) {
   return 'https://render.albiononline.com/v1/item/' + id + '.png';
 }
+
+// ===== FASE 8: Cache Local =====
+const CACHE_TTL_MS = 300000; // 5 minutos
+const CACHE_PREFIX = 'sf_cache_';
+
+function getCacheKey(itemIds, locations, qualities) {
+  const ids = Array.isArray(itemIds) ? itemIds.sort().join(',') : itemIds;
+  const locs = Array.isArray(locations) ? locations.sort().join(',') : locations;
+  const quals = Array.isArray(qualities) ? qualities.sort().join(',') : (qualities || '1');
+  return CACHE_PREFIX + btoa(ids + '|' + locs + '|' + quals).replace(/[^a-zA-Z0-9]/g, '');
+}
+
+function setCache(key, data) {
+  try {
+    const entry = { timestamp: Date.now(), data: data };
+    localStorage.setItem(key, JSON.stringify(entry));
+  } catch (e) {
+    // localStorage pode estar cheio — limpar entradas antigas
+    limparCacheAntigo();
+  }
+}
+
+function getCache(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const entry = JSON.parse(raw);
+    if (!entry || !entry.timestamp || !entry.data) return null;
+    if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return entry.data;
+  } catch (e) {
+    return null;
+  }
+}
+
+function isCacheValid(key) {
+  return getCache(key) !== null;
+}
+
+function limparCache() {
+  try {
+    const keys = Object.keys(localStorage);
+    let count = 0;
+    keys.forEach(k => {
+      if (k.startsWith(CACHE_PREFIX)) {
+        localStorage.removeItem(k);
+        count++;
+      }
+    });
+    console.log('Cache limpo:', count, 'entradas removidas');
+    // Atualizar badges visuais
+    document.querySelectorAll('.cache-badge').forEach(el => {
+      el.className = 'cache-badge fresh';
+      el.innerHTML = '<span class="cache-dot fresh"></span>Fresco';
+    });
+  } catch (e) {
+    console.warn('Erro ao limpar cache:', e);
+  }
+}
+
+function limparCacheAntigo() {
+  try {
+    const keys = Object.keys(localStorage);
+    keys.forEach(k => {
+      if (k.startsWith(CACHE_PREFIX)) {
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          try {
+            const entry = JSON.parse(raw);
+            if (entry && entry.timestamp && (Date.now() - entry.timestamp > CACHE_TTL_MS)) {
+              localStorage.removeItem(k);
+            }
+          } catch (e) {}
+        }
+      }
+    });
+  } catch (e) {}
+}
+
+function getCacheBadgeHTML(isCached) {
+  if (isCached) {
+    return '<span class="cache-badge cached"><span class="cache-dot cached"></span>Cache</span>';
+  }
+  return '<span class="cache-badge fresh"><span class="cache-dot fresh"></span>Fresco</span>';
+}
+
 async function fetchPrices(items, locations, qualities) {
   if (!items || !items.length) return [];
   const locStr = locations.join(',');
@@ -901,6 +1031,14 @@ async function fetchPrices(items, locations, qualities) {
   const allData = [];
   
   const delay = ms => new Promise(r => setTimeout(r, ms));
+  
+  // FASE 8: Verificar cache antes de bater na API
+  const cacheKey = getCacheKey(items, locations, qualities);
+  const cached = getCache(cacheKey);
+  if (cached && Array.isArray(cached)) {
+    console.log('Cache hit:', cacheKey.substring(0, 20) + '...');
+    return cached;
+  }
   
   for (let i = 0; i < items.length; i += chunkSize) {
     const chunk = items.slice(i, i + chunkSize);
@@ -925,6 +1063,12 @@ async function fetchPrices(items, locations, qualities) {
     }
     if (lastError) console.warn('Fetch failed after 3 attempts:', lastError.message);
   }
+  
+  // FASE 8: Salvar no cache
+  if (allData.length > 0) {
+    setCache(cacheKey, allData);
+  }
+  
   return allData;
 }
 
@@ -1379,6 +1523,14 @@ async function scanFlips() {
     tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Erro ao buscar dados da API</p><span>Verifique sua conexão ou tente novamente mais tarde</span></div></td></tr>';
   } finally {
     setLoading(false);
+    const badge = document.getElementById('flipCacheBadge');
+    if (badge) {
+      const itemInput = document.getElementById('flipItemInput').value.trim();
+      const quality = parseInt(document.getElementById('flipQuality').value) || 1;
+      const items = itemInput ? [traduzirParaId(itemInput)] : ITENS_FLIPPER;
+      const allCities = [...new Set([...(fromCity === 'Todas' ? CIDADES_COM_BRECILIEN : [fromCity]), ...(toCity === 'Todas' ? CIDADES_COM_BRECILIEN : [toCity])])];
+      badge.innerHTML = getCacheBadgeHTML(isCacheValid(getCacheKey(items, allCities, [quality])));
+    }
   }
 }
 
@@ -1553,6 +1705,7 @@ async function selecionarBuscarItem(itemId) {
             '<div class="price-summary-value" style="color:var(--gold);">' + formatSilverFull(bmPrice) + '</div>' +
           '</div>' +
         '</div>' +
+        '<div style="text-align:right;margin-bottom:8px;">' + getCacheBadgeHTML(isCacheValid(getCacheKey([itemId], allLocations, [quality]))) + '</div>' +
         '<table class="data-table">' +
           '<thead><tr><th>Cidade</th><th>Venda Min.</th><th>Compra Max.</th><th>Volume</th><th>Atualizado</th></tr></thead>' +
           '<tbody>' +
@@ -1687,6 +1840,11 @@ async function scanBlackMarket() {
     resultados.sort((a, b) => b.lucro - a.lucro);
     bmDataCache = resultados;
     filtrarBM();
+    const badge = document.getElementById('bmCacheBadge');
+    if (badge) {
+      const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
+      badge.innerHTML = getCacheBadgeHTML(isCacheValid(getCacheKey(ITENS_BLACK_MARKET, allLocations, [1])));
+    }
   } catch (e) {
     console.error('BM Erro:', e);
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Erro ao buscar dados do Black Market</p><span>Detalhes no console (F12) — Verifique sua conexão</span></div>';
@@ -1880,6 +2038,14 @@ async function buscarPrecosRefino() {
     if (precoRefinado > 0) document.getElementById('refinoPrecoRefinado').value = precoRefinado;
     if (precoTierAnterior > 0) document.getElementById('refinoPrecoTierAnterior').value = precoTierAnterior;
     if (precoBruto > 0 || precoRefinado > 0 || precoTierAnterior > 0) calcularRefino();
+    const badge = document.getElementById('refinoCacheBadge');
+    if (badge) {
+      const ids = [idBruto, idRefinado];
+      if (idTierAnterior) ids.push(idTierAnterior);
+      const locs = [cidadeBruto, cidadeVenda];
+      if (cidadeTierAnterior) locs.push(cidadeTierAnterior);
+      badge.innerHTML = getCacheBadgeHTML(isCacheValid(getCacheKey(ids, [...new Set(locs)], [1])));
+    }
   } catch (e) {
     console.warn('Erro em buscarPrecosRefino:', e);
     const btn = document.getElementById('btnBuscarRefino');
@@ -2099,6 +2265,10 @@ async function buscarMelhorPrecoVendaRefino() {
   grid.innerHTML = html;
   btn.disabled = false;
   btnText.textContent = '🔍 Ver preço de venda em todas as cidades';
+  const badge = document.getElementById('refinoCacheBadge');
+  if (badge) {
+    badge.innerHTML = getCacheBadgeHTML(false); // Sempre fresco após busca manual
+  }
 }
 
 // ===== FASE 7: Scan Automático de Rotas =====

@@ -30,7 +30,7 @@
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
 
-### Craft & Refino (v4.0 — ATUAL)
+### Craft & Refino (v4.1 — ATUAL)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
 - [x] **Busca automática de preços via API** para bruto, refinado e tier anterior (T-1)
 - [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior
@@ -76,6 +76,14 @@
 - [x] **Aviso 🚨 automático** em rotas que passam por Caerleon/Brecilien
 - [x] **Botão "✕ Cancelar Otimização"** — permite abortar o scan a qualquer momento
 
+### Fase 8 — Cache Local (v4.1)
+- [x] **Cache automático** de resultados da API no `localStorage` com TTL de **5 minutos**
+- [x] `fetchPrices()` verifica cache **antes** de bater na API — retorna dados em cache se válidos
+- [x] **Indicador visual** 🟢 "Fresco" / 🟡 "Cache" nos resultados (Flipper, Black Market, Buscar Item, Refino)
+- [x] **Botão "🗑️ Limpar Cache"** no footer — remove todas as entradas manualmente
+- [x] **Limpeza automática** de entradas expiradas quando o `localStorage` enche
+- [x] Chave de cache baseada em hash dos parâmetros (item IDs + cidades + qualidades)
+
 ### Geral
 - [x] Navbar sticky com glassmorphism
 - [x] Navegação SPA entre 4 páginas
@@ -83,7 +91,7 @@
 - [x] Sistema de tradução PT-BR → ID do jogo (200+ itens)
 - [x] Formatação de prata (k, M, completo)
 - [x] Design responsivo (mobile, tablet, desktop)
-- [x] Footer com créditos
+- [x] Footer com créditos + botão limpar cache
 - [x] Teste de conectividade com a API (`testarAPI()`)
 - [x] Fechar sugestões ao clicar fora do input
 - [x] Atalho Enter nos inputs para acionar busca
@@ -99,14 +107,16 @@
 - O RRR é fixo e depende apenas de: cidade + bônus de cidade + uso de focus
 - **NÃO adicionar input de spec** — daria informação falsa pro usuário
 
-### 2. Cache Local
-- [ ] Salvar resultados de busca no `localStorage` por 5 minutos
-- [ ] Evitar requisições repetidas à API para o mesmo item/cidade
-- [ ] Indicador visual de "dados em cache" vs "dados frescos"
-
-### 3. Gráficos de Histórico
+### 2. Gráficos de Histórico
 - [ ] Gráfico de preço do item ao longo do tempo (se API permitir)
 - [ ] Média móvel de 7 dias para identificar tendência
+
+### 3. Flipper Automático
+- [ ] Scan automático de flips entre todas as cidades (sem precisar digitar item)
+- [ ] Lista as melhores oportunidades do momento
+
+### 4. Exportar Dados
+- [ ] Botão para copiar resultados como texto ou exportar CSV das rotas/scans
 
 ---
 
@@ -134,6 +144,14 @@
 
 ## 🏗️ Mudanças Recentes (último commit)
 
+### v4.1 — Fase 8 (Cache Local)
+- **Fase 8 — Cache Local:**
+  - Cache automático de resultados da API no `localStorage` (TTL 5 minutos)
+  - `fetchPrices()` verifica cache antes de bater na API
+  - Indicador visual 🟢 "Fresco" / 🟡 "Cache" nos resultados
+  - Botão "🗑️ Limpar Cache" no footer
+  - Limpeza automática de entradas expiradas
+
 ### v4.0 — Fase 7 (Scan Automático de Rotas)
 - **Fase 7 — Otimização Automática Completa:**
   - Botão "🚀 Otimizar Rota (343 combinações)" na aba Refino
@@ -160,4 +178,4 @@
 ## 📅 Última atualização
 
 Data: 15/08/2026
-Chat: Upgrade Refino v4.0 — Fase 6 (Custo de Transporte) + Fase 7 (Scan Automático de Rotas) + Correção de Bugs
+Chat: Upgrade Refino v4.1 — Fase 6 (Custo de Transporte) + Fase 7 (Scan Automático de Rotas) + Fase 8 (Cache Local) + Correção de Bugs
