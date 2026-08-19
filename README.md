@@ -1,127 +1,128 @@
-# 🛡️ SilverForge — Albion Market Tools v2.1
+# 🏛️ SilverForge — Albion Market Tools
 
-Ferramenta web para jogadores de **Albion Online** focada em análise de mercado, flip de itens, Black Market e simulação de craft/refino com **dados em tempo real**.
+&gt; Ferramenta não oficial para **Albion Online** que transforma diferença de preço em prata.  
+&gt; Dados reais via [Albion Online Data Project](https://www.albion-online-data.com/).
 
-🔗 **Dados em tempo real** via Albion Online Data Project
+![Versão](https://img.shields.io/badge/versão-v4.2-gold)
+![Status](https://img.shields.io/badge/status-ativo-success)
+![Dados](https://img.shields.io/badge/dados-reais-blue)
 
-* * *
+---
 
-## ⚔️ Módulos
+## ✨ Funcionalidades
 
-| Módulo | Status | Descrição |
-| --- | --- | --- |
-| **Flipper** | ✅ Pronto | Compara preços entre 7 cidades + Brecilien, calcula lucro líquido com taxas de anúncio e imposto de venda |
-| **Buscar Item** | ✅ Pronto | Consulta preços de compra/venda em todas as cidades + Black Market de Caerleon, com filtro por qualidade |
-| **Black Market Scanner** | ✅ Pronto | Escaneia ~60 itens populares, encontra oportunidades de lucro comprando nas cidades e vendendo no BM de Caerleon |
-| **Craft & Refino** | ✅ v2.1 | Simula lucro de refino (Metal, Couro, Tecido, Tábua, Pedra T2-T8) e craft genérico com múltiplos materiais, RRR, taxa de estação e imposto de venda. **Preços de bruto, refinado e materiais de craft preenchidos automaticamente via API** com fallback manual. |
+### 📊 Flipper
+- Busca por nome em **português** com autocomplete
+- Comparação de preços entre **7 cidades + Brecilien**
+- Cálculo de lucro líquido com taxa de venda (4% Premium / 8% normal)
+- Tabela de resultados com ícones, rotas e lucro
+- Stats cards no topo: melhor flip, lucro somado, margem média
 
-* * *
+### 🔍 Buscar Item
+- Lista de itens populares pré-carregada
+- Busca com sugestões em português
+- Exibição de preços por qualidade (Normal a Obra-prima)
+- Cards de preço por cidade + Black Market
+- Ícones dos itens via API do Albion
+- **📈 Gráfico de Histórico de Preços** (Fase 9)
 
-## 🎨 Design
+### 🖤 Black Market Scanner
+- Scan automático de ~60 itens populares
+- Filtro por nome em tempo real
+- Slider de lucro mínimo
+- Cards com preço de compra, preço BM, taxa, lucro líquido
 
-- **Tema:** Dark mode elegante com acentos dourados
-- **Fontes:** Cinzel (títulos) + Inter (corpo)
-- **Responsivo:** Mobile-first, adapta de desktop a celular
-- **Estilo:** Cards com bordas arredondadas, glassmorphism na navbar, animações suaves, empty states ilustrados
+### ⚒️ Craft & Refino
+- **Refino:** 5 categorias × 7 tiers (T2-T8) com cálculo real
+- **Craft:** Simulação com múltiplos materiais customizáveis
+- Busca automática de preços via API
+- RRR (Taxa de Retorno de Recursos) com bônus de cidade
+- Toggle "Usar Foco" para RRR aumentado
+- **Otimização de Rotas:** scan de 343 combinações com top 3 resultados
+- **Custo de Transporte:** input opcional com aviso de zona perigosa
 
-* * *
-
-## 🛠️ Tecnologias
-
-- **HTML5** — SPA (Single Page Application) monolítico, todo o JS embutido
-- **CSS3** puro (variáveis CSS, Grid, Flexbox, animações, glassmorphism)
-- **JavaScript vanilla** (ES6+), sem frameworks
-- **API REST:** Albion Online Data Project
-
-* * *
-
-## 📂 Estrutura
-albion-market-pro/
-├── index.html          # Página principal (SPA) — HTML + JS embutido
-├── css/
-│   └── style.css       # Estilos completos
-├── README.md           # Este arquivo
-└── CONTEXT.md          # Estado atual e próximos passos do projeto
-
-> **Nota:** O projeto foi unificado em um único arquivo `index.html`. A lógica JavaScript que antes ficava em `js/app.js` foi totalmente embutida no HTML para facilitar deploy e eliminar problemas de path/CORS em abertura local.
-
-* * *
+---
 
 ## 🚀 Como usar
 
-1. Baixe ou clone o repositório
-2. Abra `index.html` diretamente no navegador (Chrome, Edge, Firefox)
-   - Não precisa de servidor local nem build
-3. Navegue pelos módulos pelo menu superior
-4. Digite o nome do item em **português** (ex: "claymore", "bolsa", "capa", "machado")
-5. O sistema traduz automaticamente para o ID do jogo e busca os preços reais
+### Opção 1: Abrir direto no navegador
+1. Baixe o arquivo `index.html`
+2. Dê dois cliques para abrir no navegador
+3. Pronto! Não precisa de servidor
 
-* * *
+### Opção 2: Deploy no GitHub Pages
+1. Faça um fork deste repositório
+2. Vá em **Settings &gt; Pages**
+3. Selecione a branch `main` e a pasta `/ (root)`
+4. Seu site estará em `https://seu-usuario.github.io/albion-market-pro/`
 
-## 🔧 Funcionalidades Detalhadas
-
-### Flipper
-- Busca por nome em português com autocomplete
-- Comparação de preços entre 7 cidades + Brecilien
-- Cálculo de lucro líquido com taxa de venda (4% Premium / 8% normal)
-- Stats cards no topo (melhor flip, lucro somado, margem média)
-- Toggle Premium
-
-### Buscar Item
-- Lista de itens populares pré-carregada
-- Busca com sugestões em português
-- Exibição de preços por qualidade (Normal, Boa, Excelente, Obra-prima, Lendário)
-- Cards de preço por cidade com ícones via API do Albion
-
-### Black Market Scanner
-- Scan automático de ~60 itens populares
-- Filtro por nome em tempo real
-- Slider de lucro mínimo (até 5M)
-- Cards com: preço de compra, preço BM, taxa, lucro líquido
-- Toggle Premium
-- Cache de resultados para filtro rápido
-
-### Craft & Refino (v2.1)
-- **Refino:** 5 categorias × 7 tiers (T2-T8) = 35 receitas
-  - Select de receita + Tier + Cidade
-  - Botão **"Buscar Preços da API"** preenche automaticamente:
-    - Preço do material **bruto** (ex: Pele T6)
-    - Preço do material **refinado** (ex: Couro T6)
-  - Cálculo com RRR, taxa de estação e imposto de venda
-  - Descrição dinâmica da receita conforme tier selecionado
-  - **Fallback manual:** todos os campos continuam editáveis se a API falhar
-- **Craft:** Simulação genérica com múltiplos materiais customizáveis
-  - Select de cidade para referência de preços
-  - Botão **"Buscar Preço de Venda"** para o item craftado
-  - Botão **🔍 individual** em cada linha de material para buscar preço automático
-  - Sistema de sugestões de itens do dicionário PT-BR
-  - Adicionar/remover linhas de material dinamicamente
-- Painel de resultado com grid e detalhamento completo
-- Toggle Premium
-- Abas separadas: Refino / Craft
-
-### Geral
-- Dicionário de tradução PT-BR → ID do jogo (200+ itens)
-- Formatação inteligente de prata (k, M, valor completo)
-- Teste de conectividade com a API ao carregar
-- Loading overlay
-- Fechar sugestões ao clicar fora
-- Atalho Enter nos inputs de busca
-
-* * *
+---
 
 ## 🗺️ Roadmap
 
-- [ ] **Refino Avançado v3.0** — Cálculo real com material do tier anterior (ex: Couro T5 para refinar Couro T6) + otimização de rotas entre cidades
-- [ ] Adicionar mais itens ao dicionário de tradução
-- [ ] Gráficos de histórico de preços
-- [ ] Página de "Sobre" / tutorial
-- [ ] Sistema de favoritos / watchlist
-- [ ] Exportar resultados (CSV/JSON)
-- [ ] Cache local dos dados da API (localStorage)
-- [ ] Animações de entrada mais elaboradas
-- [ ] Tema claro (light mode)
+| Fase | Funcionalidade | Status |
+|------|---------------|--------|
+| v1.0 | Flipper básico | ✅ |
+| v2.0 | Buscar Item + Black Market | ✅ |
+| v3.0 | Craft & Refino com bônus de cidade | ✅ |
+| v3.1 | RRR automático + Foco | ✅ |
+| v3.2 | Custo de Transporte | ✅ |
+| v4.0 | Scan Automático de Rotas (343 combinações) | ✅ |
+| v4.1 | Cache Local (localStorage, TTL 5min) | ✅ |
+| **v4.2** | **Gráficos de Histórico de Preços** | ✅ |
+| v5.0 | Flipper Automático (scan sem digitar item) | 🔄 |
+| v5.1 | Exportar dados (CSV / copiar texto) | 🔄 |
 
-* * *
+---
 
-> 💡 Veja `CONTEXT.md` para o estado atual, bugs conhecidos e próximos passos detalhados do projeto.
+## 🎨 Stack Tecnológica
+
+- **HTML5** — estrutura monolítica (arquivo único)
+- **CSS3** — design system customizado, glassmorphism, responsivo
+- **Vanilla JavaScript** — sem frameworks, sem dependências externas
+- **SVG** — gráficos de histórico renderizados nativamente
+- **Albion Online Data Project API** — dados reais do mercado
+
+---
+
+## 🖼️ Screenshots
+
+&gt; *Adicione screenshots das 4 abas aqui*
+
+---
+
+## ⚠️ Avisos
+
+- **Não é afiliado ao Albion Online** — ferramenta feita pela comunidade
+- Dados podem ter delay de alguns minutos (dependem da API pública)
+- Sempre confirme preços no jogo antes de fazer trades de alto valor
+- O uso de dados da API está sujeito aos [termos do Albion Online Data Project](https://www.albion-online-data.com/)
+
+---
+
+## 🤝 Contribuindo
+
+1. Faça um fork do projeto
+2. Crie uma branch: `git checkout -b minha-feature`
+3. Commit suas mudanças: `git commit -m 'feat: minha feature'`
+4. Push: `git push origin minha-feature`
+5. Abra um Pull Request
+
+---
+
+## 📜 Licença
+
+MIT License — use à vontade, mas sem garantias.
+
+---
+
+## 🙏 Créditos
+
+- **Albion Online Data Project** — por disponibilizar a API pública
+- **Albion Online** — Sandbox Interactive GmbH
+
+---
+
+&lt;p align="center"&gt;
+  &lt;strong&gt;SilverForge&lt;/strong&gt; — Transforme diferença de preço em prata.
+&lt;/p&gt;

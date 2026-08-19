@@ -18,9 +18,18 @@
 ### Buscar Item
 - [x] Lista de itens populares pré-carregada
 - [x] Busca com sugestões em português
-- [x] Exibição de preços por qualidade (Normal a Lendário)
+- [x] Exibição de preços por qualidade (Normal a Obra-prima)
 - [x] Cards de preço por cidade
 - [x] Ícones dos itens via API do Albion
+- [x] **Fase 9 — Gráfico de Histórico de Preços:**
+  - [x] Botão "📈 Histórico de Preços" aparece ao selecionar item
+  - [x] Busca real na API do Albion (`/api/v2/stats/history/`)
+  - [x] Gráfico de linha SVG puro com evolução do preço mín. de venda (últimos 30 dias)
+  - [x] Média móvel de 7 dias como linha tracejada verde
+  - [x] Select para alternar entre 7 cidades + Brecilien
+  - [x] Tooltip interativo ao passar o mouse
+  - [x] Indicador de tendência com variação percentual (▲/▼)
+  - [x] Cache de 5 minutos no localStorage
 
 ### Black Market Scanner
 - [x] Scan automático de ~60 itens populares
@@ -30,7 +39,7 @@
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
 
-### Craft & Refino (v4.1 — ATUAL)
+### Craft & Refino (v4.1)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
 - [x] **Busca automática de preços via API** para bruto, refinado e tier anterior (T-1)
 - [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior
@@ -107,15 +116,11 @@
 - O RRR é fixo e depende apenas de: cidade + bônus de cidade + uso de focus
 - **NÃO adicionar input de spec** — daria informação falsa pro usuário
 
-### 2. Gráficos de Histórico
-- [ ] Gráfico de preço do item ao longo do tempo (se API permitir)
-- [ ] Média móvel de 7 dias para identificar tendência
-
-### 3. Flipper Automático
+### 2. Flipper Automático
 - [ ] Scan automático de flips entre todas as cidades (sem precisar digitar item)
 - [ ] Lista as melhores oportunidades do momento
 
-### 4. Exportar Dados
+### 3. Exportar Dados
 - [ ] Botão para copiar resultados como texto ou exportar CSV das rotas/scans
 
 ---
@@ -143,6 +148,19 @@
 ---
 
 ## 🏗️ Mudanças Recentes (último commit)
+
+### v4.2 — Fase 9 (Gráficos de Histórico)
+- **Fase 9 — Gráfico de Histórico de Preços:**
+  - Botão "📈 Histórico de Preços" na aba Buscar Item (aparece ao selecionar item)
+  - Busca real na API do Albion (`/api/v2/stats/history/{itemId}.json`)
+  - Gráfico de linha SVG puro com evolução do preço mín. de venda (últimos 30 dias)
+  - Média móvel de 7 dias como linha tracejada verde
+  - Select para alternar entre 7 cidades + Brecilien
+  - Tooltip interativo ao passar o mouse (preço + média)
+  - Indicador de tendência com variação percentual (▲ verde / ▼ vermelho)
+  - Cache de 5 minutos no localStorage (mesmo padrão do resto do app)
+  - Design escuro combinando com o tema (#0b0f19, #c9a84c, #4ade80, #ef4444)
+- **Bug fix extra:** removida tag `&lt;base target="_blank"&gt;` duplicada
 
 ### v4.1 — Fase 8 (Cache Local)
 - **Fase 8 — Cache Local:**
@@ -177,5 +195,5 @@
 
 ## 📅 Última atualização
 
-Data: 15/08/2026
-Chat: Upgrade Refino v4.1 — Fase 6 (Custo de Transporte) + Fase 7 (Scan Automático de Rotas) + Fase 8 (Cache Local) + Correção de Bugs
+Data: 19/08/2026
+Chat: Upgrade v4.2 — Fase 9 (Gráficos de Histórico de Preços)

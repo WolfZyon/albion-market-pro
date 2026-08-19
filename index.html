@@ -217,8 +217,180 @@
 .cache-dot.fresh { background: #4ade80; }
 .cache-dot.cached { background: #c9a84c; }
 
+
+/* ========== FASE 9: GRÁFICO DE HISTÓRICO ========== */
+.btn-historico {
+  margin-top: 16px;
+  width: 100%;
+  background: linear-gradient(135deg, #c9a84c 0%, #a88a3a 100%);
+  color: #0b0f19;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(201,168,76,0.2);
+}
+.btn-historico:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201,168,76,0.3);
+}
+.btn-historico:active { transform: translateY(0); }
+
+.historico-container {
+  margin-top: 20px;
+  background: #111827;
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  animation: fadeInHist 0.4s ease;
+}
+.historico-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.historico-titulo {
+  font-family: 'Cinzel', serif;
+  color: #c9a84c;
+  font-size: 1.1rem;
+  margin: 0;
+}
+.historico-cidade-select {
+  background: #0b0f19;
+  border: 1px solid rgba(201,168,76,0.3);
+  color: #e5e7eb;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.historico-cidade-select:focus { border-color: #c9a84c; }
+.historico-svg-container {
+  width: 100%;
+  height: 340px;
+  background: #0b0f19;
+  border-radius: 8px;
+  position: relative;
+  overflow: visible;
+}
+.historico-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.historico-tooltip {
+  position: absolute;
+  background: rgba(17,24,39,0.95);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 0.8rem;
+  color: #e5e7eb;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+.historico-tooltip.visible { opacity: 1; }
+.historico-legenda {
+  display: flex;
+  gap: 24px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: #9ca3af;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.legenda-item { display: flex; align-items: center; gap: 8px; }
+.legenda-linha {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+}
+.legenda-linha.preco { background: #c9a84c; }
+.legenda-linha.media {
+  background: transparent;
+  border-top: 2px dashed #4ade80;
+  height: 0;
+}
+.historico-info {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+.preco-area {
+  fill: rgba(201,168,76,0.08);
+  stroke: none;
+}
+.preco-line {
+  fill: none;
+  stroke: #c9a84c;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.media-line {
+  fill: none;
+  stroke: #4ade80;
+  stroke-width: 2;
+  stroke-dasharray: 6,4;
+  stroke-linecap: round;
+}
+.grid-line {
+  stroke: rgba(255,255,255,0.06);
+  stroke-width: 1;
+}
+.axis-line {
+  stroke: rgba(255,255,255,0.25);
+  stroke-width: 1;
+}
+.axis-text {
+  fill: #6b7280;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+}
+.data-point {
+  fill: #c9a84c;
+  stroke: #0b0f19;
+  stroke-width: 2;
+  r: 4;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.data-point:hover {
+  r: 6;
+  fill: #fbbf24;
+  stroke-width: 3;
+}
+.tendencia-alta { color: #4ade80; font-weight: 600; }
+.tendencia-baixa { color: #ef4444; font-weight: 600; }
+.historico-empty {
+  text-align: center;
+  color: #6b7280;
+  padding: 60px 20px;
+  font-style: italic;
+}
+@keyframes fadeInHist {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
 <base target="_blank">
+
 <base target="_blank">
 </head>
 <body>
@@ -416,6 +588,47 @@
     </div>
   </div>
 </div>
+
+
+  <!-- FASE 9: Gráfico de Histórico -->
+  <div id="buscarHistoricoWrapper" style="display:none; margin-top:20px; padding:0 24px;">
+    <button class="btn-historico" id="btnHistorico" onclick="carregarHistorico()">
+      📈 Histórico de Preços
+    </button>
+    <div id="historicoContainer" class="historico-container" style="display:none;">
+      <div class="historico-header">
+        <h3 class="historico-titulo">📈 Histórico — <span id="historicoItemNome">Item</span></h3>
+        <select id="historicoCidadeSelect" class="historico-cidade-select" onchange="trocarCidadeHistorico()">
+          <option value="Bridgewatch">Bridgewatch</option>
+          <option value="Caerleon">Caerleon</option>
+          <option value="Fort Sterling">Fort Sterling</option>
+          <option value="Lymhurst">Lymhurst</option>
+          <option value="Martlock">Martlock</option>
+          <option value="Thetford">Thetford</option>
+          <option value="Brecilien">Brecilien</option>
+        </select>
+      </div>
+      <div class="historico-svg-container" id="historicoSvgContainer">
+        <svg id="historicoSvg" class="historico-svg" viewBox="0 0 800 340" preserveAspectRatio="xMidYMid meet">
+          <text x="400" y="170" text-anchor="middle" fill="#6b7280" font-size="14" font-family="Inter, sans-serif">
+            Selecione um item e clique em "📈 Histórico de Preços"
+          </text>
+        </svg>
+        <div id="historicoTooltip" class="historico-tooltip"></div>
+      </div>
+      <div class="historico-legenda">
+        <div class="legenda-item">
+          <div class="legenda-linha preco"></div>
+          <span>Preço Mín. Venda</span>
+        </div>
+        <div class="legenda-item">
+          <div class="legenda-linha media"></div>
+          <span>Média Móvel 7 dias</span>
+        </div>
+      </div>
+      <div id="historicoInfo" class="historico-info"></div>
+    </div>
+  </div>
 
 <!-- ==================== BLACK MARKET ==================== -->
 <div class="page" id="page-blackmarket">
@@ -1636,6 +1849,7 @@ function selecionarBuscarSugestao(texto) {
 
 async function selecionarBuscarItem(itemId) {
   buscarItemSelecionado = itemId;
+  limparHistorico();
   initBuscar();
 
   const detalhes = document.getElementById('buscarDetalhes');
@@ -1721,6 +1935,7 @@ async function selecionarBuscarItem(itemId) {
           '</tbody>' +
         '</table>' +
       '</div>';
+    configurarHistorico(itemId, quality);
   } catch (e) {
     console.error(e);
     detalhes.innerHTML = '<div class="empty-state"><p>Erro ao buscar dados</p><span>Verifique sua conexão com a internet</span></div>';
@@ -2770,6 +2985,272 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+
+/* ========== FASE 9: GRÁFICO DE HISTÓRICO ========== */
+let historicoItemId = null;
+let historicoQualidade = 1;
+let historicoDadosAtual = [];
+let historicoCidadeAtual = 'Bridgewatch';
+
+function formatarPrataSVG(valor) {
+  if (valor >= 1000000) return (valor / 1000000).toFixed(1) + 'M';
+  if (valor >= 1000) return (valor / 1000).toFixed(1) + 'k';
+  return Math.round(valor).toString();
+}
+
+function calcularMediaMovel(dados, periodo) {
+  const resultado = [];
+  for (let i = 0; i < dados.length; i++) {
+    if (i < periodo - 1) { resultado.push(null); continue; }
+    let soma = 0;
+    for (let j = 0; j < periodo; j++) soma += dados[i - j].preco;
+    resultado.push(soma / periodo);
+  }
+  return resultado;
+}
+
+function renderizarGraficoHistorico(dados, cidade) {
+  const svg = document.getElementById('historicoSvg');
+  const tooltip = document.getElementById('historicoTooltip');
+  const container = document.getElementById('historicoSvgContainer');
+  const info = document.getElementById('historicoInfo');
+  if (!svg || !dados || dados.length === 0) return;
+
+  svg.innerHTML = '';
+  if (tooltip) tooltip.classList.remove('visible');
+
+  const width = 800;
+  const height = 340;
+  const padding = { top: 20, right: 40, bottom: 50, left: 70 };
+  const chartW = width - padding.left - padding.right;
+  const chartH = height - padding.top - padding.bottom;
+
+  // Usar últimos 30 dias no máximo
+  const pontos = dados.slice(-30);
+  const mediaMovel = calcularMediaMovel(pontos, 7);
+
+  const precos = pontos.map(d => d.preco);
+  const minP = Math.min(...precos) * 0.98;
+  const maxP = Math.max(...precos) * 1.02;
+  const range = maxP - minP || 1;
+
+  const xScale = i => padding.left + (i / Math.max(pontos.length - 1, 1)) * chartW;
+  const yScale = p => padding.top + chartH - ((p - minP) / range) * chartH;
+
+  // Área sob a curva
+  let areaD = 'M ' + xScale(0) + ' ' + (padding.top + chartH);
+  for (let i = 0; i < pontos.length; i++) areaD += ' L ' + xScale(i) + ' ' + yScale(pontos[i].preco);
+  areaD += ' L ' + xScale(pontos.length - 1) + ' ' + (padding.top + chartH) + ' Z';
+  const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  area.setAttribute('d', areaD);
+  area.setAttribute('class', 'preco-area');
+  svg.appendChild(area);
+
+  // Grid horizontal + labels Y
+  for (let i = 0; i <= 5; i++) {
+    const y = padding.top + (i / 5) * chartH;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', padding.left);
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', padding.left + chartW);
+    line.setAttribute('y2', y);
+    line.setAttribute('class', 'grid-line');
+    svg.appendChild(line);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', padding.left - 10);
+    text.setAttribute('y', y + 4);
+    text.setAttribute('text-anchor', 'end');
+    text.setAttribute('class', 'axis-text');
+    text.textContent = formatarPrataSVG(maxP - (i / 5) * range);
+    svg.appendChild(text);
+  }
+
+  // Linha do preço
+  let pathD = 'M ' + xScale(0) + ' ' + yScale(pontos[0].preco);
+  for (let i = 1; i < pontos.length; i++) pathD += ' L ' + xScale(i) + ' ' + yScale(pontos[i].preco);
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', pathD);
+  path.setAttribute('class', 'preco-line');
+  svg.appendChild(path);
+
+  // Linha média móvel
+  let mediaD = '';
+  let primeiro = true;
+  for (let i = 0; i < pontos.length; i++) {
+    if (mediaMovel[i] !== null) {
+      const cmd = primeiro ? 'M' : 'L';
+      mediaD += ' ' + cmd + ' ' + xScale(i) + ' ' + yScale(mediaMovel[i]);
+      primeiro = false;
+    }
+  }
+  if (mediaD) {
+    const mPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    mPath.setAttribute('d', mediaD);
+    mPath.setAttribute('class', 'media-line');
+    svg.appendChild(mPath);
+  }
+
+  // Eixos
+  const eixoX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  eixoX.setAttribute('x1', padding.left); eixoX.setAttribute('y1', padding.top + chartH);
+  eixoX.setAttribute('x2', padding.left + chartW); eixoX.setAttribute('y2', padding.top + chartH);
+  eixoX.setAttribute('class', 'axis-line');
+  svg.appendChild(eixoX);
+
+  const eixoY = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  eixoY.setAttribute('x1', padding.left); eixoY.setAttribute('y1', padding.top);
+  eixoY.setAttribute('x2', padding.left); eixoY.setAttribute('y2', padding.top + chartH);
+  eixoY.setAttribute('class', 'axis-line');
+  svg.appendChild(eixoY);
+
+  // Labels X (datas)
+  const step = Math.max(1, Math.floor(pontos.length / 6));
+  for (let i = 0; i < pontos.length; i += step) {
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', xScale(i));
+    text.setAttribute('y', padding.top + chartH + 28);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('class', 'axis-text');
+    const dt = new Date(pontos[i].data);
+    text.textContent = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0');
+    svg.appendChild(text);
+  }
+
+  // Pontos interativos
+  pontos.forEach((p, i) => {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', xScale(i));
+    circle.setAttribute('cy', yScale(p.preco));
+    circle.setAttribute('class', 'data-point');
+
+    circle.addEventListener('mouseenter', (e) => {
+      if (!tooltip || !container) return;
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      tooltip.style.left = Math.min(x + 12, rect.width - 150) + 'px';
+      tooltip.style.top = Math.max(y - 50, 0) + 'px';
+      const dataStr = new Date(p.data).toLocaleDateString('pt-BR');
+      const mediaStr = mediaMovel[i] ? '<br>Média 7d: <span style="color:#4ade80">' + formatarPrataSVG(mediaMovel[i]) + '</span>' : '';
+      tooltip.innerHTML = '<strong>' + dataStr + '</strong><br>Min: <span style="color:#c9a84c">' + formatarPrataSVG(p.preco) + '</span>' + mediaStr;
+      tooltip.classList.add('visible');
+    });
+
+    circle.addEventListener('mouseleave', () => tooltip && tooltip.classList.remove('visible'));
+    svg.appendChild(circle);
+  });
+
+  // Info tendência
+  if (info && pontos.length >= 2) {
+    const primeiro = pontos[0].preco;
+    const ultimo = pontos[pontos.length - 1].preco;
+    const variacao = ((ultimo - primeiro) / primeiro) * 100;
+    const seta = variacao >= 0 ? '▲' : '▼';
+    const classe = variacao >= 0 ? 'tendencia-alta' : 'tendencia-baixa';
+    info.innerHTML = 'Variação em <strong>' + cidade + '</strong>: <span class="' + classe + '">' + seta + ' ' + Math.abs(variacao).toFixed(1) + '%</span> &nbsp;|&nbsp; Período: ' + pontos.length + ' dias &nbsp;|&nbsp; Dados: <span style="color:#c9a84c">Albion Data Project</span>';
+  }
+}
+
+async function buscarHistoricoPrecos(itemId, cidade, qualidade) {
+  const url = 'https://west.albion-online-data.com/api/v2/stats/history/' + itemId + '.json?locations=' + encodeURIComponent(cidade) + '&qualities=' + qualidade + '&time-scale=24';
+  try {
+    setLoading(true, 'Buscando histórico em ' + cidade + '...');
+
+    // Verificar cache
+    const cacheKey = getCacheKey(['hist_' + itemId], [cidade], [qualidade]);
+    const cached = getCache(cacheKey);
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      setLoading(false);
+      return cached;
+    }
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Erro ' + res.status);
+    const json = await res.json();
+    setLoading(false);
+
+    if (!json || json.length === 0 || !json[0].data) {
+      mostrarErroHistorico('Sem dados históricos para este item/cidade.');
+      return [];
+    }
+
+    const dados = json[0].data
+      .map(d => ({ data: d.timestamp, preco: d.min_price || d.avg_price || 0, volume: d.item_count || 0 }))
+      .filter(d => d.preco > 0)
+      .sort((a, b) => new Date(a.data) - new Date(b.data));
+
+    // Salvar cache
+    if (dados.length > 0) {
+      setCache(cacheKey, dados);
+    }
+
+    return dados;
+  } catch (e) {
+    setLoading(false);
+    mostrarErroHistorico('Falha ao buscar histórico. Verifique sua conexão.');
+    return [];
+  }
+}
+
+function mostrarErroHistorico(msg) {
+  const svg = document.getElementById('historicoSvg');
+  const info = document.getElementById('historicoInfo');
+  if (svg) svg.innerHTML = '<text x="400" y="170" text-anchor="middle" fill="#6b7280" font-size="14" font-family="Inter, sans-serif">' + msg + '</text>';
+  if (info) info.innerHTML = '';
+}
+
+async function carregarHistorico() {
+  if (!historicoItemId) return;
+  const cidade = document.getElementById('historicoCidadeSelect')?.value || 'Bridgewatch';
+  historicoCidadeAtual = cidade;
+  const container = document.getElementById('historicoContainer');
+  if (container) container.style.display = 'block';
+  const dados = await buscarHistoricoPrecos(historicoItemId, cidade, historicoQualidade);
+  historicoDadosAtual = dados;
+  renderizarGraficoHistorico(dados, cidade);
+  container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function trocarCidadeHistorico() {
+  if (!historicoItemId) return;
+  const cidade = document.getElementById('historicoCidadeSelect')?.value || 'Bridgewatch';
+  historicoCidadeAtual = cidade;
+  const dados = await buscarHistoricoPrecos(historicoItemId, cidade, historicoQualidade);
+  historicoDadosAtual = dados;
+  renderizarGraficoHistorico(dados, cidade);
+}
+
+function configurarHistorico(itemId, qualidade) {
+  historicoItemId = itemId;
+  historicoQualidade = qualidade || 1;
+
+  const wrapper = document.getElementById('buscarHistoricoWrapper');
+  const container = document.getElementById('historicoContainer');
+  const nomeEl = document.getElementById('historicoItemNome');
+  const svg = document.getElementById('historicoSvg');
+  const info = document.getElementById('historicoInfo');
+
+  if (nomeEl) nomeEl.textContent = getNomeItem(itemId, qualidade);
+  if (wrapper) wrapper.style.display = 'block';
+  if (container) container.style.display = 'none';
+
+  if (svg) {
+    svg.innerHTML = '<text x="400" y="170" text-anchor="middle" fill="#6b7280" font-size="14" font-family="Inter, sans-serif">Clique em "📈 Histórico de Preços" para carregar o gráfico</text>';
+  }
+  if (info) info.innerHTML = '';
+}
+
+function limparHistorico() {
+  historicoItemId = null;
+  historicoQualidade = 1;
+  historicoDadosAtual = [];
+  const wrapper = document.getElementById('buscarHistoricoWrapper');
+  const container = document.getElementById('historicoContainer');
+  if (wrapper) wrapper.style.display = 'none';
+  if (container) container.style.display = 'none';
+}
 </script>
 </body>
 </html>
