@@ -3,7 +3,7 @@
 &gt; Ferramenta não oficial para **Albion Online** que transforma diferença de preço em prata.  
 &gt; Dados reais via [Albion Online Data Project](https://www.albion-online-data.com/).
 
-![Versão](https://img.shields.io/badge/versão-v4.2-gold)
+![Versão](https://img.shields.io/badge/versão-v4.3-gold)
 ![Status](https://img.shields.io/badge/status-ativo-success)
 ![Dados](https://img.shields.io/badge/dados-reais-blue)
 
@@ -17,6 +17,7 @@
 - Cálculo de lucro líquido com taxa de venda (4% Premium / 8% normal)
 - Tabela de resultados com ícones, rotas e lucro
 - Stats cards no topo: melhor flip, lucro somado, margem média
+- **📋 Copiar Texto / 📥 Baixar CSV** dos resultados
 
 ### 🔍 Buscar Item
 - Lista de itens populares pré-carregada
@@ -24,13 +25,15 @@
 - Exibição de preços por qualidade (Normal a Obra-prima)
 - Cards de preço por cidade + Black Market
 - Ícones dos itens via API do Albion
-- **📈 Gráfico de Histórico de Preços** (Fase 9)
+- **📈 Gráfico de Histórico de Preços** (últimos 30 dias, média móvel 7 dias)
+- **📋 Copiar Texto / 📥 Baixar CSV** dos preços
 
 ### 🖤 Black Market Scanner
 - Scan automático de ~60 itens populares
 - Filtro por nome em tempo real
 - Slider de lucro mínimo
 - Cards com preço de compra, preço BM, taxa, lucro líquido
+- **📋 Copiar Texto / 📥 Baixar CSV** das oportunidades
 
 ### ⚒️ Craft & Refino
 - **Refino:** 5 categorias × 7 tiers (T2-T8) com cálculo real
@@ -40,6 +43,7 @@
 - Toggle "Usar Foco" para RRR aumentado
 - **Otimização de Rotas:** scan de 343 combinações com top 3 resultados
 - **Custo de Transporte:** input opcional com aviso de zona perigosa
+- **📋 Copiar Texto / 📥 Baixar CSV** dos resultados
 
 ---
 
@@ -69,9 +73,9 @@
 | v3.2 | Custo de Transporte | ✅ |
 | v4.0 | Scan Automático de Rotas (343 combinações) | ✅ |
 | v4.1 | Cache Local (localStorage, TTL 5min) | ✅ |
-| **v4.2** | **Gráficos de Histórico de Preços** | ✅ |
+| v4.2 | Gráficos de Histórico de Preços | ✅ |
+| **v4.3** | **Exportar Dados (CSV / Copiar Texto)** | ✅ |
 | v5.0 | Flipper Automático (scan sem digitar item) | 🔄 |
-| v5.1 | Exportar dados (CSV / copiar texto) | 🔄 |
 
 ---
 

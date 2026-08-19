@@ -14,6 +14,7 @@
 - [x] Tabela de resultados com ícones, rotas e lucro
 - [x] Stats cards no topo (melhor flip, lucro somado, margem média)
 - [x] Toggle Premium
+- [x] **Fase 11 — Exportar:** botões 📋 Copiar Texto + 📥 Baixar CSV
 
 ### Buscar Item
 - [x] Lista de itens populares pré-carregada
@@ -30,6 +31,7 @@
   - [x] Tooltip interativo ao passar o mouse
   - [x] Indicador de tendência com variação percentual (▲/▼)
   - [x] Cache de 5 minutos no localStorage
+- [x] **Fase 11 — Exportar:** botões 📋 Copiar Texto + 📥 Baixar CSV
 
 ### Black Market Scanner
 - [x] Scan automático de ~60 itens populares
@@ -38,8 +40,9 @@
 - [x] Cards com: preço de compra, preço BM, taxa, lucro líquido
 - [x] Toggle Premium
 - [x] Cache de resultados para filtro rápido
+- [x] **Fase 11 — Exportar:** botões 📋 Copiar Texto + 📥 Baixar CSV
 
-### Craft & Refino (v4.1)
+### Craft & Refino (v4.3)
 - [x] **Refino:** 5 categorias × 7 tiers (T2-T8) com select de cidade
 - [x] **Busca automática de preços via API** para bruto, refinado e tier anterior (T-1)
 - [x] **Cálculo real do refino T4+** incluindo custo do material do tier anterior
@@ -67,6 +70,7 @@
 - [x] Abas separadas: Refino / Craft
 - [x] Fallback manual em todos os campos de preço
 - [x] **Try-catch** em todas as funções que manipulam DOM no módulo de refino
+- [x] **Fase 11 — Exportar:** botões 📋 Copiar Texto + 📥 Baixar CSV (tanto Refino quanto Craft)
 
 ### Fase 6 — Custo de Transporte (v3.2)
 - [x] **Input numérico** "Custo por viagem (prata)" — opcional
@@ -93,6 +97,16 @@
 - [x] **Limpeza automática** de entradas expiradas quando o `localStorage` enche
 - [x] Chave de cache baseada em hash dos parâmetros (item IDs + cidades + qualidades)
 
+### Fase 11 — Exportar Dados (v4.3)
+- [x] **Botões "📋 Copiar Texto" + "📥 Baixar CSV"** em todas as 4 abas
+- [x] Flipper: exporta Item, Rota, Compra, Venda, Lucro, Margem, Atualizado
+- [x] Buscar Item: exporta Cidade, Venda Mín, Compra Máx, Atualizado + Black Market
+- [x] Black Market: exporta Item, Comprar Em, Preço Compra, Preço BM, Lucro, Margem
+- [x] Refino & Craft: exporta todos os campos do painel de resultado
+- [x] **Toast de confirmação** ao copiar/baixar
+- [x] **Fallback** para `document.execCommand('copy')` se `navigator.clipboard` não disponível
+- [x] Nome do arquivo CSV com data, hora e identificador do item/receita
+
 ### Geral
 - [x] Navbar sticky com glassmorphism
 - [x] Navegação SPA entre 4 páginas
@@ -116,12 +130,10 @@
 - O RRR é fixo e depende apenas de: cidade + bônus de cidade + uso de focus
 - **NÃO adicionar input de spec** — daria informação falsa pro usuário
 
-### 2. Flipper Automático
+### 2. Flipper Automático (Fase 10)
 - [ ] Scan automático de flips entre todas as cidades (sem precisar digitar item)
-- [ ] Lista as melhores oportunidades do momento
-
-### 3. Exportar Dados
-- [ ] Botão para copiar resultados como texto ou exportar CSV das rotas/scans
+- [ ] Lista as melhores oportunidades do momento em tabela paginada
+- [ ] Filtro por lucro mínimo, margem mínima, tier
 
 ---
 
@@ -130,6 +142,7 @@
 - [x] ~~Falta de conexão impedia dados de serem puxados~~ → Adicionado `testarAPI()` para diagnóstico
 - [x] ~~Múltiplas tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;`~~ → Corrigido (7x → 1x)
 - [x] ~~Em conexões lentas, o loading podia travar se a API demorar muito~~ → Adicionado timeout de 15s no `setLoading()`
+- [x] ~~Seção de histórico aparecia em todas as abas~~ → Movida para dentro de `#page-buscar`
 
 ---
 
@@ -149,18 +162,29 @@
 
 ## 🏗️ Mudanças Recentes (último commit)
 
+### v4.3 — Fase 11 (Exportar Dados)
+- **Fase 11 — Exportar Dados:**
+  - Botões "📋 Copiar Texto" + "📥 Baixar CSV" em todas as 4 abas
+  - Flipper: exporta Item, Rota, Compra, Venda, Lucro, Margem
+  - Buscar Item: exporta Cidade, Venda Mín, Compra Máx + Black Market
+  - Black Market: exporta Item, Comprar Em, Preço Compra, Preço BM, Lucro
+  - Refino & Craft: exporta todos os campos do painel de resultado
+  - Toast de confirmação ao copiar/baixar
+  - Fallback para execCommand se clipboard API não disponível
+  - Nome do arquivo CSV com data, hora e identificador
+
 ### v4.2 — Fase 9 (Gráficos de Histórico)
 - **Fase 9 — Gráfico de Histórico de Preços:**
-  - Botão "📈 Histórico de Preços" na aba Buscar Item (aparece ao selecionar item)
+  - Botão "📈 Histórico de Preços" na aba Buscar Item
   - Busca real na API do Albion (`/api/v2/stats/history/{itemId}.json`)
   - Gráfico de linha SVG puro com evolução do preço mín. de venda (últimos 30 dias)
   - Média móvel de 7 dias como linha tracejada verde
   - Select para alternar entre 7 cidades + Brecilien
-  - Tooltip interativo ao passar o mouse (preço + média)
-  - Indicador de tendência com variação percentual (▲ verde / ▼ vermelho)
-  - Cache de 5 minutos no localStorage (mesmo padrão do resto do app)
-  - Design escuro combinando com o tema (#0b0f19, #c9a84c, #4ade80, #ef4444)
-- **Bug fix extra:** removida tag `&lt;base target="_blank"&gt;` duplicada
+  - Tooltip interativo ao passar o mouse
+  - Indicador de tendência com variação percentual
+  - Cache de 5 minutos no localStorage
+- **Bug fix:** removida tag `&lt;base target="_blank"&gt;` duplicada
+- **Bug fix:** seção de histórico movida para dentro de `#page-buscar` (não aparecia em outras abas)
 
 ### v4.1 — Fase 8 (Cache Local)
 - **Fase 8 — Cache Local:**
@@ -196,4 +220,4 @@
 ## 📅 Última atualização
 
 Data: 19/08/2026
-Chat: Upgrade v4.2 — Fase 9 (Gráficos de Histórico de Preços)
+Chat: Upgrade v4.3 — Fase 11 (Exportar Dados)
