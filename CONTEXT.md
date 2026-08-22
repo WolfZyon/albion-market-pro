@@ -14,6 +14,18 @@
 - [x] Tabela de resultados com ícones, rotas e lucro
 - [x] Stats cards no topo (melhor flip, lucro somado, margem média)
 - [x] Toggle Premium
+- [x] **Fase 10 — Flipper Automático:**
+  - [x] Botão "🚀 Flipper Automático" na aba Flipper
+  - [x] Escaneia ~60 itens populares (ITENS_FLIPPER) em 8 cidades de uma vez
+  - [x] Calcula TODAS as rotas possíveis (compra → venda) para cada item
+  - [x] Filtra apenas rotas com lucro &gt; 0
+  - [x] Ordena por lucro líquido (maior primeiro)
+  - [x] Tabela paginada (20 resultados/página) com navegação de páginas
+  - [x] Filtros: Lucro mínimo, Margem mínima %, Tier min/max, Cidade origem/destino
+  - [x] Stats cards dinâmicos (oportunidades, lucro total, margem média, melhor flip)
+  - [x] Toggle Premium funciona (4% vs 8% imposto)
+  - [x] Respeita cache existente (fetchPrices verifica cache primeiro)
+  - [x] Loading com mensagem "Escaneando X itens em Y cidades..."
 - [x] **Fase 11 — Exportar:** botões 📋 Copiar Texto + 📥 Baixar CSV
 
 ### Buscar Item
@@ -118,8 +130,7 @@
 - [x] Teste de conectividade com a API (`testarAPI()`)
 - [x] Fechar sugestões ao clicar fora do input
 - [x] Atalho Enter nos inputs para acionar busca
-- [x] **`&lt;base target="_blank"&gt;` única** no `&lt;head&gt;` (bug fix — removidas 6 duplicatas)
-
+- [x] **`&lt;base target="_blank"&gt;` única** no `&lt;head&gt;` (bug fix — removidas duplicatas)
 ---
 
 ## ❌ O que NÃO EXISTE ainda (gaps importantes)
@@ -130,17 +141,12 @@
 - O RRR é fixo e depende apenas de: cidade + bônus de cidade + uso de focus
 - **NÃO adicionar input de spec** — daria informação falsa pro usuário
 
-### 2. Flipper Automático (Fase 10)
-- [ ] Scan automático de flips entre todas as cidades (sem precisar digitar item)
-- [ ] Lista as melhores oportunidades do momento em tabela paginada
-- [ ] Filtro por lucro mínimo, margem mínima, tier
-
 ---
 
 ## 🐛 Bugs Conhecidos
 
 - [x] ~~Falta de conexão impedia dados de serem puxados~~ → Adicionado `testarAPI()` para diagnóstico
-- [x] ~~Múltiplas tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;`~~ → Corrigido (7x → 1x)
+- [x] ~~Múltiplas tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;`~~ → Corrigido
 - [x] ~~Em conexões lentas, o loading podia travar se a API demorar muito~~ → Adicionado timeout de 15s no `setLoading()`
 - [x] ~~Seção de histórico aparecia em todas as abas~~ → Movida para dentro de `#page-buscar`
 
@@ -157,10 +163,24 @@
 - **Bordas arredondadas:** 12px (cards), 8px (inputs)
 - **Sombras:** `0 4px 24px rgba(0,0,0,0.5)`
 - **Arquitetura:** Arquivo monolítico (`index.html` com todo o JS embutido) para facilitar deploy local e evitar problemas de CORS/path
-
 ---
 
 ## 🏗️ Mudanças Recentes (último commit)
+
+### v4.4 — Fase 10 (Flipper Automático)
+- **Fase 10 — Flipper Automático:**
+  - Botão "🚀 Flipper Automático" na aba Flipper
+  - Escaneia ~60 itens populares (ITENS_FLIPPER) em 8 cidades de uma vez
+  - Calcula TODAS as rotas possíveis (compra → venda) para cada item
+  - Filtra apenas rotas com lucro &gt; 0
+  - Ordena por lucro líquido (maior primeiro)
+  - Tabela paginada (20 resultados/página) com navegação de páginas (← → números)
+  - Filtros: Lucro mínimo, Margem mínima %, Tier min/max (T2-T8), Cidade origem/destino
+  - Stats cards dinâmicos: Oportunidades, Lucro Total, Margem Média, Melhor Flip
+  - Toggle Premium funciona (4% vs 8% imposto)
+  - Respeita cache existente (fetchPrices verifica cache primeiro)
+  - Loading com mensagem "Escaneando X itens em Y cidades..."
+  - Exportar 📋 Copiar Texto + 📥 Baixar CSV (reutiliza Fase 11)
 
 ### v4.3 — Fase 11 (Exportar Dados)
 - **Fase 11 — Exportar Dados:**
@@ -212,12 +232,12 @@
   - Linha de detalhamento no resultado mostrando custo de transporte
 
 - **Bug Fixes:**
-  - Removidas 6 tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;`
+  - Removidas tags `&lt;base target="_blank"&gt;` duplicadas no `&lt;head&gt;`
   - Adicionado timeout de 15 segundos no `setLoading()` para evitar travamento em conexões lentas
 
 ---
 
 ## 📅 Última atualização
 
-Data: 19/08/2026
-Chat: Upgrade v4.3 — Fase 11 (Exportar Dados)
+Data: 22/08/2026
+Chat: Upgrade v4.4 — Fase 10 (Flipper Automático)
