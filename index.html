@@ -571,6 +571,64 @@
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ========== FASE 10: FLIPPER AUTOMÁTICO ========== */
+.flipper-auto-filters {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(201,168,76,0.03);
+  border: 1px solid rgba(201,168,76,0.12);
+  animation: fadeIn 0.3s ease;
+}
+.flipper-auto-filters.visible { display: grid; }
+.flipper-auto-filters .form-group { margin-bottom: 0; }
+.flipper-auto-filters .form-label { font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+.flipper-auto-filters .form-input,
+.flipper-auto-filters .form-select { font-size: 13px; padding: 8px 10px; }
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px;
+}
+.pagination-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 36px;
+  text-align: center;
+}
+.pagination-btn:hover:not(:disabled) { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.3); }
+.pagination-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.pagination-btn.active { background: rgba(201,168,76,0.25); border-color: rgba(201,168,76,0.5); color: #c9a84c; }
+.pagination-info { font-size: 12px; color: var(--gray); margin: 0 8px; }
+.flipper-auto-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+.flipper-auto-stat {
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 10px 14px;
+  text-align: center;
+}
+.flipper-auto-stat .label { font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+.flipper-auto-stat .value { font-size: 18px; font-weight: 700; color: #c9a84c; }
 </style>
 <base target="_blank">
 <base target="_blank">
@@ -852,7 +910,81 @@
 
   <div class="pagination" id="flipperAutoPagination" style="display:none;"></div>
 
-  <div class="card" style="margin-top:20px; padding:0; overflow:hidden;">
+    <!-- FASE 10: Flipper Automático -->
+  <div style="display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap;">
+    <button class="btn-primary" onclick="scanFlipperAutomatico()" id="btnFlipperAuto">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      🚀 Flipper Automático
+    </button>
+    <span style="color:var(--gray);font-size:12px;">Escaneia ~60 itens em 8 cidades automaticamente</span>
+  </div>
+
+  <div class="flipper-auto-filters" id="flipperAutoFilters">
+    <div class="form-group">
+      <label class="form-label">Lucro Mínimo</label>
+      <input type="number" class="form-input" id="faLucroMin" placeholder="0" value="0" onchange="aplicarFiltrosFlipperAuto()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Margem Mínima %</label>
+      <input type="number" class="form-input" id="faMargemMin" placeholder="0" value="0" step="0.1" onchange="aplicarFiltrosFlipperAuto()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tier Mínimo</label>
+      <select class="form-select" id="faTierMin" onchange="aplicarFiltrosFlipperAuto()">
+        <option value="2">T2</option>
+        <option value="3">T3</option>
+        <option value="4" selected>T4</option>
+        <option value="5">T5</option>
+        <option value="6">T6</option>
+        <option value="7">T7</option>
+        <option value="8">T8</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tier Máximo</label>
+      <select class="form-select" id="faTierMax" onchange="aplicarFiltrosFlipperAuto()">
+        <option value="2">T2</option>
+        <option value="3">T3</option>
+        <option value="4">T4</option>
+        <option value="5">T5</option>
+        <option value="6">T6</option>
+        <option value="7">T7</option>
+        <option value="8" selected>T8</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Origem</label>
+      <select class="form-select" id="faCidadeOrigem" onchange="aplicarFiltrosFlipperAuto()">
+        <option value="Todas">Todas</option>
+        <option>Bridgewatch</option>
+        <option>Caerleon</option>
+        <option>Fort Sterling</option>
+        <option>Lymhurst</option>
+        <option>Martlock</option>
+        <option>Thetford</option>
+        <option>Brecilien</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Destino</label>
+      <select class="form-select" id="faCidadeDestino" onchange="aplicarFiltrosFlipperAuto()">
+        <option value="Todas">Todas</option>
+        <option>Bridgewatch</option>
+        <option>Caerleon</option>
+        <option>Fort Sterling</option>
+        <option>Lymhurst</option>
+        <option>Martlock</option>
+        <option>Thetford</option>
+        <option>Brecilien</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flipper-auto-stats" id="flipperAutoStats" style="display:none;"></div>
+
+  <div class="pagination" id="flipperAutoPagination" style="display:none;"></div>
+
+<div class="card" style="margin-top:20px; padding:0; overflow:hidden;">
     <table class="data-table">
       <thead>
         <tr>
@@ -3577,6 +3709,216 @@ function mudarPaginaFlipperAuto(pagina) {
 }
 
 /* ========== FASE 9: GRÁFICO DE HISTÓRICO ========== */
+// ========== FASE 10: FLIPPER AUTOMÁTICO ==========
+let flipperAutoResultados = [];
+let flipperAutoResultadosFiltrados = [];
+let flipperAutoPagina = 1;
+const FLIPPER_AUTO_POR_PAGINA = 20;
+
+async function scanFlipperAutomatico() {
+  const btn = document.getElementById('btnFlipperAuto');
+  const tbody = document.getElementById('flipTableBody');
+  const tax = getTaxaVenda();
+  const quality = parseInt(document.getElementById('flipQuality').value) || 1;
+
+  btn.disabled = true;
+  setLoading(true);
+
+  const loadingEl = document.getElementById('loading');
+  const loadingText = loadingEl ? loadingEl.querySelector('p') : null;
+  if (loadingText) loadingText.textContent = 'Escaneando ' + ITENS_FLIPPER.length + ' itens em ' + CIDADES_COM_BRECILIEN.length + ' cidades...';
+
+  try {
+    const data = await fetchPrices(ITENS_FLIPPER, CIDADES_COM_BRECILIEN, [quality]);
+    const oportunidades = [];
+
+    for (const itemId of ITENS_FLIPPER) {
+      const prices = getPricesForItem(data, itemId, quality);
+      for (const fromCity of CIDADES_COM_BRECILIEN) {
+        for (const toCity of CIDADES_COM_BRECILIEN) {
+          if (fromCity === toCity) continue;
+          const fromPrice = prices[fromCity];
+          const toPrice = prices[toCity];
+          if (!fromPrice || !toPrice || !fromPrice.sell || !toPrice.buy) continue;
+
+          const buyCost = fromPrice.sell;
+          const sellRevenue = toPrice.buy;
+          const sellFee = Math.ceil(sellRevenue * tax);
+          const netRevenue = sellRevenue - sellFee;
+          const profit = netRevenue - buyCost;
+          const profitPct = buyCost > 0 ? (profit / buyCost) : 0;
+
+          if (profit > 0) {
+            const tierMatch = itemId.match(/^T([4-8])/);
+            const tier = tierMatch ? parseInt(tierMatch[1]) : 4;
+            oportunidades.push({
+              itemId, fromCity, toCity,
+              buy: buyCost, sell: sellRevenue,
+              profit, profitPct,
+              volume: '-',
+              updated: timeSince(fromPrice.sellDate || toPrice.buyDate),
+              quality: quality,
+              tier: tier
+            });
+          }
+        }
+      }
+    }
+
+    oportunidades.sort((a, b) => b.profit - a.profit);
+    flipperAutoResultados = oportunidades;
+    flipperAutoPagina = 1;
+
+    const filtersEl = document.getElementById('flipperAutoFilters');
+    if (filtersEl) filtersEl.classList.add('visible');
+
+    aplicarFiltrosFlipperAuto();
+
+    const badge = document.getElementById('flipCacheBadge');
+    if (badge) {
+      badge.innerHTML = getCacheBadgeHTML(isCacheValid(getCacheKey(ITENS_FLIPPER, CIDADES_COM_BRECILIEN, [quality])));
+    }
+  } catch (e) {
+    console.error(e);
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Erro ao buscar dados da API</p><span>Verifique sua conexão ou tente novamente mais tarde</span></div></td></tr>';
+  } finally {
+    setLoading(false);
+    btn.disabled = false;
+    if (loadingText) loadingText.textContent = 'Carregando dados do mercado...';
+  }
+}
+
+function aplicarFiltrosFlipperAuto() {
+  const lucroMin = parseFloat(document.getElementById('faLucroMin').value) || 0;
+  const margemMin = parseFloat(document.getElementById('faMargemMin').value) || 0;
+  const tierMin = parseInt(document.getElementById('faTierMin').value) || 2;
+  const tierMax = parseInt(document.getElementById('faTierMax').value) || 8;
+  const cidadeOrigem = document.getElementById('faCidadeOrigem').value;
+  const cidadeDestino = document.getElementById('faCidadeDestino').value;
+
+  flipperAutoResultadosFiltrados = flipperAutoResultados.filter(o => {
+    if (o.profit < lucroMin) return false;
+    if ((o.profitPct * 100) < margemMin) return false;
+    if (o.tier < tierMin || o.tier > tierMax) return false;
+    if (cidadeOrigem !== 'Todas' && o.fromCity !== cidadeOrigem) return false;
+    if (cidadeDestino !== 'Todas' && o.toCity !== cidadeDestino) return false;
+    return true;
+  });
+
+  flipperAutoPagina = 1;
+  renderFlipperAutoPagina();
+  renderFlipperAutoStats();
+  renderFlipperAutoPagination();
+}
+
+function renderFlipperAutoStats() {
+  const statsEl = document.getElementById('flipperAutoStats');
+  if (!statsEl) return;
+  if (flipperAutoResultadosFiltrados.length === 0) {
+    statsEl.style.display = 'none';
+    return;
+  }
+  statsEl.style.display = 'grid';
+  const totalLucro = flipperAutoResultadosFiltrados.reduce((s, o) => s + o.profit, 0);
+  const avgMargin = flipperAutoResultadosFiltrados.length > 0
+    ? flipperAutoResultadosFiltrados.reduce((s, o) => s + o.profitPct, 0) / flipperAutoResultadosFiltrados.length
+    : 0;
+  const melhor = flipperAutoResultadosFiltrados[0];
+  statsEl.innerHTML =
+    '<div class="flipper-auto-stat"><div class="label">Oportunidades</div><div class="value">' + flipperAutoResultadosFiltrados.length + '</div></div>' +
+    '<div class="flipper-auto-stat"><div class="label">Lucro Total</div><div class="value">' + formatSilver(totalLucro) + '</div></div>' +
+    '<div class="flipper-auto-stat"><div class="label">Margem Média</div><div class="value">' + (avgMargin * 100).toFixed(1) + '%</div></div>' +
+    '<div class="flipper-auto-stat"><div class="label">Melhor Flip</div><div class="value">' + formatSilver(melhor.profit) + '</div></div>';
+}
+
+function renderFlipperAutoPagina() {
+  const tbody = document.getElementById('flipTableBody');
+  const exportBar = document.getElementById('flipExportBar');
+  const tax = getTaxaVenda();
+
+  flipperResultadosAtual = flipperAutoResultadosFiltrados;
+
+  if (flipperAutoResultadosFiltrados.length === 0) {
+    if (exportBar) exportBar.style.display = 'none';
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Nenhuma oportunidade encontrada com os filtros atuais</p><span>Tente relaxar os filtros ou escanear novamente</span></div></td></tr>';
+    document.getElementById('flipStatBest').textContent = '-';
+    document.getElementById('flipStatBestRoute').textContent = 'Nenhuma oportunidade';
+    document.getElementById('flipStatTotal').textContent = '-';
+    document.getElementById('flipStatCount').textContent = '0 rotas';
+    document.getElementById('flipStatMargin').textContent = '-';
+    document.getElementById('flipStatPremium').textContent = tax === 0.04 ? 'com Premium (4% imposto)' : 'sem Premium (8% imposto)';
+    return;
+  }
+
+  if (exportBar) exportBar.style.display = 'flex';
+
+  const inicio = (flipperAutoPagina - 1) * FLIPPER_AUTO_POR_PAGINA;
+  const fim = Math.min(inicio + FLIPPER_AUTO_POR_PAGINA, flipperAutoResultadosFiltrados.length);
+  const paginaItems = flipperAutoResultadosFiltrados.slice(inicio, fim);
+
+  const best = flipperAutoResultadosFiltrados[0];
+  document.getElementById('flipStatBest').textContent = formatSilver(best.profit);
+  document.getElementById('flipStatBestRoute').textContent = best.fromCity + ' → ' + best.toCity;
+  const totalProfit = flipperAutoResultadosFiltrados.reduce((s, o) => s + o.profit, 0);
+  document.getElementById('flipStatTotal').textContent = formatSilver(totalProfit);
+  document.getElementById('flipStatCount').textContent = flipperAutoResultadosFiltrados.length + ' rotas';
+  const avgMargin = flipperAutoResultadosFiltrados.reduce((s, o) => s + o.profitPct, 0) / flipperAutoResultadosFiltrados.length;
+  document.getElementById('flipStatMargin').textContent = formatPercent(avgMargin);
+  document.getElementById('flipStatPremium').textContent = tax === 0.04 ? 'com Premium (4% imposto)' : 'sem Premium (8% imposto)';
+
+  tbody.innerHTML = paginaItems.map(o => {
+    const nome = getNomeItem(o.itemId, o.quality);
+    const cat = getCategoria(o.itemId);
+    const tier = o.itemId.match(/^T([4-8])/)?.[1] || '4';
+    const enchant = o.itemId.match(/@([1-3])$/)?.[1] || '';
+    const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
+    const dotClass = o.updated === 'Agora' ? 'dot-green' : (parseInt(o.updated) < 60 ? 'dot-yellow' : 'dot-red');
+    const iconUrl = getItemIconUrl(o.itemId);
+    return '<tr>' +
+      '<td><div class="item-cell"><img src="' + iconUrl + '" class="item-icon" alt="" onerror="this.style.display='none'"><span class="tier-badge">' + tierStr + '</span><div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div></div></td>' +
+      '<td><div class="route-cell">' + o.fromCity + '<span class="arrow">→</span>' + o.toCity + '</div></td>' +
+      '<td class="price-sell price-val">' + formatSilver(o.buy) + '</td>' +
+      '<td class="price-buy price-val">' + formatSilver(o.sell) + '</td>' +
+      '<td class="profit-pos price-val">+' + formatSilver(o.profit) + ' <span style="font-size:11px;color:var(--green-dim)">(' + formatPercent(o.profitPct) + ')</span></td>' +
+      '<td>' + o.volume + '</td>' +
+      '<td><div class="timestamp"><span class="dot ' + dotClass + '"></span>' + o.updated + '</div></td>' +
+      '</tr>';
+  }).join('');
+}
+
+function renderFlipperAutoPagination() {
+  const container = document.getElementById('flipperAutoPagination');
+  if (!container) return;
+  const total = flipperAutoResultadosFiltrados.length;
+  if (total <= FLIPPER_AUTO_POR_PAGINA) {
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = 'flex';
+  const totalPaginas = Math.ceil(total / FLIPPER_AUTO_POR_PAGINA);
+  let html = '';
+  html += '<button class="pagination-btn" onclick="mudarPaginaFlipperAuto(' + (flipperAutoPagina - 1) + ')" ' + (flipperAutoPagina === 1 ? 'disabled' : '') + '>←</button>';
+  const maxVisible = 5;
+  let startPage = Math.max(1, flipperAutoPagina - Math.floor(maxVisible / 2));
+  let endPage = Math.min(totalPaginas, startPage + maxVisible - 1);
+  if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+  for (let i = startPage; i <= endPage; i++) {
+    html += '<button class="pagination-btn ' + (i === flipperAutoPagina ? 'active' : '') + '" onclick="mudarPaginaFlipperAuto(' + i + ')">' + i + '</button>';
+  }
+  html += '<button class="pagination-btn" onclick="mudarPaginaFlipperAuto(' + (flipperAutoPagina + 1) + ')" ' + (flipperAutoPagina === totalPaginas ? 'disabled' : '') + '>→</button>';
+  html += '<span class="pagination-info">' + total + ' resultados</span>';
+  container.innerHTML = html;
+}
+
+function mudarPaginaFlipperAuto(pagina) {
+  const totalPaginas = Math.ceil(flipperAutoResultadosFiltrados.length / FLIPPER_AUTO_POR_PAGINA);
+  if (pagina < 1 || pagina > totalPaginas) return;
+  flipperAutoPagina = pagina;
+  renderFlipperAutoPagina();
+  renderFlipperAutoPagination();
+  document.getElementById('flipTableBody')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ========== FASE 10: FLIPPER AUTOMÁTICO ==========
 let flipperAutoResultados = [];
 let flipperAutoResultadosFiltrados = [];
