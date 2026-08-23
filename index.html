@@ -1377,6 +1377,15 @@ async function scanBlackMarket(){
   const isPremium = document.getElementById('bmPremiumToggle').classList.contains('active');
   const taxa = isPremium ? 0.04 : 0.08;
   const results = [];
+async function scanBlackMarket(){
+  setLoading(true);
+  const itemIds = Object.keys(ITEMS).slice(0,40);
+  const {data, fromCache} = await apiGetPrices(itemIds, 'Caerleon,Bridgewatch,Fort Sterling,Lymhurst,Martlock,Thetford', '1');
+  setLoading(false);
+  
+  const isPremium = document.getElementById('bmPremiumToggle').classList.contains('active');
+  const taxa = isPremium ? 0.04 : 0.08;
+  const results = [];
   
   const bmPrices = {};
   const cityPrices = {};
@@ -1397,10 +1406,13 @@ async function scanBlackMarket(){
       const lucro = bmPrice * (1 - taxa - 0.025) - sellPrice;
       if(lucro > 0){
         results.push({
-          item: ITEMS[itemId] || {nome:itemId, icon:'', tier:4, categoria:'
-          '?'},
-          itemId, city, sellPrice, bmPrice,
-          lucro, margem: (lucro/sellPrice)*100,
+          item: ITEMS[itemId] || {nome:itemId, icon:'', tier:4, categoria:'?'},
+          itemId: itemId,
+          city: city,
+          sellPrice: sellPrice,
+          bmPrice: bmPrice,
+          lucro: lucro,
+          margem: (lucro/sellPrice)*100,
           timestamp: Date.now()
         });
       }
@@ -1443,7 +1455,32 @@ function filtrarBM(){
       </div>
     </div>
   `).join('');
-}
+}    if(r.lucro < bmMinProfit) return false;
+    if(filtro && !r.item.nome.toLowerCase().includes(filtro)) return false;
+    return true;
+  };
+  
+  const grid = document.getElementById('bmGrid');
+  if(!filtrados.length){
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Nenhuma oportunidade encontrada</p><span>Tente ajustar o filtro de lucro mínimo</span></div>';
+    return;
+  }
+  
+  grid.innerHTML = filtrados.map(r=>`
+    <div class="bm-card">
+      <div class="bm-card-header">
+        <div class="bm-card-name"><img src="${r.item.icon}" class="item-icon-sm" onerror="this.style.display='none'"><span>${r.item.nome}</span></div>
+        <span class="tier-badge">T${r.item.tier}</span>
+      </div>
+      <div class="bm-price-row"><span class="label">Comprar em ${r.city}</span><span class="value price-buy">${formatSilverFull(r.sellPrice)}</span></div>
+      <div class="bm-price-row"><span class="label">Vender BM</span><span class="value price-bm">${formatSilverFull(r.bmPrice)}</span></div>
+      <div class="bm-card-footer">
+        <span class="label" style="font-size:12px;color:var(--gray);">Lucro líquido</span>
+        <div><span class="bm-profit">+${formatSilverFull(Math.floor(r.lucro))}</span><span class="bm-profit-pct">${r.margem.toFixed(1)}%</span></div>
+      </div>
+    </div>
+  `).join('');
+
 
 // ==================== CRAFT & REFINO ====================
 function switchCraftTab(tab){
