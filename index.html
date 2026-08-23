@@ -188,273 +188,11 @@
   background: rgba(239,68,68,0.25);
 }
 
-
-.cache-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-.cache-badge.fresh {
-  background: rgba(74, 222, 128, 0.1);
-  color: #4ade80;
-  border: 1px solid rgba(74, 222, 128, 0.2);
-}
-.cache-badge.cached {
-  background: rgba(201, 168, 76, 0.1);
-  color: #c9a84c;
-  border: 1px solid rgba(201, 168, 76, 0.2);
-}
-.cache-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: inline-block;
-}
-.cache-dot.fresh { background: #4ade80; }
-.cache-dot.cached { background: #c9a84c; }
-
-
-/* ========== FASE 9: GRÁFICO DE HISTÓRICO ========== */
-.btn-historico {
-  margin-top: 16px;
-  width: 100%;
-  background: linear-gradient(135deg, #c9a84c 0%, #a88a3a 100%);
-  color: #0b0f19;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 12px rgba(201,168,76,0.2);
-}
-.btn-historico:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(201,168,76,0.3);
-}
-.btn-historico:active { transform: translateY(0); }
-
-.historico-container {
-  margin-top: 20px;
-  background: #111827;
-  border: 1px solid rgba(201,168,76,0.2);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-  animation: fadeInHist 0.4s ease;
-}
-.historico-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.historico-titulo {
-  font-family: 'Cinzel', serif;
-  color: #c9a84c;
-  font-size: 1.1rem;
-  margin: 0;
-}
-.historico-cidade-select {
-  background: #0b0f19;
-  border: 1px solid rgba(201,168,76,0.3);
-  color: #e5e7eb;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.historico-cidade-select:focus { border-color: #c9a84c; }
-.historico-svg-container {
-  width: 100%;
-  height: 340px;
-  background: #0b0f19;
-  border-radius: 8px;
-  position: relative;
-  overflow: visible;
-}
-.historico-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.historico-tooltip {
-  position: absolute;
-  background: rgba(17,24,39,0.95);
-  border: 1px solid rgba(201,168,76,0.3);
-  border-radius: 6px;
-  padding: 8px 12px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  font-size: 0.8rem;
-  color: #e5e7eb;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  white-space: nowrap;
-}
-.historico-tooltip.visible { opacity: 1; }
-.historico-legenda {
-  display: flex;
-  gap: 24px;
-  margin-top: 14px;
-  font-size: 0.85rem;
-  color: #9ca3af;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.legenda-item { display: flex; align-items: center; gap: 8px; }
-.legenda-linha {
-  width: 24px;
-  height: 3px;
-  border-radius: 2px;
-}
-.legenda-linha.preco { background: #c9a84c; }
-.legenda-linha.media {
-  background: transparent;
-  border-top: 2px dashed #4ade80;
-  height: 0;
-}
-.historico-info {
-  margin-top: 12px;
-  text-align: center;
-  font-size: 0.85rem;
-  color: #6b7280;
-}
-.preco-area {
-  fill: rgba(201,168,76,0.08);
-  stroke: none;
-}
-.preco-line {
-  fill: none;
-  stroke: #c9a84c;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.media-line {
-  fill: none;
-  stroke: #4ade80;
-  stroke-width: 2;
-  stroke-dasharray: 6,4;
-  stroke-linecap: round;
-}
-.grid-line {
-  stroke: rgba(255,255,255,0.06);
-  stroke-width: 1;
-}
-.axis-line {
-  stroke: rgba(255,255,255,0.25);
-  stroke-width: 1;
-}
-.axis-text {
-  fill: #6b7280;
-  font-size: 11px;
-  font-family: 'Inter', sans-serif;
-}
-.data-point {
-  fill: #c9a84c;
-  stroke: #0b0f19;
-  stroke-width: 2;
-  r: 4;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.data-point:hover {
-  r: 6;
-  fill: #fbbf24;
-  stroke-width: 3;
-}
-.tendencia-alta { color: #4ade80; font-weight: 600; }
-.tendencia-baixa { color: #ef4444; font-weight: 600; }
-.historico-empty {
-  text-align: center;
-  color: #6b7280;
-  padding: 60px 20px;
-  font-style: italic;
-}
-@keyframes fadeInHist {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ========== FASE 11: EXPORTAR DADOS ========== */
-.export-bar {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  margin-bottom: 8px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-.btn-export {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(201, 168, 76, 0.1);
-  color: #c9a84c;
-  border: 1px solid rgba(201, 168, 76, 0.25);
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-export:hover {
-  background: rgba(201, 168, 76, 0.2);
-  border-color: rgba(201, 168, 76, 0.4);
-}
-.btn-export:active {
-  transform: scale(0.97);
-}
-.btn-export.copied {
-  background: rgba(74, 222, 128, 0.15);
-  color: #4ade80;
-  border-color: rgba(74, 222, 128, 0.3);
-}
-.export-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: #111827;
-  border: 1px solid rgba(201, 168, 76, 0.3);
-  color: #c9a84c;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  z-index: 9999;
-  opacity: 0;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  pointer-events: none;
-}
-.export-toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
 </style>
 <base target="_blank">
-
 <base target="_blank">
 </head>
 <body>
-<div id="exportToast" class="export-toast"></div>
-
 
 <!-- Loading -->
 <div class="loading-overlay" id="loading">
@@ -606,15 +344,6 @@
       </tbody>
     </table>
   </div>
-
-  <div class="export-bar" id="flipExportBar" style="display:none;">
-    <button class="btn-export" onclick="exportarFlipper('texto')">📋 Copiar Texto</button>
-    <button class="btn-export" onclick="exportarFlipper('csv')">📥 Baixar CSV</button>
-  </div>
-
-  <div style="text-align:right;margin-top:8px;padding:0 16px;">
-    <span id="flipCacheBadge"></span>
-  </div>
 </div>
 
 <!-- ==================== BUSCAR ITEM ==================== -->
@@ -654,50 +383,9 @@
       </div>
     </div>
   </div>
-
-  <div id="buscarHistoricoWrapper" style="display:none; margin-top:20px; padding:0 24px;">
-    <button class="btn-historico" id="btnHistorico" onclick="carregarHistorico()">
-      📈 Histórico de Preços
-    </button>
-    <div id="historicoContainer" class="historico-container" style="display:none;">
-      <div class="historico-header">
-        <h3 class="historico-titulo">📈 Histórico — <span id="historicoItemNome">Item</span></h3>
-        <select id="historicoCidadeSelect" class="historico-cidade-select" onchange="trocarCidadeHistorico()">
-          <option value="Bridgewatch">Bridgewatch</option>
-          <option value="Caerleon">Caerleon</option>
-          <option value="Fort Sterling">Fort Sterling</option>
-          <option value="Lymhurst">Lymhurst</option>
-          <option value="Martlock">Martlock</option>
-          <option value="Thetford">Thetford</option>
-          <option value="Brecilien">Brecilien</option>
-        </select>
-      </div>
-      <div class="historico-svg-container" id="historicoSvgContainer">
-        <svg id="historicoSvg" class="historico-svg" viewBox="0 0 800 340" preserveAspectRatio="xMidYMid meet">
-          <text x="400" y="170" text-anchor="middle" fill="#6b7280" font-size="14" font-family="Inter, sans-serif">
-            Selecione um item e clique em "📈 Histórico de Preços"
-          </text>
-        </svg>
-        <div id="historicoTooltip" class="historico-tooltip"></div>
-      </div>
-      <div class="historico-legenda">
-        <div class="legenda-item">
-          <div class="legenda-linha preco"></div>
-          <span>Preço Mín. Venda</span>
-        </div>
-        <div class="legenda-item">
-          <div class="legenda-linha media"></div>
-          <span>Média Móvel 7 dias</span>
-        </div>
-      </div>
-      <div id="historicoInfo" class="historico-info"></div>
-    </div>
-  </div>
 </div>
 
-
-  <!-- FASE 9: Gráfico de Histórico -->
-  <!-- ==================== BLACK MARKET ==================== -->
+<!-- ==================== BLACK MARKET ==================== -->
 <div class="page" id="page-blackmarket">
   <section class="hero-section" style="padding:32px 24px 24px;">
     <div class="hero-bg" style="opacity:0.25;"></div>
@@ -725,21 +413,12 @@
     </div>
   </div>
 
-  <div style="text-align:right;margin-bottom:8px;">
-    <span id="bmCacheBadge"></span>
-  </div>
   <div class="bm-grid" id="bmGrid">
     <div class="empty-state" style="grid-column:1/-1;">
       <p>Clique em <strong>Escanear</strong> para buscar oportunidades no Black Market</p>
       <span>Buscando dados reais da Albion Online Data Project</span>
     </div>
   </div>
-
-  <div class="export-bar" id="bmExportBar" style="display:none;">
-    <button class="btn-export" onclick="exportarBlackMarket('texto')">📋 Copiar Texto</button>
-    <button class="btn-export" onclick="exportarBlackMarket('csv')">📥 Baixar CSV</button>
-  </div>
-
 
   <div style="text-align:center; margin-top:20px;">
     <button class="btn-primary" onclick="scanBlackMarket()">
@@ -944,9 +623,6 @@
 
     </div>
     <div class="result-panel" id="refinoResultado">
-      <div style="text-align:right;margin-bottom:8px;">
-        <span id="refinoCacheBadge"></span>
-      </div>
       <div class="result-header">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <h3>Resultado do Refino</h3>
@@ -981,12 +657,6 @@
       <p class="result-note" id="refinoNota">Configure os valores e clique em calcular</p>
     </div>
   </div>
-
-      <div class="export-bar" id="refinoExportBar" style="display:none;">
-        <button class="btn-export" onclick="exportarRefino('texto')">📋 Copiar Texto</button>
-        <button class="btn-export" onclick="exportarRefino('csv')">📥 Baixar CSV</button>
-      </div>
-
 
   <!-- CRAFT -->
   <div class="craft-layout" id="craftCraftPanel" style="display:none;">
@@ -1125,17 +795,8 @@
   </div>
 </div>
 
-      <div class="export-bar" id="craftExportBar" style="display:none;">
-        <button class="btn-export" onclick="exportarCraft('texto')">📋 Copiar Texto</button>
-        <button class="btn-export" onclick="exportarCraft('csv')">📥 Baixar CSV</button>
-      </div>
-
-
 <footer class="footer">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-    <span>SilverForge — Ferramenta não oficial para Albion Online. Dados via <a href="https://www.albion-online-data.com/" target="_blank">Albion Online Data Project</a>.</span>
-    <button class="btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="limparCache()">🗑️ Limpar Cache</button>
-  </div>
+  SilverForge — Ferramenta não oficial para Albion Online. Dados via <a href="https://www.albion-online-data.com/" target="_blank">Albion Online Data Project</a>.
 </footer>
 
 <script>
@@ -1232,95 +893,6 @@ function escapeHtml(text) {
 function getItemIconUrl(id) {
   return 'https://render.albiononline.com/v1/item/' + id + '.png';
 }
-
-// ===== FASE 8: Cache Local =====
-const CACHE_TTL_MS = 300000; // 5 minutos
-const CACHE_PREFIX = 'sf_cache_';
-
-function getCacheKey(itemIds, locations, qualities) {
-  const ids = Array.isArray(itemIds) ? itemIds.sort().join(',') : itemIds;
-  const locs = Array.isArray(locations) ? locations.sort().join(',') : locations;
-  const quals = Array.isArray(qualities) ? qualities.sort().join(',') : (qualities || '1');
-  return CACHE_PREFIX + btoa(ids + '|' + locs + '|' + quals).replace(/[^a-zA-Z0-9]/g, '');
-}
-
-function setCache(key, data) {
-  try {
-    const entry = { timestamp: Date.now(), data: data };
-    localStorage.setItem(key, JSON.stringify(entry));
-  } catch (e) {
-    // localStorage pode estar cheio — limpar entradas antigas
-    limparCacheAntigo();
-  }
-}
-
-function getCache(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const entry = JSON.parse(raw);
-    if (!entry || !entry.timestamp || !entry.data) return null;
-    if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return entry.data;
-  } catch (e) {
-    return null;
-  }
-}
-
-function isCacheValid(key) {
-  return getCache(key) !== null;
-}
-
-function limparCache() {
-  try {
-    const keys = Object.keys(localStorage);
-    let count = 0;
-    keys.forEach(k => {
-      if (k.startsWith(CACHE_PREFIX)) {
-        localStorage.removeItem(k);
-        count++;
-      }
-    });
-    console.log('Cache limpo:', count, 'entradas removidas');
-    // Atualizar badges visuais
-    document.querySelectorAll('.cache-badge').forEach(el => {
-      el.className = 'cache-badge fresh';
-      el.innerHTML = '<span class="cache-dot fresh"></span>Fresco';
-    });
-  } catch (e) {
-    console.warn('Erro ao limpar cache:', e);
-  }
-}
-
-function limparCacheAntigo() {
-  try {
-    const keys = Object.keys(localStorage);
-    keys.forEach(k => {
-      if (k.startsWith(CACHE_PREFIX)) {
-        const raw = localStorage.getItem(k);
-        if (raw) {
-          try {
-            const entry = JSON.parse(raw);
-            if (entry && entry.timestamp && (Date.now() - entry.timestamp > CACHE_TTL_MS)) {
-              localStorage.removeItem(k);
-            }
-          } catch (e) {}
-        }
-      }
-    });
-  } catch (e) {}
-}
-
-function getCacheBadgeHTML(isCached) {
-  if (isCached) {
-    return '<span class="cache-badge cached"><span class="cache-dot cached"></span>Cache</span>';
-  }
-  return '<span class="cache-badge fresh"><span class="cache-dot fresh"></span>Fresco</span>';
-}
-
 async function fetchPrices(items, locations, qualities) {
   if (!items || !items.length) return [];
   const locStr = locations.join(',');
@@ -1329,14 +901,6 @@ async function fetchPrices(items, locations, qualities) {
   const allData = [];
   
   const delay = ms => new Promise(r => setTimeout(r, ms));
-  
-  // FASE 8: Verificar cache antes de bater na API
-  const cacheKey = getCacheKey(items, locations, qualities);
-  const cached = getCache(cacheKey);
-  if (cached && Array.isArray(cached)) {
-    console.log('Cache hit:', cacheKey.substring(0, 20) + '...');
-    return cached;
-  }
   
   for (let i = 0; i < items.length; i += chunkSize) {
     const chunk = items.slice(i, i + chunkSize);
@@ -1361,12 +925,6 @@ async function fetchPrices(items, locations, qualities) {
     }
     if (lastError) console.warn('Fetch failed after 3 attempts:', lastError.message);
   }
-  
-  // FASE 8: Salvar no cache
-  if (allData.length > 0) {
-    setCache(cacheKey, allData);
-  }
-  
   return allData;
 }
 
@@ -1821,21 +1379,10 @@ async function scanFlips() {
     tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Erro ao buscar dados da API</p><span>Verifique sua conexão ou tente novamente mais tarde</span></div></td></tr>';
   } finally {
     setLoading(false);
-    const badge = document.getElementById('flipCacheBadge');
-    if (badge) {
-      const itemInput = document.getElementById('flipItemInput').value.trim();
-      const quality = parseInt(document.getElementById('flipQuality').value) || 1;
-      const items = itemInput ? [traduzirParaId(itemInput)] : ITENS_FLIPPER;
-      const allCities = [...new Set([...(fromCity === 'Todas' ? CIDADES_COM_BRECILIEN : [fromCity]), ...(toCity === 'Todas' ? CIDADES_COM_BRECILIEN : [toCity])])];
-      badge.innerHTML = getCacheBadgeHTML(isCacheValid(getCacheKey(items, allCities, [quality])));
-    }
   }
 }
 
 function renderFlipResults(oportunidades, tax) {
-  flipperResultadosAtual = oportunidades;
-  const exportBar = document.getElementById('flipExportBar');
-  if (exportBar) exportBar.style.display = oportunidades.length > 0 ? 'flex' : 'none';
   const tbody = document.getElementById('flipTableBody');
 
   if (oportunidades.length > 0) {
@@ -1937,7 +1484,6 @@ function selecionarBuscarSugestao(texto) {
 
 async function selecionarBuscarItem(itemId) {
   buscarItemSelecionado = itemId;
-  limparHistorico();
   initBuscar();
 
   const detalhes = document.getElementById('buscarDetalhes');
@@ -1960,7 +1506,6 @@ async function selecionarBuscarItem(itemId) {
     let maiorCompra = 0;
     let bmPrice = 0;
 
-    buscarResultadosAtual = { cidades: [], bmPrice: 0, quality: quality };
     const cidadesRows = CIDADES_COM_BRECILIEN.map(cidade => {
       const p = prices[cidade];
       const vendaMin = p?.sell || 0;
@@ -1981,12 +1526,6 @@ async function selecionarBuscarItem(itemId) {
     // Black Market
     const bm = prices[BLACK_MARKET];
     if (bm && bm.sell > 0) bmPrice = bm.sell;
-    if (buscarResultadosAtual) {
-      buscarResultadosAtual.cidades = cidadesRows;
-      buscarResultadosAtual.bmPrice = bmPrice;
-    }
-    const exportBar = document.getElementById('buscarExportBar');
-    if (exportBar) exportBar.style.display = 'flex';
 
     if (menorVenda === Infinity) menorVenda = 0;
 
@@ -2014,7 +1553,6 @@ async function selecionarBuscarItem(itemId) {
             '<div class="price-summary-value" style="color:var(--gold);">' + formatSilverFull(bmPrice) + '</div>' +
           '</div>' +
         '</div>' +
-        '<div style="text-align:right;margin-bottom:8px;">' + getCacheBadgeHTML(isCacheValid(getCacheKey([itemId], allLocations, [quality]))) + '</div>' +
         '<table class="data-table">' +
           '<thead><tr><th>Cidade</th><th>Venda Min.</th><th>Compra Max.</th><th>Volume</th><th>Atualizado</th></tr></thead>' +
           '<tbody>' +
@@ -2029,14 +1567,7 @@ async function selecionarBuscarItem(itemId) {
           }).join('') +
           '</tbody>' +
         '</table>' +
-
-        <div class="export-bar" id="buscarExportBar" style="display:none;">
-          <button class="btn-export" onclick="exportarBuscarItem('texto')">📋 Copiar Texto</button>
-          <button class="btn-export" onclick="exportarBuscarItem('csv')">📥 Baixar CSV</button>
-        </div>
-
       '</div>';
-    configurarHistorico(itemId, quality);
   } catch (e) {
     console.error(e);
     detalhes.innerHTML = '<div class="empty-state"><p>Erro ao buscar dados</p><span>Verifique sua conexão com a internet</span></div>';
@@ -2156,11 +1687,6 @@ async function scanBlackMarket() {
     resultados.sort((a, b) => b.lucro - a.lucro);
     bmDataCache = resultados;
     filtrarBM();
-    const badge = document.getElementById('bmCacheBadge');
-    if (badge) {
-      const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
-      badge.innerHTML = getCacheBadgeHTML(isCacheValid(getCacheKey(ITENS_BLACK_MARKET, allLocations, [1])));
-    }
   } catch (e) {
     console.error('BM Erro:', e);
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Erro ao buscar dados do Black Market</p><span>Detalhes no console (F12) — Verifique sua conexão</span></div>';
@@ -2169,7 +1695,6 @@ async function scanBlackMarket() {
 
 function filtrarBM() {
   const grid = document.getElementById('bmGrid');
-  const exportBar = document.getElementById('bmExportBar');
   const filtro = document.getElementById('bmFilterInput').value.toLowerCase().trim();
 
   let itens = bmDataCache;
@@ -2182,10 +1707,8 @@ function filtrarBM() {
 
   if (!itens.length) {
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Nenhuma oportunidade encontrada</p><span>Ajuste o filtro ou clique em Escanear para buscar dados</span></div>';
-    if (exportBar) exportBar.style.display = 'none';
     return;
   }
-  if (exportBar) exportBar.style.display = 'flex';
 
   grid.innerHTML = itens.map(i => {
     const dotClass = i.updated === 'Agora' ? 'dot-green' : (parseInt(i.updated) < 60 ? 'dot-yellow' : 'dot-red');
@@ -2357,14 +1880,6 @@ async function buscarPrecosRefino() {
     if (precoRefinado > 0) document.getElementById('refinoPrecoRefinado').value = precoRefinado;
     if (precoTierAnterior > 0) document.getElementById('refinoPrecoTierAnterior').value = precoTierAnterior;
     if (precoBruto > 0 || precoRefinado > 0 || precoTierAnterior > 0) calcularRefino();
-    const badge = document.getElementById('refinoCacheBadge');
-    if (badge) {
-      const ids = [idBruto, idRefinado];
-      if (idTierAnterior) ids.push(idTierAnterior);
-      const locs = [cidadeBruto, cidadeVenda];
-      if (cidadeTierAnterior) locs.push(cidadeTierAnterior);
-      badge.innerHTML = getCacheBadgeHTML(isCacheValid(getCacheKey(ids, [...new Set(locs)], [1])));
-    }
   } catch (e) {
     console.warn('Erro em buscarPrecosRefino:', e);
     const btn = document.getElementById('btnBuscarRefino');
@@ -2584,10 +2099,6 @@ async function buscarMelhorPrecoVendaRefino() {
   grid.innerHTML = html;
   btn.disabled = false;
   btnText.textContent = '🔍 Ver preço de venda em todas as cidades';
-  const badge = document.getElementById('refinoCacheBadge');
-  if (badge) {
-    badge.innerHTML = getCacheBadgeHTML(false); // Sempre fresco após busca manual
-  }
 }
 
 // ===== FASE 7: Scan Automático de Rotas =====
@@ -2814,8 +2325,6 @@ function renderTopRotas(rotas, totalAnalisadas) {
 
 function calcularRefino() {
   try {
-    const exportBar = document.getElementById('refinoExportBar');
-    if (exportBar) exportBar.style.display = 'flex';
     const tipo = document.getElementById('refinoReceita').value;
     const tier = parseInt(document.getElementById('refinoTier').value);
     const rec = REFINO_RECEITAS[tipo];
@@ -2889,8 +2398,6 @@ function calcularRefino() {
 }
 
 function calcularCraft() {
-  const exportBar = document.getElementById('craftExportBar');
-  if (exportBar) exportBar.style.display = 'flex';
   const precoVenda = parseFloat(document.getElementById('craftPrecoVenda').value) || 0;
   const quantidade = parseFloat(document.getElementById('craftQuantidade').value) || 0;
   const rrr = parseFloat(document.getElementById('craftRRR').value) || 0;
@@ -3093,531 +2600,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-
-
-/* ========== FASE 9: GRÁFICO DE HISTÓRICO ========== */
-let historicoItemId = null;
-let historicoQualidade = 1;
-let historicoDadosAtual = [];
-let historicoCidadeAtual = 'Bridgewatch';
-
-function formatarPrataSVG(valor) {
-  if (valor >= 1000000) return (valor / 1000000).toFixed(1) + 'M';
-  if (valor >= 1000) return (valor / 1000).toFixed(1) + 'k';
-  return Math.round(valor).toString();
-}
-
-function calcularMediaMovel(dados, periodo) {
-  const resultado = [];
-  for (let i = 0; i < dados.length; i++) {
-    if (i < periodo - 1) { resultado.push(null); continue; }
-    let soma = 0;
-    for (let j = 0; j < periodo; j++) soma += dados[i - j].preco;
-    resultado.push(soma / periodo);
-  }
-  return resultado;
-}
-
-function renderizarGraficoHistorico(dados, cidade) {
-  const svg = document.getElementById('historicoSvg');
-  const tooltip = document.getElementById('historicoTooltip');
-  const container = document.getElementById('historicoSvgContainer');
-  const info = document.getElementById('historicoInfo');
-  if (!svg || !dados || dados.length === 0) return;
-
-  svg.innerHTML = '';
-  if (tooltip) tooltip.classList.remove('visible');
-
-  const width = 800;
-  const height = 340;
-  const padding = { top: 20, right: 40, bottom: 50, left: 70 };
-  const chartW = width - padding.left - padding.right;
-  const chartH = height - padding.top - padding.bottom;
-
-  // Usar últimos 30 dias no máximo
-  const pontos = dados.slice(-30);
-  const mediaMovel = calcularMediaMovel(pontos, 7);
-
-  const precos = pontos.map(d => d.preco);
-  const minP = Math.min(...precos) * 0.98;
-  const maxP = Math.max(...precos) * 1.02;
-  const range = maxP - minP || 1;
-
-  const xScale = i => padding.left + (i / Math.max(pontos.length - 1, 1)) * chartW;
-  const yScale = p => padding.top + chartH - ((p - minP) / range) * chartH;
-
-  // Área sob a curva
-  let areaD = 'M ' + xScale(0) + ' ' + (padding.top + chartH);
-  for (let i = 0; i < pontos.length; i++) areaD += ' L ' + xScale(i) + ' ' + yScale(pontos[i].preco);
-  areaD += ' L ' + xScale(pontos.length - 1) + ' ' + (padding.top + chartH) + ' Z';
-  const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  area.setAttribute('d', areaD);
-  area.setAttribute('class', 'preco-area');
-  svg.appendChild(area);
-
-  // Grid horizontal + labels Y
-  for (let i = 0; i <= 5; i++) {
-    const y = padding.top + (i / 5) * chartH;
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', padding.left);
-    line.setAttribute('y1', y);
-    line.setAttribute('x2', padding.left + chartW);
-    line.setAttribute('y2', y);
-    line.setAttribute('class', 'grid-line');
-    svg.appendChild(line);
-
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', padding.left - 10);
-    text.setAttribute('y', y + 4);
-    text.setAttribute('text-anchor', 'end');
-    text.setAttribute('class', 'axis-text');
-    text.textContent = formatarPrataSVG(maxP - (i / 5) * range);
-    svg.appendChild(text);
-  }
-
-  // Linha do preço
-  let pathD = 'M ' + xScale(0) + ' ' + yScale(pontos[0].preco);
-  for (let i = 1; i < pontos.length; i++) pathD += ' L ' + xScale(i) + ' ' + yScale(pontos[i].preco);
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', pathD);
-  path.setAttribute('class', 'preco-line');
-  svg.appendChild(path);
-
-  // Linha média móvel
-  let mediaD = '';
-  let primeiro = true;
-  for (let i = 0; i < pontos.length; i++) {
-    if (mediaMovel[i] !== null) {
-      const cmd = primeiro ? 'M' : 'L';
-      mediaD += ' ' + cmd + ' ' + xScale(i) + ' ' + yScale(mediaMovel[i]);
-      primeiro = false;
-    }
-  }
-  if (mediaD) {
-    const mPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    mPath.setAttribute('d', mediaD);
-    mPath.setAttribute('class', 'media-line');
-    svg.appendChild(mPath);
-  }
-
-  // Eixos
-  const eixoX = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  eixoX.setAttribute('x1', padding.left); eixoX.setAttribute('y1', padding.top + chartH);
-  eixoX.setAttribute('x2', padding.left + chartW); eixoX.setAttribute('y2', padding.top + chartH);
-  eixoX.setAttribute('class', 'axis-line');
-  svg.appendChild(eixoX);
-
-  const eixoY = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  eixoY.setAttribute('x1', padding.left); eixoY.setAttribute('y1', padding.top);
-  eixoY.setAttribute('x2', padding.left); eixoY.setAttribute('y2', padding.top + chartH);
-  eixoY.setAttribute('class', 'axis-line');
-  svg.appendChild(eixoY);
-
-  // Labels X (datas)
-  const step = Math.max(1, Math.floor(pontos.length / 6));
-  for (let i = 0; i < pontos.length; i += step) {
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', xScale(i));
-    text.setAttribute('y', padding.top + chartH + 28);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('class', 'axis-text');
-    const dt = new Date(pontos[i].data);
-    text.textContent = String(dt.getDate()).padStart(2, '0') + '/' + String(dt.getMonth() + 1).padStart(2, '0');
-    svg.appendChild(text);
-  }
-
-  // Pontos interativos
-  pontos.forEach((p, i) => {
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', xScale(i));
-    circle.setAttribute('cy', yScale(p.preco));
-    circle.setAttribute('class', 'data-point');
-
-    circle.addEventListener('mouseenter', (e) => {
-      if (!tooltip || !container) return;
-      const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      tooltip.style.left = Math.min(x + 12, rect.width - 150) + 'px';
-      tooltip.style.top = Math.max(y - 50, 0) + 'px';
-      const dataStr = new Date(p.data).toLocaleDateString('pt-BR');
-      const mediaStr = mediaMovel[i] ? '<br>Média 7d: <span style="color:#4ade80">' + formatarPrataSVG(mediaMovel[i]) + '</span>' : '';
-      tooltip.innerHTML = '<strong>' + dataStr + '</strong><br>Min: <span style="color:#c9a84c">' + formatarPrataSVG(p.preco) + '</span>' + mediaStr;
-      tooltip.classList.add('visible');
-    });
-
-    circle.addEventListener('mouseleave', () => tooltip && tooltip.classList.remove('visible'));
-    svg.appendChild(circle);
-  });
-
-  // Info tendência
-  if (info && pontos.length >= 2) {
-    const primeiro = pontos[0].preco;
-    const ultimo = pontos[pontos.length - 1].preco;
-    const variacao = ((ultimo - primeiro) / primeiro) * 100;
-    const seta = variacao >= 0 ? '▲' : '▼';
-    const classe = variacao >= 0 ? 'tendencia-alta' : 'tendencia-baixa';
-    info.innerHTML = 'Variação em <strong>' + cidade + '</strong>: <span class="' + classe + '">' + seta + ' ' + Math.abs(variacao).toFixed(1) + '%</span> &nbsp;|&nbsp; Período: ' + pontos.length + ' dias &nbsp;|&nbsp; Dados: <span style="color:#c9a84c">Albion Data Project</span>';
-  }
-}
-
-async function buscarHistoricoPrecos(itemId, cidade, qualidade) {
-  const url = 'https://west.albion-online-data.com/api/v2/stats/history/' + itemId + '.json?locations=' + encodeURIComponent(cidade) + '&qualities=' + qualidade + '&time-scale=24';
-  try {
-    setLoading(true, 'Buscando histórico em ' + cidade + '...');
-
-    // Verificar cache
-    const cacheKey = getCacheKey(['hist_' + itemId], [cidade], [qualidade]);
-    const cached = getCache(cacheKey);
-    if (cached && Array.isArray(cached) && cached.length > 0) {
-      setLoading(false);
-      return cached;
-    }
-
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Erro ' + res.status);
-    const json = await res.json();
-    setLoading(false);
-
-    if (!json || json.length === 0 || !json[0].data) {
-      mostrarErroHistorico('Sem dados históricos para este item/cidade.');
-      return [];
-    }
-
-    const dados = json[0].data
-      .map(d => ({ data: d.timestamp, preco: d.min_price || d.avg_price || 0, volume: d.item_count || 0 }))
-      .filter(d => d.preco > 0)
-      .sort((a, b) => new Date(a.data) - new Date(b.data));
-
-    // Salvar cache
-    if (dados.length > 0) {
-      setCache(cacheKey, dados);
-    }
-
-    return dados;
-  } catch (e) {
-    setLoading(false);
-    mostrarErroHistorico('Falha ao buscar histórico. Verifique sua conexão.');
-    return [];
-  }
-}
-
-function mostrarErroHistorico(msg) {
-  const svg = document.getElementById('historicoSvg');
-  const info = document.getElementById('historicoInfo');
-  if (svg) svg.innerHTML = '<text x="400" y="170" text-anchor="middle" fill="#6b7280" font-size="14" font-family="Inter, sans-serif">' + msg + '</text>';
-  if (info) info.innerHTML = '';
-}
-
-async function carregarHistorico() {
-  if (!historicoItemId) return;
-  const cidade = document.getElementById('historicoCidadeSelect')?.value || 'Bridgewatch';
-  historicoCidadeAtual = cidade;
-  const container = document.getElementById('historicoContainer');
-  if (container) container.style.display = 'block';
-  const dados = await buscarHistoricoPrecos(historicoItemId, cidade, historicoQualidade);
-  historicoDadosAtual = dados;
-  renderizarGraficoHistorico(dados, cidade);
-  container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-async function trocarCidadeHistorico() {
-  if (!historicoItemId) return;
-  const cidade = document.getElementById('historicoCidadeSelect')?.value || 'Bridgewatch';
-  historicoCidadeAtual = cidade;
-  const dados = await buscarHistoricoPrecos(historicoItemId, cidade, historicoQualidade);
-  historicoDadosAtual = dados;
-  renderizarGraficoHistorico(dados, cidade);
-}
-
-function configurarHistorico(itemId, qualidade) {
-  historicoItemId = itemId;
-  historicoQualidade = qualidade || 1;
-
-  const wrapper = document.getElementById('buscarHistoricoWrapper');
-  const container = document.getElementById('historicoContainer');
-  const nomeEl = document.getElementById('historicoItemNome');
-  const svg = document.getElementById('historicoSvg');
-  const info = document.getElementById('historicoInfo');
-
-  if (nomeEl) nomeEl.textContent = getNomeItem(itemId, qualidade);
-  if (wrapper) wrapper.style.display = 'block';
-  if (container) container.style.display = 'none';
-
-  if (svg) {
-    svg.innerHTML = '<text x="400" y="170" text-anchor="middle" fill="#6b7280" font-size="14" font-family="Inter, sans-serif">Clique em "📈 Histórico de Preços" para carregar o gráfico</text>';
-  }
-  if (info) info.innerHTML = '';
-}
-
-function limparHistorico() {
-  historicoItemId = null;
-  historicoQualidade = 1;
-  historicoDadosAtual = [];
-  const wrapper = document.getElementById('buscarHistoricoWrapper');
-  const container = document.getElementById('historicoContainer');
-  if (wrapper) wrapper.style.display = 'none';
-  if (container) container.style.display = 'none';
-}
-
-
-/* ========== FASE 11: EXPORTAR DADOS ========== */
-
-function showExportToast(msg) {
-  const toast = document.getElementById('exportToast');
-  if (!toast) return;
-  toast.textContent = msg;
-  toast.classList.add('visible');
-  setTimeout(() => toast.classList.remove('visible'), 2000);
-}
-
-function baixarCSV(nomeArquivo, conteudo) {
-  const blob = new Blob([conteudo], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = nomeArquivo;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(link.href);
-}
-
-function copiarTexto(texto) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(texto).then(() => {
-      showExportToast('✅ Copiado para a área de transferência!');
-    }).catch(() => {
-      fallbackCopy(texto);
-    });
-  } else {
-    fallbackCopy(texto);
-  }
-}
-
-function fallbackCopy(texto) {
-  const ta = document.createElement('textarea');
-  ta.value = texto;
-  ta.style.position = 'fixed';
-  ta.style.left = '-9999px';
-  document.body.appendChild(ta);
-  ta.select();
-  try {
-    document.execCommand('copy');
-    showExportToast('✅ Copiado para a área de transferência!');
-  } catch (e) {
-    showExportToast('❌ Erro ao copiar. Tente baixar o CSV.');
-  }
-  document.body.removeChild(ta);
-}
-
-// ===== FLIPPER =====
-let flipperResultadosAtual = [];
-
-function exportarFlipper(tipo) {
-  if (!flipperResultadosAtual || flipperResultadosAtual.length === 0) {
-    showExportToast('Nenhum dado para exportar. Escaneie primeiro.');
-    return;
-  }
-  const dataStr = new Date().toLocaleDateString('pt-BR');
-  const horaStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-  if (tipo === 'csv') {
-    let csv = 'Item,Rota,Compra,Venda,Lucro,Margem,Atualizado\n';
-    flipperResultadosAtual.forEach(o => {
-      const nome = getNomeItem(o.itemId, o.quality).replace(/,/g, ' ');
-      csv += nome + ',' + o.fromCity + ' → ' + o.toCity + ',' + o.buy + ',' + o.sell + ',' + o.profit + ',' + (o.profitPct * 100).toFixed(1) + '%,' + o.updated + '\n';
-    });
-    baixarCSV('flipper_' + dataStr.replace(/\//g, '-') + '_' + horaStr.replace(/:/g, '-') + '.csv', csv);
-    showExportToast('📥 CSV baixado!');
-  } else {
-    let txt = '🏛️ SILVERFORGE — Flipper\nData: ' + dataStr + ' ' + horaStr + '\n\n';
-    txt += 'Item | Rota | Compra | Venda | Lucro | Margem\n';
-    txt += '—'.repeat(70) + '\n';
-    flipperResultadosAtual.forEach(o => {
-      const nome = getNomeItem(o.itemId, o.quality);
-      txt += nome + ' | ' + o.fromCity + ' → ' + o.toCity + ' | ' + formatSilver(o.buy) + ' | ' + formatSilver(o.sell) + ' | +' + formatSilver(o.profit) + ' | ' + (o.profitPct * 100).toFixed(1) + '%\n';
-    });
-    copiarTexto(txt);
-  }
-}
-
-// ===== BUSCAR ITEM =====
-let buscarResultadosAtual = null;
-
-function exportarBuscarItem(tipo) {
-  if (!buscarResultadosAtual || !buscarItemSelecionado) {
-    showExportToast('Nenhum dado para exportar. Busque um item primeiro.');
-    return;
-  }
-  const dataStr = new Date().toLocaleDateString('pt-BR');
-  const horaStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  const nome = getNomeItem(buscarItemSelecionado, buscarResultadosAtual.quality);
-
-  if (tipo === 'csv') {
-    let csv = 'Item: ' + nome.replace(/,/g, ' ') + '\nData: ' + dataStr + ' ' + horaStr + '\n\n';
-    csv += 'Cidade,Venda Min,Compra Max,Atualizado\n';
-    buscarResultadosAtual.cidades.forEach(c => {
-      csv += c.cidade + ',' + (c.vendaMin || '-') + ',' + (c.compraMax || '-') + ',' + c.updated + '\n';
-    });
-    if (buscarResultadosAtual.bmPrice > 0) {
-      csv += 'Black Market,' + buscarResultadosAtual.bmPrice + ',—,—\n';
-    }
-    baixarCSV('precos_' + buscarItemSelecionado + '_' + dataStr.replace(/\//g, '-') + '.csv', csv);
-    showExportToast('📥 CSV baixado!');
-  } else {
-    let txt = '🏛️ SILVERFORGE — Preços\n' + nome + '\nData: ' + dataStr + ' ' + horaStr + '\n\n';
-    txt += 'Cidade | Venda Min | Compra Max | Atualizado\n';
-    txt += '—'.repeat(50) + '\n';
-    buscarResultadosAtual.cidades.forEach(c => {
-      txt += c.cidade + ' | ' + (c.vendaMin > 0 ? formatSilver(c.vendaMin) : '-') + ' | ' + (c.compraMax > 0 ? formatSilver(c.compraMax) : '-') + ' | ' + c.updated + '\n';
-    });
-    if (buscarResultadosAtual.bmPrice > 0) {
-      txt += 'Black Market | ' + formatSilver(buscarResultadosAtual.bmPrice) + ' | — | —\n';
-    }
-    copiarTexto(txt);
-  }
-}
-
-// ===== BLACK MARKET =====
-function exportarBlackMarket(tipo) {
-  if (!bmDataCache || bmDataCache.length === 0) {
-    showExportToast('Nenhum dado para exportar. Escaneie primeiro.');
-    return;
-  }
-  const dataStr = new Date().toLocaleDateString('pt-BR');
-  const horaStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-  if (tipo === 'csv') {
-    let csv = 'Item,Comprar Em,Preço Compra,Preço BM,Lucro,Margem,Atualizado\n';
-    bmDataCache.forEach(i => {
-      const nome = i.nome.replace(/,/g, ' ');
-      csv += nome + ',' + i.comprarEm + ',' + i.precoCompra + ',' + i.precoBM + ',' + i.lucro + ',' + (i.lucroPct * 100).toFixed(1) + '%,' + i.updated + '\n';
-    });
-    baixarCSV('blackmarket_' + dataStr.replace(/\//g, '-') + '_' + horaStr.replace(/:/g, '-') + '.csv', csv);
-    showExportToast('📥 CSV baixado!');
-  } else {
-    let txt = '🏛️ SILVERFORGE — Black Market\nData: ' + dataStr + ' ' + horaStr + '\n\n';
-    txt += 'Item | Comprar Em | Preço | BM | Lucro | Margem\n';
-    txt += '—'.repeat(60) + '\n';
-    bmDataCache.forEach(i => {
-      txt += i.nome + ' | ' + i.comprarEm + ' | ' + formatSilver(i.precoCompra) + ' | ' + formatSilver(i.precoBM) + ' | +' + formatSilver(i.lucro) + ' | ' + (i.lucroPct * 100).toFixed(1) + '%\n';
-    });
-    copiarTexto(txt);
-  }
-}
-
-// ===== REFINO =====
-function exportarRefino(tipo) {
-  const custoTotal = document.getElementById('refinoCustoTotal')?.textContent;
-  const lucroTotal = document.getElementById('refinoLucroTotal')?.textContent;
-  if (!custoTotal || custoTotal === '-') {
-    showExportToast('Nenhum dado para exportar. Calcule primeiro.');
-    return;
-  }
-  const dataStr = new Date().toLocaleDateString('pt-BR');
-  const horaStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  const receita = document.getElementById('refinoReceita')?.value || '—';
-  const tier = document.getElementById('refinoTier')?.value || '—';
-  const cidade = document.getElementById('refinoCidade')?.value || '—';
-  const qtd = document.getElementById('refinoQuantidade')?.value || '—';
-  const rrr = document.getElementById('refinoRRR')?.value || '—';
-  const taxa = document.getElementById('refinoTaxaEstacao')?.value || '—';
-  const receitaBruta = document.getElementById('refinoReceitaBruta')?.textContent || '—';
-  const custoMP = document.getElementById('refinoCustoMP')?.textContent || '—';
-  const taxaVal = document.getElementById('refinoTaxa')?.textContent || '—';
-  const retorno = document.getElementById('refinoRetorno')?.textContent || '—';
-  const imposto = document.getElementById('refinoImposto')?.textContent || '—';
-  const lucroPct = document.getElementById('refinoLucroPct')?.textContent || '—';
-
-  if (tipo === 'csv') {
-    let csv = 'SilverForge — Resultado do Refino\n';
-    csv += 'Data,' + dataStr + ' ' + horaStr + '\n';
-    csv += 'Receita,' + receita + '\n';
-    csv += 'Tier,T' + tier + '\n';
-    csv += 'Cidade,' + cidade + '\n';
-    csv += 'Quantidade,' + qtd + '\n';
-    csv += 'RRR,' + rrr + '%\n';
-    csv += 'Taxa Estação,' + taxa + '\n\n';
-    csv += 'Item,Valor\n';
-    csv += 'Custo Total,' + custoTotal + '\n';
-    csv += 'Receita Bruta,' + receitaBruta + '\n';
-    csv += 'Custo Matéria-Prima,' + custoMP + '\n';
-    csv += 'Taxa da Estação,' + taxaVal + '\n';
-    csv += 'Retorno de Recursos,' + retorno + '\n';
-    csv += 'Imposto de Venda,' + imposto + '\n';
-    csv += 'Lucro Líquido,' + lucroTotal + '\n';
-    csv += 'Margem,' + lucroPct + '\n';
-    baixarCSV('refino_' + receita + '_T' + tier + '_' + dataStr.replace(/\//g, '-') + '.csv', csv);
-    showExportToast('📥 CSV baixado!');
-  } else {
-    let txt = '🏛️ SILVERFORGE — Resultado do Refino\n';
-    txt += 'Data: ' + dataStr + ' ' + horaStr + '\n';
-    txt += 'Receita: ' + receita + ' | Tier: T' + tier + ' | Cidade: ' + cidade + '\n';
-    txt += 'Quantidade: ' + qtd + ' | RRR: ' + rrr + '% | Taxa: ' + taxa + '\n\n';
-    txt += 'Custo Total: ' + custoTotal + '\n';
-    txt += 'Receita Bruta: ' + receitaBruta + '\n';
-    txt += 'Custo MP: ' + custoMP + '\n';
-    txt += 'Taxa Estação: ' + taxaVal + '\n';
-    txt += 'Retorno: ' + retorno + '\n';
-    txt += 'Imposto: ' + imposto + '\n';
-    txt += 'Lucro Líquido: ' + lucroTotal + ' ' + lucroPct + '\n';
-    copiarTexto(txt);
-  }
-}
-
-// ===== CRAFT =====
-function exportarCraft(tipo) {
-  const custoTotal = document.getElementById('craftCustoTotal')?.textContent;
-  const lucroTotal = document.getElementById('craftLucroTotal')?.textContent;
-  if (!custoTotal || custoTotal === '-') {
-    showExportToast('Nenhum dado para exportar. Calcule primeiro.');
-    return;
-  }
-  const dataStr = new Date().toLocaleDateString('pt-BR');
-  const horaStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  const itemNome = document.getElementById('craftItemInput')?.value || 'Craft';
-  const cidade = document.getElementById('craftCidade')?.value || '—';
-  const qtd = document.getElementById('craftQuantidade')?.value || '—';
-  const rrr = document.getElementById('craftRRR')?.value || '—';
-  const taxa = document.getElementById('craftTaxaEstacao')?.value || '—';
-  const receitaBruta = document.getElementById('craftReceitaBruta')?.textContent || '—';
-  const taxaVal = document.getElementById('craftTaxa')?.textContent || '—';
-  const retorno = document.getElementById('craftRetorno')?.textContent || '—';
-  const imposto = document.getElementById('craftImposto')?.textContent || '—';
-  const lucroPct = document.getElementById('craftLucroPct')?.textContent || '—';
-
-  if (tipo === 'csv') {
-    let csv = 'SilverForge — Resultado do Craft\n';
-    csv += 'Data,' + dataStr + ' ' + horaStr + '\n';
-    csv += 'Item,' + itemNome + '\n';
-    csv += 'Cidade,' + cidade + '\n';
-    csv += 'Quantidade,' + qtd + '\n';
-    csv += 'RRR,' + rrr + '%\n';
-    csv += 'Taxa Estação,' + taxa + '\n\n';
-    csv += 'Item,Valor\n';
-    csv += 'Custo Total,' + custoTotal + '\n';
-    csv += 'Receita Bruta,' + receitaBruta + '\n';
-    csv += 'Taxa da Estação,' + taxaVal + '\n';
-    csv += 'Retorno de Recursos,' + retorno + '\n';
-    csv += 'Imposto de Venda,' + imposto + '\n';
-    csv += 'Lucro Líquido,' + lucroTotal + '\n';
-    csv += 'Margem,' + lucroPct + '\n';
-    baixarCSV('craft_' + itemNome.replace(/\s+/g, '_') + '_' + dataStr.replace(/\//g, '-') + '.csv', csv);
-    showExportToast('📥 CSV baixado!');
-  } else {
-    let txt = '🏛️ SILVERFORGE — Resultado do Craft\n';
-    txt += 'Data: ' + dataStr + ' ' + horaStr + '\n';
-    txt += 'Item: ' + itemNome + ' | Cidade: ' + cidade + '\n';
-    txt += 'Quantidade: ' + qtd + ' | RRR: ' + rrr + '% | Taxa: ' + taxa + '\n\n';
-    txt += 'Custo Total: ' + custoTotal + '\n';
-    txt += 'Receita Bruta: ' + receitaBruta + '\n';
-    txt += 'Taxa Estação: ' + taxaVal + '\n';
-    txt += 'Retorno: ' + retorno + '\n';
-    txt += 'Imposto: ' + imposto + '\n';
-    txt += 'Lucro Líquido: ' + lucroTotal + ' ' + lucroPct + '\n';
-    copiarTexto(txt);
-  }
-}
 </script>
 </body>
 </html>
