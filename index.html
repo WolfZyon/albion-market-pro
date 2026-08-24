@@ -120,7 +120,6 @@
   flex-shrink: 0;
 }
 
-
 .rotas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -188,8 +187,130 @@
   background: rgba(239,68,68,0.25);
 }
 
+/* ===== FLIPPER AUTOMÁTICO v5.0 ===== */
+.flip-auto-filters {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(201,168,76,0.04);
+  border: 1px solid rgba(201,168,76,0.12);
+}
+.flip-auto-filters.active {
+  display: grid;
+}
+.flip-auto-filters .form-group {
+  margin-bottom: 0;
+}
+.flip-auto-filters .form-label {
+  font-size: 11px;
+  color: var(--gray);
+  margin-bottom: 4px;
+}
+.flip-auto-filters .form-input,
+.flip-auto-filters .form-select {
+  font-size: 13px;
+  padding: 8px 10px;
+}
+
+.btn-auto {
+  background: linear-gradient(135deg, #c9a84c, #a08030);
+  color: #0b0f19;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-auto:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+.btn-auto:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+.btn-auto svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pagination {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 12px;
+}
+.pagination.active {
+  display: flex;
+}
+.pagination-btn {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--gray);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pagination-btn:hover {
+  background: rgba(201,168,76,0.15);
+  color: var(--gold);
+  border-color: rgba(201,168,76,0.3);
+}
+.pagination-btn.active {
+  background: rgba(201,168,76,0.2);
+  color: var(--gold);
+  border-color: rgba(201,168,76,0.4);
+}
+.pagination-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.pagination-info {
+  font-size: 12px;
+  color: var(--gray);
+  margin: 0 8px;
+}
+
+.flip-auto-actions {
+  display: none;
+  gap: 10px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+.flip-auto-actions.active {
+  display: flex;
+}
+
+.auto-scanning-msg {
+  text-align: center;
+  padding: 20px;
+  color: var(--gray);
+  font-size: 14px;
+}
+.auto-scanning-msg .spinner {
+  margin: 0 auto 12px;
+}
+
 </style>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -234,7 +355,6 @@
     </div>
   </div>
 </nav>
-
 <!-- ==================== FLIPPER ==================== -->
 <div class="page active" id="page-flipper">
   <section class="hero-section">
@@ -299,7 +419,7 @@
     </div>
     <div class="form-group" style="margin-bottom:0;">
       <label class="form-label">Qualidade</label>
-      <select class="form-select" id="flipQuality" onchange="scanFlips()">
+      <select class="form-select" id="flipQuality" onchange="if(!flipAutoMode) scanFlips()">
         <option value="1">Normal</option>
         <option value="2">Boa</option>
         <option value="3">Excelente</option>
@@ -307,8 +427,8 @@
       </select>
     </div>
     
-    <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:0;">
-      <div class="toggle-wrap active" id="flipPremiumToggle" onclick="this.classList.toggle('active'); updateFlipPremiumLabel(); scanFlips();">
+    <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:0;flex-wrap:wrap;">
+      <div class="toggle-wrap active" id="flipPremiumToggle" onclick="this.classList.toggle('active'); updateFlipPremiumLabel(); if(flipAutoMode) scanFlipAuto(); else scanFlips();">
         <div class="toggle-switch"></div>
         <span class="toggle-label">Conta Premium</span>
       </div>
@@ -316,6 +436,72 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
         Escanear
       </button>
+      <button class="btn-auto" id="btnFlipAuto" onclick="toggleFlipAuto()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span id="btnFlipAutoText">Flipper Automático</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros do Flipper Automático -->
+  <div class="flip-auto-filters" id="flipAutoFilters">
+    <div class="form-group">
+      <label class="form-label">Lucro Mín.</label>
+      <input type="number" class="form-input" id="flipAutoLucroMin" placeholder="0" value="0" onchange="aplicarFiltrosFlipAuto()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Margem Mín. (%)</label>
+      <input type="number" class="form-input" id="flipAutoMargemMin" placeholder="0" value="0" step="0.1" onchange="aplicarFiltrosFlipAuto()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tier Mín.</label>
+      <select class="form-select" id="flipAutoTierMin" onchange="aplicarFiltrosFlipAuto()">
+        <option value="2">T2</option>
+        <option value="3">T3</option>
+        <option value="4" selected>T4</option>
+        <option value="5">T5</option>
+        <option value="6">T6</option>
+        <option value="7">T7</option>
+        <option value="8">T8</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tier Máx.</label>
+      <select class="form-select" id="flipAutoTierMax" onchange="aplicarFiltrosFlipAuto()">
+        <option value="2">T2</option>
+        <option value="3">T3</option>
+        <option value="4">T4</option>
+        <option value="5">T5</option>
+        <option value="6">T6</option>
+        <option value="7">T7</option>
+        <option value="8" selected>T8</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Origem</label>
+      <select class="form-select" id="flipAutoFrom" onchange="aplicarFiltrosFlipAuto()">
+        <option value="Todas">Todas</option>
+        <option>Bridgewatch</option>
+        <option>Caerleon</option>
+        <option>Fort Sterling</option>
+        <option>Lymhurst</option>
+        <option>Martlock</option>
+        <option>Thetford</option>
+        <option>Brecilien</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Destino</label>
+      <select class="form-select" id="flipAutoTo" onchange="aplicarFiltrosFlipAuto()">
+        <option value="Todas">Todas</option>
+        <option>Bridgewatch</option>
+        <option>Caerleon</option>
+        <option>Fort Sterling</option>
+        <option>Lymhurst</option>
+        <option>Martlock</option>
+        <option>Thetford</option>
+        <option>Brecilien</option>
+      </select>
     </div>
   </div>
 
@@ -344,8 +530,27 @@
       </tbody>
     </table>
   </div>
-</div>
 
+  <!-- Paginação -->
+  <div class="pagination" id="flipPagination">
+    <button class="pagination-btn" id="flipPagePrev" onclick="mudarPaginaFlipAuto(-1)">←</button>
+    <div id="flipPageNumbers"></div>
+    <button class="pagination-btn" id="flipPageNext" onclick="mudarPaginaFlipAuto(1)">→</button>
+    <span class="pagination-info" id="flipPageInfo"></span>
+  </div>
+
+  <!-- Ações de Exportação do Flipper Automático -->
+  <div class="flip-auto-actions" id="flipAutoActions">
+    <button class="btn-api" onclick="copiarFlipAutoTexto()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar Texto
+    </button>
+    <button class="btn-api" onclick="baixarFlipAutoCSV()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Baixar CSV
+    </button>
+  </div>
+</div>
 <!-- ==================== BUSCAR ITEM ==================== -->
 <div class="page" id="page-buscar">
   <section class="hero-section" style="padding:32px 24px 24px;">
@@ -384,7 +589,6 @@
     </div>
   </div>
 </div>
-
 <!-- ==================== BLACK MARKET ==================== -->
 <div class="page" id="page-blackmarket">
   <section class="hero-section" style="padding:32px 24px 24px;">
@@ -427,7 +631,6 @@
     </button>
   </div>
 </div>
-
 <!-- ==================== CRAFT & REFINO ==================== -->
 <div class="page" id="page-craft">
   <section class="hero-section" style="padding:32px 24px 24px;">
@@ -484,7 +687,6 @@
           </select>
         </div>
       </div>
-      <!-- FASE 5: Toggle de Foco -->
       <div class="form-row" style="margin-top:8px;">
         <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:8px;">
           <label class="toggle-wrap" id="refinoFocusToggle" onclick="this.classList.toggle('active'); atualizarDescRefino();" style="cursor:pointer;">
@@ -493,7 +695,6 @@
           </label>
         </div>
       </div>
-      <!-- FASE 3: Otimização de Rotas -->
       <div style="margin:16px 0 12px;padding:12px;border-radius:8px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);">
         <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:8px;">🗺️ Otimização de Rotas (Avançado)</div>
         <div class="form-row">
@@ -535,7 +736,6 @@
           </div>
         </div>
       </div>
-      <!-- FASE 6: Custo de Transporte -->
       <div class="transporte-section">
         <div class="transporte-title">🚛 Custo de Transporte</div>
         <div class="form-row">
@@ -657,8 +857,7 @@
       <p class="result-note" id="refinoNota">Configure os valores e clique em calcular</p>
     </div>
   </div>
-
-  <!-- CRAFT -->
+    <!-- CRAFT -->
   <div class="craft-layout" id="craftCraftPanel" style="display:none;">
     <div class="card">
       <div class="form-row">
@@ -733,7 +932,6 @@
         <span class="toggle-label">Conta Premium (imposto 4%)</span>
       </div>
 
-      <!-- FASE 6: Custo de Transporte -->
       <div class="transporte-section">
         <div class="transporte-title">🚛 Custo de Transporte</div>
         <div class="form-row">
@@ -800,7 +998,7 @@
 </footer>
 
 <script>
-// ============================================
+  // ============================================
 // SILVERFORGE — ALBION MARKET TOOLS v2.1
 // APENAS DADOS REAIS — SEM DADOS DE EXEMPLO
 // ============================================
@@ -976,61 +1174,7 @@ const NOMES_ITENS = {
   'T5_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T5','T5_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T5','T5_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T5','T5_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T5','T5_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T5','T5_CAPEITEM_FW_THETFORD':'Capa de Thetford T5',
   'T6_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T6','T6_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T6','T6_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T6','T6_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T6','T6_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T6','T6_CAPEITEM_FW_THETFORD':'Capa de Thetford T6',
   'T7_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T7','T7_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T7','T7_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T7','T7_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T7','T7_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T7','T7_CAPEITEM_FW_THETFORD':'Capa de Thetford T7',
-  'T8_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T8','T8_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T8','T8_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T8','T8_CAPEITEM_FW_LYMHURST':'Capa de Lymhurst T8','T8_CAPEITEM_FW_MARTLOCK':'Capa de Martlock T8','T8_CAPEITEM_FW_THETFORD':'Capa de Thetford T8',
-  // Espadas
-  'T4_MAIN_SWORD':'Broadsword T4','T5_MAIN_SWORD':'Broadsword T5','T6_MAIN_SWORD':'Broadsword T6','T7_MAIN_SWORD':'Broadsword T7','T8_MAIN_SWORD':'Broadsword T8',
-  'T4_2H_CLAYMORE':'Claymore T4','T5_2H_CLAYMORE':'Claymore T5','T6_2H_CLAYMORE':'Claymore T6','T7_2H_CLAYMORE':'Claymore T7','T8_2H_CLAYMORE':'Claymore T8',
-  'T4_2H_DUALSWORD':'Espadas Duplas T4','T5_2H_DUALSWORD':'Espadas Duplas T5','T6_2H_DUALSWORD':'Espadas Duplas T6','T7_2H_DUALSWORD':'Espadas Duplas T7','T8_2H_DUALSWORD':'Espadas Duplas T8',
-  'T4_2H_CLAYMORE_AVALON':'Clarent Blade T4','T5_2H_CLAYMORE_AVALON':'Clarent Blade T5','T6_2H_CLAYMORE_AVALON':'Clarent Blade T6','T7_2H_CLAYMORE_AVALON':'Clarent Blade T7','T8_2H_CLAYMORE_AVALON':'Clarent Blade T8',
-  // Machados
-  'T4_2H_AXE':'Machado Sanguinario T4','T5_2H_AXE':'Machado Sanguinario T5','T6_2H_AXE':'Machado Sanguinario T6','T7_2H_AXE':'Machado Sanguinario T7','T8_2H_AXE':'Machado Sanguinario T8',
-  'T4_2H_GREATAXE':'Greataxe T4','T5_2H_GREATAXE':'Greataxe T5','T6_2H_GREATAXE':'Greataxe T6','T7_2H_GREATAXE':'Greataxe T7','T8_2H_GREATAXE':'Greataxe T8',
-  'T4_2H_HALBERD':'Halberd T4','T5_2H_HALBERD':'Halberd T5','T6_2H_HALBERD':'Halberd T6','T7_2H_HALBERD':'Halberd T7','T8_2H_HALBERD':'Halberd T8',
-  // Macas
-  'T4_MAIN_MACE':'Maca T4','T5_MAIN_MACE':'Maca T5','T6_MAIN_MACE':'Maca T6','T7_MAIN_MACE':'Maca T7','T8_MAIN_MACE':'Maca T8',
-  'T4_2H_MACE':'Maca Pesada T4','T5_2H_MACE':'Maca Pesada T5','T6_2H_MACE':'Maca Pesada T6','T7_2H_MACE':'Maca Pesada T7','T8_2H_MACE':'Maca Pesada T8',
-  'T4_2H_FLAIL':'Morning Star T4','T5_2H_FLAIL':'Morning Star T5','T6_2H_FLAIL':'Morning Star T6','T7_2H_FLAIL':'Morning Star T7','T8_2H_FLAIL':'Morning Star T8',
-  // Lancas
-  'T4_2H_SPEAR':'Lanca T4','T5_2H_SPEAR':'Lanca T5','T6_2H_SPEAR':'Lanca T6','T7_2H_SPEAR':'Lanca T7','T8_2H_SPEAR':'Lanca T8',
-  'T4_2H_PIKE':'Pique T4','T5_2H_PIKE':'Pique T5','T6_2H_PIKE':'Pique T6','T7_2H_PIKE':'Pique T7','T8_2H_PIKE':'Pique T8',
-  'T4_2H_GLAIVE':'Glaive T4','T5_2H_GLAIVE':'Glaive T5','T6_2H_GLAIVE':'Glaive T6','T7_2H_GLAIVE':'Glaive T7','T8_2H_GLAIVE':'Glaive T8',
-  // Cajados de Fogo
-  'T4_2H_FIRESTAFF':'Cajado de Fogo T4','T5_2H_FIRESTAFF':'Cajado de Fogo T5','T6_2H_FIRESTAFF':'Cajado de Fogo T6','T7_2H_FIRESTAFF':'Cajado de Fogo T7','T8_2H_FIRESTAFF':'Cajado de Fogo T8',
-  'T4_2H_INFERNOSTAFF':'Grande Fogo T4','T5_2H_INFERNOSTAFF':'Grande Fogo T5','T6_2H_INFERNOSTAFF':'Grande Fogo T6','T7_2H_INFERNOSTAFF':'Grande Fogo T7','T8_2H_INFERNOSTAFF':'Grande Fogo T8',
-  // Cajados de Gelo
-  'T4_2H_FROSTSTAFF':'Cajado de Gelo T4','T5_2H_FROSTSTAFF':'Cajado de Gelo T5','T6_2H_FROSTSTAFF':'Cajado de Gelo T6','T7_2H_FROSTSTAFF':'Cajado de Gelo T7','T8_2H_FROSTSTAFF':'Cajado de Gelo T8',
-  'T4_2H_GLACIALSTAFF':'Grande Gelo T4','T5_2H_GLACIALSTAFF':'Grande Gelo T5','T6_2H_GLACIALSTAFF':'Grande Gelo T6','T7_2H_GLACIALSTAFF':'Grande Gelo T7','T8_2H_GLACIALSTAFF':'Grande Gelo T8',
-  // Cajados Arcanos
-  'T4_2H_ARCANESTAFF':'Cajado Arcano T4','T5_2H_ARCANESTAFF':'Cajado Arcano T5','T6_2H_ARCANESTAFF':'Cajado Arcano T6','T7_2H_ARCANESTAFF':'Cajado Arcano T7','T8_2H_ARCANESTAFF':'Cajado Arcano T8',
-  'T4_2H_ENIGMATICSTAFF':'Grande Arcano T4','T5_2H_ENIGMATICSTAFF':'Grande Arcano T5','T6_2H_ENIGMATICSTAFF':'Grande Arcano T6','T7_2H_ENIGMATICSTAFF':'Grande Arcano T7','T8_2H_ENIGMATICSTAFF':'Grande Arcano T8',
-  // Cajados Sagrados
-  'T4_2H_HOLYSTAFF':'Cajado Sagrado T4','T5_2H_HOLYSTAFF':'Cajado Sagrado T5','T6_2H_HOLYSTAFF':'Cajado Sagrado T6','T7_2H_HOLYSTAFF':'Cajado Sagrado T7','T8_2H_HOLYSTAFF':'Cajado Sagrado T8',
-  'T4_2H_DIVINESTAFF':'Grande Sagrado T4','T5_2H_DIVINESTAFF':'Grande Sagrado T5','T6_2H_DIVINESTAFF':'Grande Sagrado T6','T7_2H_DIVINESTAFF':'Grande Sagrado T7','T8_2H_DIVINESTAFF':'Grande Sagrado T8',
-  // Cajados Malditos
-  'T4_2H_CURSESTAFF':'Cajado Maldito T4','T5_2H_CURSESTAFF':'Cajado Maldito T5','T6_2H_CURSESTAFF':'Cajado Maldito T6','T7_2H_CURSESTAFF':'Cajado Maldito T7','T8_2H_CURSESTAFF':'Cajado Maldito T8',
-  'T4_2H_DEMONICSTAFF':'Grande Maldito T4','T5_2H_DEMONICSTAFF':'Grande Maldito T5','T6_2H_DEMONICSTAFF':'Grande Maldito T6','T7_2H_DEMONICSTAFF':'Grande Maldito T7','T8_2H_DEMONICSTAFF':'Grande Maldito T8',
-  // Cajados da Natureza
-  'T4_2H_NATURESTAFF':'Cajado da Natureza T4','T5_2H_NATURESTAFF':'Cajado da Natureza T5','T6_2H_NATURESTAFF':'Cajado da Natureza T6','T7_2H_NATURESTAFF':'Cajado da Natureza T7','T8_2H_NATURESTAFF':'Cajado da Natureza T8',
-  'T4_2H_WILDSTAFF':'Grande Natureza T4','T5_2H_WILDSTAFF':'Grande Natureza T5','T6_2H_WILDSTAFF':'Grande Natureza T6','T7_2H_WILDSTAFF':'Grande Natureza T7','T8_2H_WILDSTAFF':'Grande Natureza T8',
-  // Shapeshifters
-  'T4_2H_SHAPESHIFTER_SET1':'Prowling Staff T4','T5_2H_SHAPESHIFTER_SET1':'Prowling Staff T5','T6_2H_SHAPESHIFTER_SET1':'Prowling Staff T6','T7_2H_SHAPESHIFTER_SET1':'Prowling Staff T7','T8_2H_SHAPESHIFTER_SET1':'Prowling Staff T8',
-  'T4_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T4','T5_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T5','T6_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T6','T7_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T7','T8_2H_SHAPESHIFTER_MORGANA':'Bloodmoon Staff T8',
-  'T4_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T4','T5_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T5','T6_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T6','T7_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T7','T8_2H_SHAPESHIFTER_HELL':'Hellspawn Staff T8',
-  'T4_2H_SHAPESHIFTER_SET3':'Earthrune Staff T4','T5_2H_SHAPESHIFTER_SET3':'Earthrune Staff T5','T6_2H_SHAPESHIFTER_SET3':'Earthrune Staff T6','T7_2H_SHAPESHIFTER_SET3':'Earthrune Staff T7','T8_2H_SHAPESHIFTER_SET3':'Earthrune Staff T8',
-  'T4_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T4','T5_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T5','T6_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T6','T7_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T7','T8_2H_SHAPESHIFTER_SET4':'Hellspawn Staff T8',
-  'T4_2H_SHAPESHIFTER_SET5':'Primal Staff T4','T5_2H_SHAPESHIFTER_SET5':'Primal Staff T5','T6_2H_SHAPESHIFTER_SET5':'Primal Staff T6','T7_2H_SHAPESHIFTER_SET5':'Primal Staff T7','T8_2H_SHAPESHIFTER_SET5':'Primal Staff T8',
-  'T4_2H_SHAPESHIFTER_AVALON':'Lightcaller T4','T5_2H_SHAPESHIFTER_AVALON':'Lightcaller T5','T6_2H_SHAPESHIFTER_AVALON':'Lightcaller T6','T7_2H_SHAPESHIFTER_AVALON':'Lightcaller T7','T8_2H_SHAPESHIFTER_AVALON':'Lightcaller T8',
-  // Armaduras Placa
-  'T4_HEAD_PLATE_SET1':'Capacete Soldier T4','T4_ARMOR_PLATE_SET1':'Armadura Soldier T4','T4_SHOES_PLATE_SET1':'Botas Soldier T4',
-  'T5_HEAD_PLATE_SET1':'Capacete Soldier T5','T5_ARMOR_PLATE_SET1':'Armadura Soldier T5','T5_SHOES_PLATE_SET1':'Botas Soldier T5',
-  'T6_HEAD_PLATE_SET1':'Capacete Soldier T6','T6_ARMOR_PLATE_SET1':'Armadura Soldier T6','T6_SHOES_PLATE_SET1':'Botas Soldier T6',
-  'T7_HEAD_PLATE_SET1':'Capacete Soldier T7','T7_ARMOR_PLATE_SET1':'Armadura Soldier T7','T7_SHOES_PLATE_SET1':'Botas Soldier T7',
-  'T8_HEAD_PLATE_SET1':'Capacete Soldier T8','T8_ARMOR_PLATE_SET1':'Armadura Soldier T8','T8_SHOES_PLATE_SET1':'Botas Soldier T8',
-  // Armaduras Couro
-  'T4_HEAD_LEATHER_SET1':'Capuz Mercenary T4','T4_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T4','T4_SHOES_LEATHER_SET1':'Sapatos Mercenary T4',
-  'T5_HEAD_LEATHER_SET1':'Capuz Mercenary T5','T5_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T5','T5_SHOES_LEATHER_SET1':'Sapatos Mercenary T5',
-  'T6_HEAD_LEATHER_SET1':'Capuz Mercenary T6','T6_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T6','T6_SHOES_LEATHER_SET1':'Sapatos Mercenary T6',
-  'T7_HEAD_LEATHER_SET1':'Capuz Mercenary T7','T7_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T7','T7_SHOES_LEATHER_SET1':'Sapatos Mercenary T7',
+  'T8_CAPEITEM_FW_BRIDGEWATCH':'Capa de Bridgewatch T8','T8_CAPEITEM_FW_CAERLEON':'Capa de Caerleon T8','T8_CAPEITEM_FW_FORTSTERLING':'Capa de Fort Sterling T8','T8_CAPEITEM_FWuz Mercenary T7','T7_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T7','T7_SHOES_LEATHER_SET1':'Sapatos Mercenary T7',
   'T8_HEAD_LEATHER_SET1':'Capuz Mercenary T8','T8_ARMOR_LEATHER_SET1':'Jaqueta Mercenary T8','T8_SHOES_LEATHER_SET1':'Sapatos Mercenary T8',
   // Armaduras Tecido
   'T4_HEAD_CLOTH_SET1':'Capuz Scholar T4','T4_ARMOR_CLOTH_SET1':'Veste Scholar T4','T4_SHOES_CLOTH_SET1':'Sandalias Scholar T4',
@@ -1268,7 +1412,6 @@ function buscarSugestoes(texto) {
     .slice(0, 8);
   return scored.map(s => s.sugestao);
 }
-
 // ============================================
 // FLIPPER — DADOS REAIS
 // ============================================
@@ -1280,89 +1423,220 @@ function onFlipInput(val) {
     sugestoesBox.innerHTML = sugestoes.map(s => {
       const id = TRADUCOES[s];
       const nome = getNomeItem(id);
-      return '<div class="sugestao-item" onclick="selecionarFlipSugestao(\'' + escapeHtml(s) + '\')">' + nome + '<span class="sugestao-id">' + id + '</span></div>';
+      return '<div class="sugestao-item" onclick="selecionarFlipItem(\'' + id + '\')">' + escapeHtml(nome) + '</div>';
     }).join('');
     sugestoesBox.style.display = 'block';
   } else {
-    sugestoesBox.innerHTML = '';
     sugestoesBox.style.display = 'none';
   }
 }
 
-function selecionarFlipSugestao(texto) {
-  document.getElementById('flipItemInput').value = texto;
+function selecionarFlipItem(itemId) {
+  document.getElementById('flipItemInput').value = getNomeItem(itemId);
   document.getElementById('flipSugestoes').style.display = 'none';
 }
 
-function updateFlipPremiumLabel() {
-  const toggle = document.getElementById('flipPremiumToggle');
-  const label = toggle.querySelector('.toggle-label');
-  label.textContent = toggle.classList.contains('active') ? 'Conta Premium' : 'Sem Premium';
+function getTaxaVenda() {
+  return document.getElementById('flipPremiumToggle').classList.contains('active') ? 0.04 : 0.08;
 }
 
-function getTaxaVenda() {
-  const premium = document.getElementById('flipPremiumToggle')?.classList.contains('active');
-  return premium ? 0.04 : 0.08;
+function updateFlipPremiumLabel() {
+  const tax = getTaxaVenda();
+  document.getElementById('flipStatPremium').textContent = tax === 0.04 ? 'com Premium (4% imposto)' : 'sem Premium (8% imposto)';
 }
 
 async function scanFlips() {
-  const inputRaw = document.getElementById('flipItemInput').value.trim();
+  if (flipAutoMode) return;
+  
+  const itemNome = document.getElementById('flipItemInput').value.trim();
   const fromCity = document.getElementById('flipFrom').value;
   const toCity = document.getElementById('flipTo').value;
+  const quality = parseInt(document.getElementById('flipQuality').value);
+  const tax = getTaxaVenda();
+  
+  const itemId = traduzirParaId(itemNome);
+  if (!itemId) {
+    document.getElementById('flipTableBody').innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Item não reconhecido</p><span>Tente: bolsa, espada, capa, claymore, arco...</span></div></td></tr>';
+    return;
+  }
+  
+  setLoading(true);
+  document.getElementById('flipTableBody').innerHTML = '<tr><td colspan="7"><div class="auto-scanning-msg"><div class="spinner"></div><p>Buscando preços...</p></div></td></tr>';
+  
+  try {
+    const data = await fetchPrices([itemId], CIDADES_COM_BRECILIEN, [quality]);
+    const prices = getPricesForItem(data, itemId, quality);
+    
+    const rotas = [];
+    const cities = fromCity === 'Todas' ? CIDADES_COM_BRECILIEN : [fromCity];
+    const targetCities = toCity === 'Todas' ? CIDADES_COM_BRECILIEN : [toCity];
+    
+    for (const fc of cities) {
+      for (const tc of targetCities) {
+        if (fc === tc) continue;
+        const fromPrice = prices[fc];
+        const toPrice = prices[tc];
+        if (!fromPrice || !toPrice || !fromPrice.sell || !toPrice.buy) continue;
+        
+        const buyCost = fromPrice.sell;
+        const sellRevenue = toPrice.buy;
+        const sellFee = Math.ceil(sellRevenue * tax);
+        const netRevenue = sellRevenue - sellFee;
+        const profit = netRevenue - buyCost;
+        const profitPct = buyCost > 0 ? (profit / buyCost) : 0;
+        
+        if (profit > 0) {
+          rotas.push({
+            fromCity: fc,
+            toCity: tc,
+            buy: buyCost,
+            sell: sellRevenue,
+            profit,
+            profitPct,
+            volume: '-',
+            updated: timeSince(fromPrice.sellDate || toPrice.buyDate)
+          });
+        }
+      }
+    }
+    
+    rotas.sort((a, b) => b.profit - a.profit);
+    
+    if (rotas.length > 0) {
+      const best = rotas[0];
+      document.getElementById('flipStatBest').textContent = formatSilver(best.profit);
+      document.getElementById('flipStatBestRoute').textContent = best.fromCity + ' → ' + best.toCity;
+      const totalProfit = rotas.reduce((s, o) => s + o.profit, 0);
+      document.getElementById('flipStatTotal').textContent = formatSilver(totalProfit);
+      document.getElementById('flipStatCount').textContent = rotas.length + ' rotas';
+      const avgMargin = rotas.reduce((s, o) => s + o.profitPct, 0) / rotas.length;
+      document.getElementById('flipStatMargin').textContent = formatPercent(avgMargin);
+    } else {
+      document.getElementById('flipStatBest').textContent = '-';
+      document.getElementById('flipStatBestRoute').textContent = 'Nenhuma oportunidade';
+      document.getElementById('flipStatTotal').textContent = '-';
+      document.getElementById('flipStatCount').textContent = '0 rotas';
+      document.getElementById('flipStatMargin').textContent = '-';
+    }
+    
+    const tbody = document.getElementById('flipTableBody');
+    if (rotas.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Nenhuma oportunidade de flip lucrativa</p><span>Tente outro item ou ajuste os filtros</span></div></td></tr>';
+    } else {
+      const nome = getNomeItem(itemId, quality);
+      const cat = getCategoria(itemId);
+      const tier = itemId.match(/^T([4-8])/)?.[1] || '4';
+      const enchant = itemId.match(/@([1-3])$/)?.[1] || '';
+      const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
+      
+      tbody.innerHTML = rotas.map(o => {
+        const dotClass = o.updated === 'Agora' ? 'dot-green' : (parseInt(o.updated) < 60 ? 'dot-yellow' : 'dot-red');
+        const iconUrl = getItemIconUrl(itemId);
+        return '<tr>' +
+          '<td><div class="item-cell"><img src="' + iconUrl + '" class="item-icon" alt="" onerror="this.style.display=\'none\'"><span class="tier-badge">' + tierStr + '</span><div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div></div></td>' +
+          '<td><div class="route-cell">' + o.fromCity + '<span class="arrow">→</span>' + o.toCity + '</div></td>' +
+          '<td class="price-sell price-val">' + formatSilver(o.buy) + '</td>' +
+          '<td class="price-buy price-val">' + formatSilver(o.sell) + '</td>' +
+          '<td class="profit-pos price-val">+' + formatSilver(o.profit) + ' <span style="font-size:11px;color:var(--green-dim)">(' + formatPercent(o.profitPct) + ')</span></td>' +
+          '<td>' + o.volume + '</td>' +
+          '<td><div class="timestamp"><span class="dot ' + dotClass + '"></span>' + o.updated + '</div></td>' +
+          '</tr>';
+      }).join('');
+    }
+  } catch (e) {
+    console.error(e);
+    document.getElementById('flipTableBody').innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Erro ao buscar dados</p><span>Verifique sua conexão</span></div></td></tr>';
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ============================================
+// FLIPPER AUTOMÁTICO v5.0
+// ============================================
+
+let flipAutoMode = false;
+let flipAutoResultados = [];
+let flipAutoResultadosFiltrados = [];
+let flipAutoPaginaAtual = 1;
+const FLIP_AUTO_POR_PAGINA = 20;
+
+function toggleFlipAuto() {
+  flipAutoMode = !flipAutoMode;
+  const filters = document.getElementById('flipAutoFilters');
+  const btnText = document.getElementById('btnFlipAutoText');
+  const pagination = document.getElementById('flipPagination');
+  const actions = document.getElementById('flipAutoActions');
+  
+  if (flipAutoMode) {
+    filters.classList.add('active');
+    btnText.textContent = 'Flipper Manual';
+    document.getElementById('flipItemInput').value = '';
+    document.getElementById('flipSugestoes').style.display = 'none';
+    scanFlipAuto();
+  } else {
+    filters.classList.remove('active');
+    btnText.textContent = 'Flipper Automático';
+    pagination.classList.remove('active');
+    actions.classList.remove('active');
+    flipAutoResultados = [];
+    flipAutoResultadosFiltrados = [];
+    flipAutoPaginaAtual = 1;
+    document.getElementById('flipTableBody').innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Clique em <strong>Escanear</strong> para buscar oportunidades</p><span>Buscaremos os melhores flips entre todas as cidades</span></div></td></tr>';
+    document.getElementById('flipStatBest').textContent = '-';
+    document.getElementById('flipStatBestRoute').textContent = 'Nenhuma oportunidade';
+    document.getElementById('flipStatTotal').textContent = '-';
+    document.getElementById('flipStatCount').textContent = '0 rotas';
+    document.getElementById('flipStatMargin').textContent = '-';
+  }
+}
+
+async function scanFlipAuto() {
+  if (!flipAutoMode) return;
+  
+  const tbody = document.getElementById('flipTableBody');
+  const pagination = document.getElementById('flipPagination');
+  const actions = document.getElementById('flipAutoActions');
   const qualitySelect = document.getElementById('flipQuality');
   const quality = qualitySelect ? parseInt(qualitySelect.value) : 1;
-  const tbody = document.getElementById('flipTableBody');
   const tax = getTaxaVenda();
-
+  
   setLoading(true);
-
-  let itemsToScan = [];
-  let itemIdEspecifico = null;
-
-  if (inputRaw) {
-    itemIdEspecifico = traduzirParaId(inputRaw);
-    if (itemIdEspecifico) {
-      itemsToScan = [itemIdEspecifico];
-    } else {
-      setLoading(false);
-      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Item nao encontrado: "' + escapeHtml(inputRaw) + '"</p><span>Tente outro nome ou ID do item</span></div></td></tr>';
-      return;
-    }
-  } else {
-    itemsToScan = ITENS_FLIPPER;
-  }
-
-  let fromCities = fromCity === 'Todas' ? CIDADES_COM_BRECILIEN : [fromCity];
-  let toCities = toCity === 'Todas' ? CIDADES_COM_BRECILIEN : [toCity];
-
+  tbody.innerHTML = '<tr><td colspan="7"><div class="auto-scanning-msg"><div class="spinner"></div><p>Escaneando ' + ITENS_FLIPPER.length + ' itens em ' + CIDADES_COM_BRECILIEN.length + ' cidades...</p></div></td></tr>';
+  
   try {
-    const allCities = [...new Set([...fromCities, ...toCities])];
-    const data = await fetchPrices(itemsToScan, allCities, [quality]);
-
+    const data = await fetchPrices(ITENS_FLIPPER, CIDADES_COM_BRECILIEN, [quality]);
     const oportunidades = [];
-
-    for (const itemId of itemsToScan) {
+    
+    for (const itemId of ITENS_FLIPPER) {
       const prices = getPricesForItem(data, itemId, quality);
-
-      for (const fc of fromCities) {
-        for (const tc of toCities) {
-          if (fc === tc) continue;
+      
+      for (let i = 0; i < CIDADES_COM_BRECILIEN.length; i++) {
+        for (let j = 0; j < CIDADES_COM_BRECILIEN.length; j++) {
+          if (i === j) continue;
+          const fc = CIDADES_COM_BRECILIEN[i];
+          const tc = CIDADES_COM_BRECILIEN[j];
           const fromPrice = prices[fc];
           const toPrice = prices[tc];
+          
           if (!fromPrice || !toPrice || !fromPrice.sell || !toPrice.buy) continue;
-
+          
           const buyCost = fromPrice.sell;
           const sellRevenue = toPrice.buy;
           const sellFee = Math.ceil(sellRevenue * tax);
           const netRevenue = sellRevenue - sellFee;
           const profit = netRevenue - buyCost;
           const profitPct = buyCost > 0 ? (profit / buyCost) : 0;
-
+          
           if (profit > 0) {
             oportunidades.push({
-              itemId, fromCity: fc, toCity: tc,
-              buy: buyCost, sell: sellRevenue,
-              profit, profitPct,
+              itemId,
+              fromCity: fc,
+              toCity: tc,
+              buy: buyCost,
+              sell: sellRevenue,
+              profit,
+              profitPct,
               volume: '-',
               updated: timeSince(fromPrice.sellDate || toPrice.buyDate),
               quality: quality
@@ -1371,28 +1645,65 @@ async function scanFlips() {
         }
       }
     }
-
+    
     oportunidades.sort((a, b) => b.profit - a.profit);
-    renderFlipResults(oportunidades, tax);
+    flipAutoResultados = oportunidades;
+    aplicarFiltrosFlipAuto();
+    
   } catch (e) {
     console.error(e);
     tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Erro ao buscar dados da API</p><span>Verifique sua conexão ou tente novamente mais tarde</span></div></td></tr>';
+    pagination.classList.remove('active');
+    actions.classList.remove('active');
   } finally {
     setLoading(false);
   }
 }
 
-function renderFlipResults(oportunidades, tax) {
-  const tbody = document.getElementById('flipTableBody');
+function aplicarFiltrosFlipAuto() {
+  if (!flipAutoMode) return;
+  
+  const lucroMin = parseFloat(document.getElementById('flipAutoLucroMin').value) || 0;
+  const margemMin = parseFloat(document.getElementById('flipAutoMargemMin').value) || 0;
+  const tierMin = parseInt(document.getElementById('flipAutoTierMin').value) || 2;
+  const tierMax = parseInt(document.getElementById('flipAutoTierMax').value) || 8;
+  const cidadeOrigem = document.getElementById('flipAutoFrom').value;
+  const cidadeDestino = document.getElementById('flipAutoTo').value;
+  
+  flipAutoResultadosFiltrados = flipAutoResultados.filter(o => {
+    const tierMatch = o.itemId.match(/^T([4-8])/);
+    const tier = tierMatch ? parseInt(tierMatch[1]) : 4;
+    
+    if (o.profit < lucroMin) return false;
+    if (margemMin > 0 && (o.profitPct * 100) < margemMin) return false;
+    if (tier < tierMin || tier > tierMax) return false;
+    if (cidadeOrigem !== 'Todas' && o.fromCity !== cidadeOrigem) return false;
+    if (cidadeDestino !== 'Todas' && o.toCity !== cidadeDestino) return false;
+    
+    return true;
+  });
+  
+  flipAutoPaginaAtual = 1;
+  renderFlipAutoPagina();
+}
 
-  if (oportunidades.length > 0) {
-    const best = oportunidades[0];
+function renderFlipAutoPagina() {
+  const tbody = document.getElementById('flipTableBody');
+  const pagination = document.getElementById('flipPagination');
+  const actions = document.getElementById('flipAutoActions');
+  const tax = getTaxaVenda();
+  
+  const total = flipAutoResultadosFiltrados.length;
+  const totalPages = Math.ceil(total / FLIP_AUTO_POR_PAGINA) || 1;
+  
+  if (total > 0) {
+    const best = flipAutoResultadosFiltrados[0];
     document.getElementById('flipStatBest').textContent = formatSilver(best.profit);
-    document.getElementById('flipStatBestRoute').textContent = best.fromCity + ' \u2192 ' + best.toCity;
-    const totalProfit = oportunidades.reduce((s, o) => s + o.profit, 0);
+    document.getElementById('flipStatBestRoute').textContent = best.fromCity + ' → ' + best.toCity;
+    const totalProfit = flipAutoResultadosFiltrados.reduce((s, o) => s + o.profit, 0);
     document.getElementById('flipStatTotal').textContent = formatSilver(totalProfit);
-    document.getElementById('flipStatCount').textContent = oportunidades.length + ' rotas listadas';
-    const avgMargin = oportunidades.reduce((s, o) => s + o.profitPct, 0) / oportunidades.length;
+    document.getElementById('flipStatCount').textContent = total + ' rotas';
+    const avgMargin = flipAutoResultadosFiltrados.reduce((s, o) => s + o.profitPct, 0) / total;
     document.getElementById('flipStatMargin').textContent = formatPercent(avgMargin);
     document.getElementById('flipStatPremium').textContent = tax === 0.04 ? 'com Premium (4% imposto)' : 'sem Premium (8% imposto)';
   } else {
@@ -1403,1136 +1714,801 @@ function renderFlipResults(oportunidades, tax) {
     document.getElementById('flipStatMargin').textContent = '-';
     document.getElementById('flipStatPremium').textContent = tax === 0.04 ? 'com Premium (4% imposto)' : 'sem Premium (8% imposto)';
   }
+  
+  if (total === 0) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Nenhuma oportunidade encontrada com os filtros atuais</p><span>Tente relaxar os filtros ou escanear novamente</span></div></td></tr>';
+    pagination.classList.remove('active');
+    actions.classList.remove('active');
+    return;
+  }
+  
+  const start = (flipAutoPaginaAtual - 1) * FLIP_AUTO_POR_PAGINA;
+  const end = Math.min(start + FLIP_AUTO_POR_PAGINA, total);
+  const pageItems = flipAutoResultadosFiltrados.slice(start, end);
+  
+  tbody.innerHTML = pageItems.map(o => {
+    const nome = getNomeItem(o.itemId, o.quality);
+    const cat = getCategoria(o.itemId);
+    const tier = o.itemId.match(/^T([4-8])/)?.[1] || '4';
+    const enchant = o.itemId.match(/@([1-3])$/)?.[1] || '';
+    const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
+    const dotClass = o.updated === 'Agora' ? 'dot-green' : (parseInt(o.updated) < 60 ? 'dot-yellow' : 'dot-red');
+    const iconUrl = getItemIconUrl(o.itemId);
+    return '<tr>' +
+      '<td><div class="item-cell"><img src="' + iconUrl + '" class="item-icon" alt="" onerror="this.style.display=\'none\'"><span class="tier-badge">' + tierStr + '</span><div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div></div></td>' +
+      '<td><div class="route-cell">' + o.fromCity + '<span class="arrow">→</span>' + o.toCity + '</div></td>' +
+      '<td class="price-sell price-val">' + formatSilver(o.buy) + '</td>' +
+      '<td class="price-buy price-val">' + formatSilver(o.sell) + '</td>' +
+      '<td class="profit-pos price-val">+' + formatSilver(o.profit) + ' <span style="font-size:11px;color:var(--green-dim)">(' + formatPercent(o.profitPct) + ')</span></td>' +
+      '<td>' + o.volume + '</td>' +
+      '<td><div class="timestamp"><span class="dot ' + dotClass + '"></span>' + o.updated + '</div></td>' +
+      '</tr>';
+  }).join('');
+  
+  pagination.classList.add('active');
+  actions.classList.add('active');
+  renderFlipAutoPagination(totalPages);
+  document.getElementById('flipPageInfo').textContent = 'Página ' + flipAutoPaginaAtual + ' de ' + totalPages + ' (' + total + ' resultados)';
+}
 
-  if (!oportunidades.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state small"><p>Nenhuma oportunidade de lucro encontrada</p><span>Tente outras cidades ou verifique se os itens tem volume no mercado</span></div></td></tr>';
+function renderFlipAutoPagination(totalPages) {
+  const container = document.getElementById('flipPageNumbers');
+  let html = '';
+  
+  const maxVisible = 5;
+  let startPage = Math.max(1, flipAutoPaginaAtual - Math.floor(maxVisible / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+  if (endPage - startPage < maxVisible - 1) {
+    startPage = Math.max(1, endPage - maxVisible + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const active = i === flipAutoPaginaAtual ? 'active' : '';
+    html += '<button class="pagination-btn ' + active + '" onclick="irParaPaginaFlipAuto(' + i + ')">' + i + '</button>';
+  }
+  
+  container.innerHTML = html;
+  document.getElementById('flipPagePrev').disabled = flipAutoPaginaAtual <= 1;
+  document.getElementById('flipPageNext').disabled = flipAutoPaginaAtual >= totalPages;
+}
+
+function irParaPaginaFlipAuto(pagina) {
+  flipAutoPaginaAtual = pagina;
+  renderFlipAutoPagina();
+}
+
+function mudarPaginaFlipAuto(direcao) {
+  const totalPages = Math.ceil(flipAutoResultadosFiltrados.length / FLIP_AUTO_POR_PAGINA) || 1;
+  flipAutoPaginaAtual = Math.max(1, Math.min(totalPages, flipAutoPaginaAtual + direcao));
+  renderFlipAutoPagina();
+}
+
+function copiarFlipAutoTexto() {
+  if (!flipAutoResultadosFiltrados.length) return;
+  const tax = getTaxaVenda();
+  const lines = ['SilverForge — Flipper Automático'];
+  lines.push('Data: ' + new Date().toLocaleString('pt-BR'));
+  lines.push('Premium: ' + (tax === 0.04 ? 'Sim' : 'Não'));
+  lines.push('');
+  lines.push('Item | Rota | Compra | Venda | Lucro | Margem | Atualizado');
+  lines.push('—'.repeat(80));
+  
+  flipAutoResultadosFiltrados.forEach(o => {
+    const nome = getNomeItem(o.itemId, o.quality);
+    lines.push(nome + ' | ' + o.fromCity + ' → ' + o.toCity + ' | ' + formatSilverFull(o.buy) + ' | ' + formatSilverFull(o.sell) + ' | ' + formatSilverFull(o.profit) + ' | ' + (o.profitPct * 100).toFixed(1) + '% | ' + o.updated);
+  });
+  
+  const text = lines.join('\\n');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('Resultados copiados!'));
   } else {
-    tbody.innerHTML = oportunidades.map(o => {
-      const nome = getNomeItem(o.itemId, o.quality);
-      const cat = getCategoria(o.itemId);
-      const tier = o.itemId.match(/^T([4-8])/)?.[1] || '4';
-      const enchant = o.itemId.match(/@([1-3])$/)?.[1] || '';
-      const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
-      const dotClass = o.updated === 'Agora' ? 'dot-green' : (parseInt(o.updated) < 60 ? 'dot-yellow' : 'dot-red');
-      const iconUrl = getItemIconUrl(o.itemId);
-      return '<tr>' +
-        '<td><div class="item-cell"><img src="' + iconUrl + '" class="item-icon" alt="" onerror="this.style.display=\'none\'"><span class="tier-badge">' + tierStr + '</span><div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div></div></td>' +
-        '<td><div class="route-cell">' + o.fromCity + '<span class="arrow">\u2192</span>' + o.toCity + '</div></td>' +
-        '<td class="price-sell price-val">' + formatSilver(o.buy) + '</td>' +
-        '<td class="price-buy price-val">' + formatSilver(o.sell) + '</td>' +
-        '<td class="profit-pos price-val">+' + formatSilver(o.profit) + ' <span style="font-size:11px;color:var(--green-dim)">(' + formatPercent(o.profitPct) + ')</span></td>' +
-        '<td>' + o.volume + '</td>' +
-        '<td><div class="timestamp"><span class="dot ' + dotClass + '"></span>' + o.updated + '</div></td>' +
-        '</tr>';
-    }).join('');
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Resultados copiados!');
   }
 }
 
-// ============================================
-// BUSCAR ITEM — DADOS REAIS
-// ============================================
+function baixarFlipAutoCSV() {
+  if (!flipAutoResultadosFiltrados.length) return;
+  const tax = getTaxaVenda();
+  const headers = ['Item', 'Rota', 'Compra', 'Venda', 'Lucro', 'Margem%', 'Atualizado'];
+  const rows = flipAutoResultadosFiltrados.map(o => {
+    const nome = getNomeItem(o.itemId, o.quality);
+    return [
+      '"' + nome + '"',
+      o.fromCity + ' → ' + o.toCity,
+      o.buy,
+      o.sell,
+      o.profit,
+      (o.profitPct * 100).toFixed(1),
+      o.updated
+    ].join(',');
+  });
+  
+  const csv = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'silverforge_flipper_auto_' + new Date().toISOString().slice(0, 19).replace(/:/g, '-') + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('CSV baixado!');
+}
 
-const ITENS_POPULARES = [
-  'T7_2_2H_DAGGER', 'T6_1_2H_BOW', 'T8_2H_AXE', 'T6_3_2H_FIRESTAFF',
-  'T7_1_2H_HAMMER', 'T6_2_HEAD_LEATHER_SET1', 'T7_1_SHOES_LEATHER_SET1',
-  'T5_HEAD_PLATE_SET1', 'T6_1_ARMOR_CLOTH_SET1', 'T5_2H_CLAYMORE',
-  'T8_MOUNT_DIREWOLF', 'T8_2H_CAPEITEM_FW_THETFORD'
-];
+function showToast(msg) {
+  const existing = document.querySelector('.sf-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'sf-toast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#4ade80;padding:10px 20px;border-radius:8px;border:1px solid rgba(74,222,128,0.3);font-size:13px;font-weight:600;z-index:9999;animation:fadeInUp 0.3s ease;';
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2000);
+}
+// ============================================
+// BUSCAR ITEM
+// ============================================
 
 let buscarItemSelecionado = null;
 
-function initBuscar() {
-  const lista = document.getElementById('buscarListaItens');
-  lista.innerHTML = ITENS_POPULARES.map(id => {
-    const nome = getNomeItem(id);
-    const tier = id.match(/^T([4-8])/)?.[1] || '4';
-    const enchant = id.match(/@([1-3])$/)?.[1] || '';
-    const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
-    const cat = getCategoria(id);
-    const active = buscarItemSelecionado === id ? 'active' : '';
-    const iconUrl = getItemIconUrl(id);
-    return '<div class="search-list-item ' + active + '" onclick="selecionarBuscarItem(\'' + id + '\')">' +
-      '<img src="' + iconUrl + '" class="item-icon-sm" alt="" onerror="this.style.display=\'none\'">' +
-      '<span class="tier-badge">' + tierStr + '</span>' +
-      '<div class="item-info"><span class="item-name">' + escapeHtml(nome) + '</span><span class="item-category">' + cat + '</span></div>' +
-      '</div>';
-  }).join('');
-}
-
 function onBuscarInput(val) {
   const sugestoesBox = document.getElementById('buscarSugestoes');
+  const lista = document.getElementById('buscarListaItens');
   const sugestoes = buscarSugestoes(val);
+  
   if (sugestoes.length > 0) {
     sugestoesBox.innerHTML = sugestoes.map(s => {
       const id = TRADUCOES[s];
       const nome = getNomeItem(id);
-      return '<div class="sugestao-item" onclick="selecionarBuscarSugestao(\'' + escapeHtml(s) + '\')">' + nome + '<span class="sugestao-id">' + id + '</span></div>';
+      return '<div class="sugestao-item" onclick="selecionarBuscarItem(\'' + id + '\')">' + escapeHtml(nome) + '</div>';
     }).join('');
     sugestoesBox.style.display = 'block';
   } else {
-    sugestoesBox.innerHTML = '';
     sugestoesBox.style.display = 'none';
   }
-}
-
-function selecionarBuscarSugestao(texto) {
-  document.getElementById('buscarInput').value = texto;
-  document.getElementById('buscarSugestoes').style.display = 'none';
-  const itemId = traduzirParaId(texto);
-  if (itemId) selecionarBuscarItem(itemId);
+  
+  if (!val || val.length < 2) {
+    lista.innerHTML = '';
+    return;
+  }
+  
+  const matches = Object.entries(TRADUCOES)
+    .filter(([k, v]) => k.includes(val.toLowerCase()))
+    .slice(0, 20);
+  
+  if (matches.length > 0) {
+    lista.innerHTML = matches.map(([k, id]) => {
+      const nome = getNomeItem(id);
+      return '<div class="search-item" onclick="selecionarBuscarItem(\'' + id + '\')">' + escapeHtml(nome) + '</div>';
+    }).join('');
+  } else {
+    lista.innerHTML = '<div style="padding:12px;color:var(--gray);font-size:13px;">Nenhum item encontrado</div>';
+  }
 }
 
 async function selecionarBuscarItem(itemId) {
   buscarItemSelecionado = itemId;
-  initBuscar();
-
+  document.getElementById('buscarInput').value = getNomeItem(itemId);
+  document.getElementById('buscarSugestoes').style.display = 'none';
+  document.getElementById('buscarListaItens').innerHTML = '';
+  
+  const quality = parseInt(document.getElementById('buscarQuality').value);
   const detalhes = document.getElementById('buscarDetalhes');
-  detalhes.innerHTML = '<div class="empty-state"><div class="spinner" style="margin:0 auto 12px;"></div><p>Buscando preços reais...</p></div>';
-
-  const tier = itemId.match(/^T([4-8])/)?.[1] || '4';
-  const enchant = itemId.match(/@([1-3])$/)?.[1] || '';
-  const tierStr = 'T' + tier + (enchant ? '.' + enchant : '');
-  const qualitySelect = document.getElementById('buscarQuality');
-  const quality = qualitySelect ? parseInt(qualitySelect.value) : 1;
-  const nome = getNomeItem(itemId, quality);
-  const cat = getCategoria(itemId);
-
+  
+  setLoading(true);
+  detalhes.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Buscando preços...</p></div>';
+  
   try {
-    const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
-    const data = await fetchPrices([itemId], allLocations, [quality]);
+    const data = await fetchPrices([itemId], [...CIDADES_COM_BRECILIEN, BLACK_MARKET], [quality]);
     const prices = getPricesForItem(data, itemId, quality);
-
-    let menorVenda = Infinity;
-    let maiorCompra = 0;
-    let bmPrice = 0;
-
-    const cidadesRows = CIDADES_COM_BRECILIEN.map(cidade => {
-      const p = prices[cidade];
-      const vendaMin = p?.sell || 0;
-      const compraMax = p?.buy || 0;
-      const volume = p ? Math.floor(Math.random() * 500) + 50 : 0;
-      const updated = p ? timeSince(p.sellDate || p.buyDate) : '?';
-
-      if (vendaMin > 0 && vendaMin < menorVenda) menorVenda = vendaMin;
-      if (compraMax > 0 && compraMax > maiorCompra) maiorCompra = compraMax;
-
-      const dotClass = updated === 'Agora' ? 'dot-green' : (parseInt(updated) < 60 ? 'dot-yellow' : 'dot-red');
-
-      return {
-        cidade, vendaMin, compraMax, volume, updated, dotClass
-      };
-    });
-
-    // Black Market
-    const bm = prices[BLACK_MARKET];
-    if (bm && bm.sell > 0) bmPrice = bm.sell;
-
-    if (menorVenda === Infinity) menorVenda = 0;
-
-    detalhes.innerHTML =
-      '<div class="price-card">' +
-        '<div class="item-detail-header">' +
-          '<img src="' + getItemIconUrl(itemId) + '" class="item-icon-lg" alt="" onerror="this.style.display=\'none\'">' +
-          '<span class="tier-badge" style="font-size:12px;padding:4px 10px;">' + tierStr + '</span>' +
-          '<div>' +
-            '<div class="item-detail-title">' + escapeHtml(nome.toUpperCase()) + '</div>' +
-            '<div class="item-detail-category">' + cat + ' · ' + (QUALIDADES[quality] || 'Qualidade ' + quality) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="price-summary">' +
-          '<div class="price-summary-box">' +
-            '<div class="price-summary-label">Menor Venda</div>' +
-            '<div class="price-summary-value" style="color:var(--green);">' + formatSilverFull(menorVenda) + '</div>' +
-          '</div>' +
-          '<div class="price-summary-box">' +
-            '<div class="price-summary-label">Maior Ordem de Compra</div>' +
-            '<div class="price-summary-value">' + formatSilverFull(maiorCompra) + '</div>' +
-          '</div>' +
-          '<div class="price-summary-box">' +
-            '<div class="price-summary-label">Black Market</div>' +
-            '<div class="price-summary-value" style="color:var(--gold);">' + formatSilverFull(bmPrice) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<table class="data-table">' +
-          '<thead><tr><th>Cidade</th><th>Venda Min.</th><th>Compra Max.</th><th>Volume</th><th>Atualizado</th></tr></thead>' +
-          '<tbody>' +
-          cidadesRows.map(c => {
-            return '<tr>' +
-              '<td style="font-weight:500;">' + c.cidade + '</td>' +
-              '<td style="color:var(--green);font-weight:600;">' + (c.vendaMin > 0 ? formatSilver(c.vendaMin) : '-') + '</td>' +
-              '<td>' + (c.compraMax > 0 ? formatSilver(c.compraMax) : '-') + '</td>' +
-              '<td>' + c.volume + '</td>' +
-              '<td><div class="timestamp"><span class="dot ' + c.dotClass + '"></span>' + c.updated + '</div></td>' +
-              '</tr>';
-          }).join('') +
-          '</tbody>' +
-        '</table>' +
-      '</div>';
+    
+    const nome = getNomeItem(itemId, quality);
+    const cat = getCategoria(itemId);
+    const iconUrl = getItemIconUrl(itemId);
+    
+    let html = '<div class="card"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">';
+    html += '<img src="' + iconUrl + '" style="width:48px;height:48px;border-radius:8px;background:#111827;" alt="" onerror="this.style.display=\'none\'">';
+    html += '<div><h3 style="margin:0;font-size:18px;">' + escapeHtml(nome) + '</h3><span style="color:var(--gray);font-size:13px;">' + cat + '</span></div></div>';
+    
+    html +=async function selecionarBuscarItem(itemId) {
+  buscarItemSelecionado = itemId;
+  document.getElementById('buscarInput').value = getNomeItem(itemId);
+  document.getElementById('buscarSugestoes').style.display = 'none';
+  document.getElementById('buscarListaItens').innerHTML = '';
+  
+  const quality = parseInt(document.getElementById('buscarQuality').value);
+  const detalhes = document.getElementById('buscarDetalhes');
+  
+  setLoading(true);
+  detalhes.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Buscando preços...</p></div>';
+  
+  try {
+    const data = await fetchPrices([itemId], [...CIDADES_COM_BRECILIEN, BLACK_MARKET], [quality]);
+    const prices = getPricesForItem(data, itemId, quality);
+    
+    const nome = getNomeItem(itemId, quality);
+    const cat = getCategoria(itemId);
+    const iconUrl = getItemIconUrl(itemId);
+    
+    let html = '<div class="card"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">';
+    html += '<img src="' + iconUrl + '" style="width:48px;height:48px;border-radius:8px;background:#111827;" alt="" onerror="this.style.display=\'none\'">';
+    html += '<div><h3 style="margin:0;font-size:18px;">' + escapeHtml(nome) + '</h3><span style="color:var(--gray);font-size:13px;">' + cat + '</span></div></div>';
+    
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">';
+    
+    for (const city of [...CIDADES_COM_BRECILIEN, BLACK_MARKET]) {
+      const p = prices[city];
+      if (!p) continue;
+      
+      const sellPrice = p.sell || 0;
+      const buyPrice = p.buy || 0;
+      const isBM = city === BLACK_MARKET;
+      const cardBg = isBM ? 'background:rgba(201,168,76,0.05);border-color:rgba(201,168,76,0.2);' : '';
+      
+      html += '<div style="padding:12px;border-radius:8px;background:#111827;border:1px solid rgba(255,255,255,0.06);' + cardBg + '">';
+      html += '<div style="font-size:12px;color:var(--gray);margin-bottom:6px;">' + city + '</div>';
+      html += '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>Compra</span><span style="color:#ef4444;font-weight:600;">' + formatSilver(sellPrice) + '</span></div>';
+      html += '<div style="display:flex;justify-content:space-between;font-size:13px;"><span>Venda</span><span style="color:#4ade80;font-weight:600;">' + formatSilver(buyPrice) + '</span></div>';
+      html += '</div>';
+    }
+    
+    html += '</div></div>';
+    detalhes.innerHTML = html;
   } catch (e) {
     console.error(e);
-    detalhes.innerHTML = '<div class="empty-state"><p>Erro ao buscar dados</p><span>Verifique sua conexão com a internet</span></div>';
+    detalhes.innerHTML = '<div class="empty-state"><p>Erro ao buscar preços</p></div>';
+  } finally {
+    setLoading(false);
   }
 }
 
+function initBuscar() {
+  document.getElementById('buscarInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const val = document.getElementById('buscarInput').value.trim();
+      const id = traduzirParaId(val);
+      if (id) selecionarBuscarItem(id);
+    }
+  });
+}
+
 // ============================================
-// BLACK MARKET — DADOS REAIS
+// BLACK MARKET
 // ============================================
 
+let bmData = [];
 let bmMinProfit = 0;
-let bmDataCache = [];
 
-function initBM() {
+function initBMRange() {
   const track = document.getElementById('bmRangeTrack');
-  const thumb = document.getElementById('bmRangeThumb');
   const fill = document.getElementById('bmRangeFill');
-
+  const thumb = document.getElementById('bmRangeThumb');
+  const label = document.getElementById('bmMinProfitLabel');
+  
   let isDragging = false;
-
-  function updateSlider(clientX) {
+  
+  function updateFromX(x) {
     const rect = track.getBoundingClientRect();
-    let pct = (clientX - rect.left) / rect.width;
+    let pct = (x - rect.left) / rect.width;
     pct = Math.max(0, Math.min(1, pct));
-    bmMinProfit = Math.round(pct * 2000000);
-    thumb.style.left = (pct * 100) + '%';
+    bmMinProfit = Math.round(pct * 50000);
     fill.style.width = (pct * 100) + '%';
-    document.getElementById('bmMinProfitLabel').textContent = formatSilver(bmMinProfit);
+    thumb.style.left = (pct * 100) + '%';
+    label.textContent = formatSilver(bmMinProfit);
     filtrarBM();
   }
-
+  
   thumb.addEventListener('mousedown', () => isDragging = true);
-  document.addEventListener('mousemove', e => { if (isDragging) updateSlider(e.clientX); });
+  document.addEventListener('mousemove', (e) => { if (isDragging) updateFromX(e.clientX); });
   document.addEventListener('mouseup', () => isDragging = false);
-  track.addEventListener('click', e => updateSlider(e.clientX));
+  track.addEventListener('click', (e) => updateFromX(e.clientX));
+}
+
+function getBMTaxaVenda() {
+  return document.getElementById('bmPremiumToggle').classList.contains('active') ? 0.04 : 0.08;
 }
 
 function updateBMPremiumLabel() {
-  const toggle = document.getElementById('bmPremiumToggle');
-  const label = toggle.querySelector('.toggle-label');
-  label.textContent = toggle.classList.contains('active') ? 'Conta Premium' : 'Sem Premium';
-}
-
-function carregarBM() {
-  filtrarBM();
+  const tax = getBMTaxaVenda();
+  // label atualizado dinamicamente
 }
 
 async function scanBlackMarket() {
-  const grid = document.getElementById('bmGrid');
-  const tax = document.getElementById('bmPremiumToggle')?.classList.contains('active') ? 0.04 : 0.08;
-
-  grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="spinner" style="margin:0 auto 12px;"></div><p>Buscando dados reais do Black Market...</p></div>';
-
+  const tax = getBMTaxaVenda();
+  setLoading(true);
+  
   try {
-    const allLocations = [...CIDADES_COM_BRECILIEN, BLACK_MARKET];
+    const data = await fetchPrices(ITENS_BLACK_MARKET, [...CIDADES, BLACK_MARKET], [1]);
+    bmData = [];
     
-
-    const data = await fetchPrices(ITENS_BLACK_MARKET, allLocations, [1]);
-    
-
-    if (!data || data.length === 0) {
-      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>API retornou dados vazios</p><span>Tente novamente em alguns segundos</span></div>';
-      return;
-    }
-
-    const resultados = [];
-
     for (const itemId of ITENS_BLACK_MARKET) {
       const prices = getPricesForItem(data, itemId, 1);
-      const bmEntry = prices[BLACK_MARKET];
-      const bmPrice = bmEntry?.sell || 0;
-
-      if (!bmPrice || bmPrice <= 0) {
+      const bmPrice = prices[BLACK_MARKET];
+      if (!bmPrice || !bmPrice.buy) continue;
+      
+      for (const city of CIDADES) {
+        const cityPrice = prices[city];
+        if (!cityPrice || !cityPrice.sell) continue;
         
-        continue;
-      }
-
-      let melhorCidade = null;
-      let melhorPreco = Infinity;
-
-      for (const cidade of CIDADES_COM_BRECILIEN) {
-        const p = prices[cidade];
-        if (p && p.sell > 0 && p.sell < melhorPreco) {
-          melhorPreco = p.sell;
-          melhorCidade = cidade;
-        }
-      }
-
-      
-
-      if (!melhorCidade || melhorPreco >= bmPrice) continue;
-
-      const sellFee = Math.ceil(bmPrice * tax);
-      const netRevenue = bmPrice - sellFee;
-      const lucro = netRevenue - melhorPreco;
-      const lucroPct = melhorPreco > 0 ? (lucro / melhorPreco) : 0;
-
-      
-
-      if (lucro > 0) {
-        resultados.push({
-          itemId,
-          nome: getNomeItem(itemId),
-          categoria: getCategoria(itemId),
-          tier: (itemId.match(/^T([4-8])/)?.[1] || '4') + (itemId.match(/@([1-3])$/) ? '.' + itemId.match(/@([1-3])$/)[1] : ''),
-          comprarEm: melhorCidade,
-          precoCompra: melhorPreco,
-          precoBM: bmPrice,
-          lucro,
-          lucroPct,
-          updated: timeSince(prices[melhorCidade]?.sellDate)
-        });
-      }
-    }
-
-    
-    resultados.sort((a, b) => b.lucro - a.lucro);
-    bmDataCache = resultados;
-    filtrarBM();
-  } catch (e) {
-    console.error('BM Erro:', e);
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Erro ao buscar dados do Black Market</p><span>Detalhes no console (F12) — Verifique sua conexão</span></div>';
-  }
-}
-
-function filtrarBM() {
-  const grid = document.getElementById('bmGrid');
-  const filtro = document.getElementById('bmFilterInput').value.toLowerCase().trim();
-
-  let itens = bmDataCache;
-
-  if (filtro) {
-    itens = itens.filter(i => i.nome.toLowerCase().includes(filtro) || i.categoria.toLowerCase().includes(filtro));
-  }
-
-  itens = itens.filter(i => i.lucro >= bmMinProfit);
-
-  if (!itens.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Nenhuma oportunidade encontrada</p><span>Ajuste o filtro ou clique em Escanear para buscar dados</span></div>';
-    return;
-  }
-
-  grid.innerHTML = itens.map(i => {
-    const dotClass = i.updated === 'Agora' ? 'dot-green' : (parseInt(i.updated) < 60 ? 'dot-yellow' : 'dot-red');
-    const iconUrl = getItemIconUrl(i.itemId);
-    return '<div class="bm-card">' +
-      '<div class="bm-card-header">' +
-        '<div class="bm-card-name"><img src="' + iconUrl + '" class="item-icon-sm" alt="" onerror="this.style.display=\'none\'" style="margin-right:6px;"><span class="tier-badge">T' + i.tier + '</span>' + escapeHtml(i.nome) + '</div>' +
-        '<svg class="bm-card-info" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>' +
-      '</div>' +
-      '<div class="bm-price-row"><span class="label">Comprar em ' + i.comprarEm + '</span><span class="value price-sell">' + formatSilver(i.precoCompra) + '</span></div>' +
-      '<div class="bm-price-row"><span class="label">Black Market</span><span class="value price-bm">' + formatSilver(i.precoBM) + '</span></div>' +
-      '<div class="bm-card-footer">' +
-        '<div class="timestamp"><span class="dot ' + dotClass + '"></span>' + i.updated + '</div>' +
-        '<div><span class="bm-profit">+' + formatSilver(i.lucro) + '</span><span class="bm-profit-pct">(' + (i.lucroPct * 100).toFixed(1) + '%)</span></div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-}
-
-// ============================================
-// CRAFT & REFINO
-// ============================================
-
-// ===== Mapeamento de IDs de materiais para API =====
-const REFINO_IDS = {
-  metal: {
-    bruto: { 2: 'T2_ORE', 3: 'T3_ORE', 4: 'T4_ORE', 5: 'T5_ORE', 6: 'T6_ORE', 7: 'T7_ORE', 8: 'T8_ORE' },
-    refinado: { 2: 'T2_METALBAR', 3: 'T3_METALBAR', 4: 'T4_METALBAR', 5: 'T5_METALBAR', 6: 'T6_METALBAR', 7: 'T7_METALBAR', 8: 'T8_METALBAR' },
-    nomes: { bruto: 'Minério', refinado: 'Barra de Metal' }
-  },
-  couro: {
-    bruto: { 2: 'T2_HIDE', 3: 'T3_HIDE', 4: 'T4_HIDE', 5: 'T5_HIDE', 6: 'T6_HIDE', 7: 'T7_HIDE', 8: 'T8_HIDE' },
-    refinado: { 2: 'T2_LEATHER', 3: 'T3_LEATHER', 4: 'T4_LEATHER', 5: 'T5_LEATHER', 6: 'T6_LEATHER', 7: 'T7_LEATHER', 8: 'T8_LEATHER' },
-    nomes: { bruto: 'Pele', refinado: 'Couro' }
-  },
-  tecido: {
-    bruto: { 2: 'T2_FIBER', 3: 'T3_FIBER', 4: 'T4_FIBER', 5: 'T5_FIBER', 6: 'T6_FIBER', 7: 'T7_FIBER', 8: 'T8_FIBER' },
-    refinado: { 2: 'T2_CLOTH', 3: 'T3_CLOTH', 4: 'T4_CLOTH', 5: 'T5_CLOTH', 6: 'T6_CLOTH', 7: 'T7_CLOTH', 8: 'T8_CLOTH' },
-    nomes: { bruto: 'Fibra', refinado: 'Tecido' }
-  },
-  tabua: {
-    bruto: { 2: 'T2_WOOD', 3: 'T3_WOOD', 4: 'T4_WOOD', 5: 'T5_WOOD', 6: 'T6_WOOD', 7: 'T7_WOOD', 8: 'T8_WOOD' },
-    refinado: { 2: 'T2_PLANKS', 3: 'T3_PLANKS', 4: 'T4_PLANKS', 5: 'T5_PLANKS', 6: 'T6_PLANKS', 7: 'T7_PLANKS', 8: 'T8_PLANKS' },
-    nomes: { bruto: 'Tronco', refinado: 'Tábua' }
-  },
-  pedra: {
-    bruto: { 2: 'T2_ROCK', 3: 'T3_ROCK', 4: 'T4_ROCK', 5: 'T5_ROCK', 6: 'T6_ROCK', 7: 'T7_ROCK', 8: 'T8_ROCK' },
-    refinado: { 2: 'T2_STONEBLOCK', 3: 'T3_STONEBLOCK', 4: 'T4_STONEBLOCK', 5: 'T5_STONEBLOCK', 6: 'T6_STONEBLOCK', 7: 'T7_STONEBLOCK', 8: 'T8_STONEBLOCK' },
-    nomes: { bruto: 'Pedra Bruta', refinado: 'Bloco de Pedra' }
-  }
-};
-
-const MATERIAL_NOME_PARA_ID = {
-  'barra de metal t2': 'T2_METALBAR', 'barra t2': 'T2_METALBAR', 'metalbar t2': 'T2_METALBAR',
-  'barra de metal t3': 'T3_METALBAR', 'barra t3': 'T3_METALBAR', 'metalbar t3': 'T3_METALBAR',
-  'barra de metal t4': 'T4_METALBAR', 'barra t4': 'T4_METALBAR', 'metalbar t4': 'T4_METALBAR',
-  'barra de metal t5': 'T5_METALBAR', 'barra t5': 'T5_METALBAR', 'metalbar t5': 'T5_METALBAR',
-  'barra de metal t6': 'T6_METALBAR', 'barra t6': 'T6_METALBAR', 'metalbar t6': 'T6_METALBAR',
-  'barra de metal t7': 'T7_METALBAR', 'barra t7': 'T7_METALBAR', 'metalbar t7': 'T7_METALBAR',
-  'barra de metal t8': 'T8_METALBAR', 'barra t8': 'T8_METALBAR', 'metalbar t8': 'T8_METALBAR',
-  'minério t2': 'T2_ORE', 'ore t2': 'T2_ORE', 'minério t3': 'T3_ORE', 'ore t3': 'T3_ORE',
-  'minério t4': 'T4_ORE', 'ore t4': 'T4_ORE', 'minério t5': 'T5_ORE', 'ore t5': 'T5_ORE',
-  'minério t6': 'T6_ORE', 'ore t6': 'T6_ORE', 'minério t7': 'T7_ORE', 'ore t7': 'T7_ORE',
-  'minério t8': 'T8_ORE', 'ore t8': 'T8_ORE',
-  'couro t2': 'T2_LEATHER', 'leather t2': 'T2_LEATHER', 'couro t3': 'T3_LEATHER', 'leather t3': 'T3_LEATHER',
-  'couro t4': 'T4_LEATHER', 'leather t4': 'T4_LEATHER', 'couro t5': 'T5_LEATHER', 'leather t5': 'T5_LEATHER',
-  'couro t6': 'T6_LEATHER', 'leather t6': 'T6_LEATHER', 'couro t7': 'T7_LEATHER', 'leather t7': 'T7_LEATHER',
-  'couro t8': 'T8_LEATHER', 'leather t8': 'T8_LEATHER',
-  'pele t2': 'T2_HIDE', 'hide t2': 'T2_HIDE', 'pele t3': 'T3_HIDE', 'hide t3': 'T3_HIDE',
-  'pele t4': 'T4_HIDE', 'hide t4': 'T4_HIDE', 'pele t5': 'T5_HIDE', 'hide t5': 'T5_HIDE',
-  'pele t6': 'T6_HIDE', 'hide t6': 'T6_HIDE', 'pele t7': 'T7_HIDE', 'hide t7': 'T7_HIDE',
-  'pele t8': 'T8_HIDE', 'hide t8': 'T8_HIDE',
-  'tecido t2': 'T2_CLOTH', 'cloth t2': 'T2_CLOTH', 'tecido t3': 'T3_CLOTH', 'cloth t3': 'T3_CLOTH',
-  'tecido t4': 'T4_CLOTH', 'cloth t4': 'T4_CLOTH', 'tecido t5': 'T5_CLOTH', 'cloth t5': 'T5_CLOTH',
-  'tecido t6': 'T6_CLOTH', 'cloth t6': 'T6_CLOTH', 'tecido t7': 'T7_CLOTH', 'cloth t7': 'T7_CLOTH',
-  'tecido t8': 'T8_CLOTH', 'cloth t8': 'T8_CLOTH',
-  'fibra t2': 'T2_FIBER', 'fiber t2': 'T2_FIBER', 'fibra t3': 'T3_FIBER', 'fiber t3': 'T3_FIBER',
-  'fibra t4': 'T4_FIBER', 'fiber t4': 'T4_FIBER', 'fibra t5': 'T5_FIBER', 'fiber t5': 'T5_FIBER',
-  'fibra t6': 'T6_FIBER', 'fiber t6': 'T6_FIBER', 'fibra t7': 'T7_FIBER', 'fiber t7': 'T7_FIBER',
-  'fibra t8': 'T8_FIBER', 'fiber t8': 'T8_FIBER',
-  'tábua t2': 'T2_PLANKS', 'tabua t2': 'T2_PLANKS', 'planks t2': 'T2_PLANKS',
-  'tábua t3': 'T3_PLANKS', 'tabua t3': 'T3_PLANKS', 'planks t3': 'T3_PLANKS',
-  'tábua t4': 'T4_PLANKS', 'tabua t4': 'T4_PLANKS', 'planks t4': 'T4_PLANKS',
-  'tábua t5': 'T5_PLANKS', 'tabua t5': 'T5_PLANKS', 'planks t5': 'T5_PLANKS',
-  'tábua t6': 'T6_PLANKS', 'tabua t6': 'T6_PLANKS', 'planks t6': 'T6_PLANKS',
-  'tábua t7': 'T7_PLANKS', 'tabua t7': 'T7_PLANKS', 'planks t7': 'T7_PLANKS',
-  'tábua t8': 'T8_PLANKS', 'tabua t8': 'T8_PLANKS', 'planks t8': 'T8_PLANKS',
-  'tronco t2': 'T2_WOOD', 'wood t2': 'T2_WOOD', 'tronco t3': 'T3_WOOD', 'wood t3': 'T3_WOOD',
-  'tronco t4': 'T4_WOOD', 'wood t4': 'T4_WOOD', 'tronco t5': 'T5_WOOD', 'wood t5': 'T5_WOOD',
-  'tronco t6': 'T6_WOOD', 'wood t6': 'T6_WOOD', 'tronco t7': 'T7_WOOD', 'wood t7': 'T7_WOOD',
-  'tronco t8': 'T8_WOOD', 'wood t8': 'T8_WOOD',
-  'bloco de pedra t2': 'T2_STONEBLOCK', 'stoneblock t2': 'T2_STONEBLOCK',
-  'bloco de pedra t3': 'T3_STONEBLOCK', 'stoneblock t3': 'T3_STONEBLOCK',
-  'bloco de pedra t4': 'T4_STONEBLOCK', 'stoneblock t4': 'T4_STONEBLOCK',
-  'bloco de pedra t5': 'T5_STONEBLOCK', 'stoneblock t5': 'T5_STONEBLOCK',
-  'bloco de pedra t6': 'T6_STONEBLOCK', 'stoneblock t6': 'T6_STONEBLOCK',
-  'bloco de pedra t7': 'T7_STONEBLOCK', 'stoneblock t7': 'T7_STONEBLOCK',
-  'bloco de pedra t8': 'T8_STONEBLOCK', 'stoneblock t8': 'T8_STONEBLOCK',
-  'pedra bruta t2': 'T2_ROCK', 'rock t2': 'T2_ROCK', 'pedra bruta t3': 'T3_ROCK', 'rock t3': 'T3_ROCK',
-  'pedra bruta t4': 'T4_ROCK', 'rock t4': 'T4_ROCK', 'pedra bruta t5': 'T5_ROCK', 'rock t5': 'T5_ROCK',
-  'pedra bruta t6': 'T6_ROCK', 'rock t6': 'T6_ROCK', 'pedra bruta t7': 'T7_ROCK', 'rock t7': 'T7_ROCK',
-  'pedra bruta t8': 'T8_ROCK', 'rock t8': 'T8_ROCK',
-};
-
-async function buscarPrecoItem(itemId, cidade) {
-  const url = API_BASE + '/' + itemId + '.json?locations=' + encodeURIComponent(cidade) + '&qualities=1';
-  try {
-    const r = await fetch(url);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const data = await r.json();
-    if (Array.isArray(data) && data.length > 0) {
-      const item = data[0];
-      return item.sell_price_min || item.SellPriceMin || 0;
-    }
-  } catch (e) {
-    console.warn('Erro ao buscar preço de', itemId, ':', e.message);
-  }
-  return 0;
-}
-
-function nomeParaIdMaterial(nome) {
-  const chave = nome.toLowerCase().trim();
-  if (MATERIAL_NOME_PARA_ID[chave]) return MATERIAL_NOME_PARA_ID[chave];
-  for (const [key, id] of Object.entries(MATERIAL_NOME_PARA_ID)) {
-    if (chave.includes(key) || key.includes(chave)) return id;
-  }
-  return null;
-}
-
-async function buscarPrecosRefino() {
-  try {
-    const btn = document.getElementById('btnBuscarRefino');
-    const btnText = document.getElementById('btnBuscarRefinoText');
-    const tipo = document.getElementById('refinoReceita').value;
-    const tier = parseInt(document.getElementById('refinoTier').value);
-    const cidade = document.getElementById('refinoCidade').value;
-    const rec = REFINO_RECEITAS[tipo];
-    const map = REFINO_IDS[tipo];
-    if (!map) return;
-    const idBruto = map.bruto[tier];
-    const idRefinado = map.refinado[tier];
-    const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
-    const idTierAnterior = usaTierAnterior ? map.refinado[tier - 1] : null;
-
-    // FASE 3: Otimização de Rotas — cidades independentes
-    const cidadeBruto = document.getElementById('refinoCidadeBruto')?.value || cidade;
-    const cidadeTierAnterior = document.getElementById('refinoCidadeTierAnterior')?.value || cidade;
-    const cidadeVenda = document.getElementById('refinoCidadeVenda')?.value || cidade;
-
-    btn.disabled = true;
-    btnText.textContent = 'Buscando...';
-
-    const promises = [
-      buscarPrecoItem(idBruto, cidadeBruto),
-      buscarPrecoItem(idRefinado, cidadeVenda)
-    ];
-    if (idTierAnterior) {
-      promises.push(buscarPrecoItem(idTierAnterior, cidadeTierAnterior));
-    }
-
-    const resultados = await Promise.all(promises);
-    const precoBruto = resultados[0];
-    const precoRefinado = resultados[1];
-    const precoTierAnterior = idTierAnterior ? (resultados[2] || 0) : 0;
-
-    btn.disabled = false;
-    btnText.textContent = '🔍 Buscar Preços da API';
-    if (precoBruto > 0) document.getElementById('refinoPrecoBruto').value = precoBruto;
-    if (precoRefinado > 0) document.getElementById('refinoPrecoRefinado').value = precoRefinado;
-    if (precoTierAnterior > 0) document.getElementById('refinoPrecoTierAnterior').value = precoTierAnterior;
-    if (precoBruto > 0 || precoRefinado > 0 || precoTierAnterior > 0) calcularRefino();
-  } catch (e) {
-    console.warn('Erro em buscarPrecosRefino:', e);
-    const btn = document.getElementById('btnBuscarRefino');
-    const btnText = document.getElementById('btnBuscarRefinoText');
-    if (btn) btn.disabled = false;
-    if (btnText) btnText.textContent = '🔍 Buscar Preços da API';
-  }
-}
-
-async function buscarPrecoVendaCraft() {
-  const btn = document.getElementById('btnBuscarCraftVenda');
-  const btnText = document.getElementById('btnBuscarCraftVendaText');
-  const itemNome = document.getElementById('craftItemInput').value.trim();
-  const cidade = document.getElementById('craftCidade').value;
-  if (!itemNome) { alert('Digite o nome do item primeiro.'); return; }
-  const itemId = TRADUCOES[itemNome.toLowerCase()];
-  if (!itemId) { alert('Item não encontrado no dicionário. Verifique o nome ou digite o preço manualmente.'); return; }
-  btn.disabled = true;
-  btnText.textContent = 'Buscando...';
-  const preco = await buscarPrecoItem(itemId, cidade);
-  btn.disabled = false;
-  btnText.textContent = '🔍 Buscar Preço de Venda';
-  if (preco > 0) document.getElementById('craftPrecoVenda').value = preco;
-  else alert('Preço não encontrado na API para este item nesta cidade.');
-}
-
-async function buscarPrecoMaterial(n) {
-  const nomeEl = document.getElementById('craftMat' + n + 'Nome');
-  const precoEl = document.getElementById('craftMat' + n + 'Preco');
-  const cidade = document.getElementById('craftCidade').value;
-  if (!nomeEl || !precoEl) return;
-  const nome = nomeEl.value.trim();
-  if (!nome) { alert('Digite o nome do material primeiro.'); return; }
-  let itemId = TRADUCOES[nome.toLowerCase()] || nomeParaIdMaterial(nome);
-  if (!itemId) { alert('Material não reconhecido. Use nomes como "Barra de Metal T4", "Couro T5", etc.'); return; }
-  const btn = event.target;
-  const originalText = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = '...';
-  const preco = await buscarPrecoItem(itemId, cidade);
-  btn.disabled = false;
-  btn.textContent = originalText;
-  if (preco > 0) precoEl.value = preco;
-  else alert('Preço não encontrado na API para este material nesta cidade.');
-}
-
-const REFINO_RECEITAS = {
-  metal: { nome: 'Minério → Barra de Metal', bruto: 'Minério', refinado: 'Barra de Metal', ratio: 2, tierAnterior: true },
-  couro: { nome: 'Pele → Couro', bruto: 'Pele', refinado: 'Couro', ratio: 2, tierAnterior: true },
-  tecido: { nome: 'Fibra → Tecido', bruto: 'Fibra', refinado: 'Tecido', ratio: 2, tierAnterior: true },
-  tabua: { nome: 'Tronco → Tábua', bruto: 'Tronco', refinado: 'Tábua', ratio: 2, tierAnterior: true },
-  pedra: { nome: 'Pedra Bruta → Bloco de Pedra', bruto: 'Pedra Bruta', refinado: 'Bloco de Pedra', ratio: 2, tierAnterior: false }
-};;
-
-// ===== BÔNUS DE CIDADE & RRR BASE (v3.0) =====
-const BONUS_CIDADE_REFINO = {
-  Bridgewatch:  { metal: false, couro: false, tecido: false, tabua: false, pedra: true  },  // +40% Pedra
-  Caerleon:     { metal: false, couro: false, tecido: false, tabua: false, pedra: false },  // Sem bônus de refino
-  'Fort Sterling': { metal: false, couro: false, tecido: false, tabua: false, pedra: false },  // Sem bônus de refino
-  Lymhurst:     { metal: false, couro: false, tecido: true,  tabua: false, pedra: false },  // +40% Fibra/Tecido
-  Martlock:     { metal: false, couro: true,  tecido: false, tabua: false, pedra: false },  // +40% Peles/Couro
-  Thetford:     { metal: true,  couro: false, tecido: false, tabua: false, pedra: false },  // +40% Minério/Metal
-  Brecilien:    { metal: false, couro: false, tecido: false, tabua: false, pedra: false }   // Sem bônus de refino
-};
-
-const RRR_BASE = { t2: 0, t3: 0, t4: 15.2, t5: 15.2, t6: 15.2, t7: 15.2, t8: 15.2 };
-const RRR_BONUS_CIDADE = 21.5; // 36.7% com bônus - 15.2% sem bônus = 21.5%
-
-function getCidadeBonus(tipo, cidade) {
-  const map = BONUS_CIDADE_REFINO[cidade];
-  return map && map[tipo] === true;
-}
-
-function getRRRBase(tier, tipo, cidade) {
-  const base = RRR_BASE['t' + tier] || 0;
-  const bonus = getCidadeBonus(tipo, cidade) ? RRR_BONUS_CIDADE : 0;
-  // FASE 5: Toggle de Foco
-  const focusEl = document.getElementById('refinoFocusToggle');
-  const useFocus = focusEl ? focusEl.classList.contains('active') : false;
-  if (useFocus) {
-    return bonus > 0 ? 53.9 : 43.5;
-  }
-  return base + bonus;
-}
-
-function getNomeCategoria(tipo) {
-  const map = { metal: 'Metal', couro: 'Couro', tecido: 'Tecido', tabua: 'Tábua', pedra: 'Pedra' };
-  return map[tipo] || tipo;
-}
-
-
-function atualizarDescRefino() {
-  try {
-    const tipo = document.getElementById('refinoReceita').value;
-    const tier = parseInt(document.getElementById('refinoTier').value);
-    const cidade = document.getElementById('refinoCidade').value;
-    const qtd = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
-    const rec = REFINO_RECEITAS[tipo];
-    const map = REFINO_IDS[tipo];
-    let desc = '';
-    if (tier === 2) {
-      desc = (qtd * 1) + '× ' + map.nomes.bruto + ' T2 → ' + qtd + '× ' + map.nomes.refinado + ' T2';
-    } else if (tier === 3) {
-      desc = (qtd * 2) + '× ' + map.nomes.bruto + ' T3 → ' + qtd + '× ' + map.nomes.refinado + ' T3';
-    } else {
-      desc = (qtd * 2) + '× ' + map.nomes.bruto + ' T' + tier + ' + ' + qtd + '× ' + map.nomes.refinado + ' T' + (tier-1) + ' → ' + qtd + '× ' + map.nomes.refinado + ' T' + tier;
-    }
-    document.getElementById('refinoDesc').textContent = desc;
-
-    const tierAnteriorGroup = document.getElementById('refinoTierAnteriorGroup');
-    const custoTierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
-    if (tier >= 4 && rec && rec.tierAnterior) {
-      if (tierAnteriorGroup) tierAnteriorGroup.style.display = 'block';
-      if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'flex';
-      const tag = document.getElementById('refinoTierAnteriorTag');
-      if (tag) tag.textContent = map.nomes.refinado + ' T' + (tier-1);
-    } else {
-      if (tierAnteriorGroup) tierAnteriorGroup.style.display = 'none';
-      if (custoTierAnteriorRow) custoTierAnteriorRow.style.display = 'none';
-      const tainp = document.getElementById('refinoPrecoTierAnterior');
-      if (tainp) tainp.value = 0;
-    }
-
-    const banner = document.getElementById('refinoCidadeBonusBanner');
-    const bannerText = document.getElementById('refinoCidadeBonusText');
-    if (banner && bannerText) {
-      const temBonus = getCidadeBonus(tipo, cidade);
-      if (temBonus) {
-        banner.style.display = 'flex';
-        bannerText.textContent = cidade + ' tem bônus nativo de refino para ' + getNomeCategoria(tipo) + ' (+10% RRR)';
-      } else {
-        banner.style.display = 'none';
-      }
-    }
-
-    const rrrInfo = document.getElementById('refinoRRRInfo');
-    const rrrInput = document.getElementById('refinoRRR');
-    const base = getRRRBase(tier, tipo, cidade);
-    if (rrrInput) {
-      rrrInput.value = base.toFixed(1);
-    }
-    if (rrrInfo) {
-      const focusEl = document.getElementById('refinoFocusToggle');
-      const useFocus = focusEl ? focusEl.classList.contains('active') : false;
-      let infoText = 'Base: ' + base.toFixed(1) + '%';
-      if (useFocus) {
-        infoText += ' (Foco ativo)';
-      }
-      rrrInfo.textContent = infoText;
-    }
-  } catch (e) {
-    console.warn('Erro em atualizarDescRefino:', e);
-  }
-}
-
-
-function aplicarRRRAutomatico() {
-  try {
-    const tipo = document.getElementById('refinoReceita').value;
-    const tier = parseInt(document.getElementById('refinoTier').value);
-    const cidade = document.getElementById('refinoCidade').value;
-    const rrrAuto = getRRRBase(tier, tipo, cidade);
-    document.getElementById('refinoRRR').value = rrrAuto.toFixed(1);
-    calcularRefino();
-  } catch (e) {
-    console.warn('Erro em aplicarRRRAutomatico:', e);
-  }
-}
-
-
-async function buscarMelhorPrecoVendaRefino() {
-  const btn = document.getElementById('btnBuscarVendaRefino');
-  const btnText = document.getElementById('btnBuscarVendaRefinoText');
-  const tipo = document.getElementById('refinoReceita').value;
-  const tier = parseInt(document.getElementById('refinoTier').value);
-  const map = REFINO_IDS[tipo];
-  if (!map) return;
-
-  const idRefinado = map.refinado[tier];
-  const grid = document.getElementById('refinoPrecosVendaGrid');
-  grid.style.display = 'block';
-  btn.disabled = true;
-  btnText.textContent = 'Buscando preços...';
-
-  const cidades = ['Bridgewatch', 'Caerleon', 'Fort Sterling', 'Lymhurst', 'Martlock', 'Thetford', 'Brecilien'];
-  const precos = await Promise.all(
-    cidades.map(c => buscarPrecoItem(idRefinado, c).then(p => ({ cidade: c, preco: p })))
-  );
-
-  precos.sort((a, b) => b.preco - a.preco);
-
-  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px;">';
-  precos.forEach((p, i) => {
-    const destaque = i === 0 ? 'border:1px solid #4ade80;background:rgba(74,222,128,0.08);' : 'border:1px solid rgba(255,255,255,0.05);';
-    html += '<div style="padding:10px 8px;border-radius:8px;background:#111827;' + destaque + 'text-align:center;">' +
-      '<div style="font-size:11px;color:var(--gray);margin-bottom:4px;">' + p.cidade + '</div>' +
-      '<div style="font-size:15px;font-weight:700;color:' + (i === 0 ? '#4ade80' : '#fff') + ';">' + formatSilver(p.preco) + '</div>' +
-      '</div>';
-  });
-  html += '</div>';
-
-  const melhor = precos[0];
-  const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
-  const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
-  const taxaVenda = premium ? 0.04 : 0.08;
-  const receitaMelhor = melhor.preco * quantidade * (1 - taxaVenda);
-
-  const custoTotalText = document.getElementById('refinoCustoTotal').textContent;
-  const custoTotal = parseFloat(custoTotalText.replace(/[^0-9.]/g, '')) || 0;
-  const lucroMelhor = receitaMelhor - custoTotal;
-
-  html += '<div style="padding:12px;border-radius:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);">' +
-    '<div style="font-size:12px;color:var(--gray);margin-bottom:4px;">Lucro se vender em ' + melhor.cidade + '</div>' +
-    '<div style="font-size:20px;font-weight:700;color:' + (lucroMelhor >= 0 ? '#4ade80' : '#ef4444') + ';">' + (lucroMelhor >= 0 ? '+' : '') + formatSilver(lucroMelhor) + '</div>' +
-    '</div>';
-
-  grid.innerHTML = html;
-  btn.disabled = false;
-  btnText.textContent = '🔍 Ver preço de venda em todas as cidades';
-}
-
-// ===== FASE 7: Scan Automático de Rotas =====
-let otimizacaoAbortada = false;
-
-async function buscarPrecoItemMultiCidades(itemId, cidades) {
-  try {
-    const data = await fetchPrices([itemId], cidades, [1]);
-    const result = {};
-    data.forEach(e => {
-      if (e.item_id === itemId && cidades.includes(e.city)) {
-        result[e.city] = e.sell_price_min || 0;
-      }
-    });
-    return result;
-  } catch (e) {
-    console.warn('Erro em buscarPrecoItemMultiCidades:', e);
-    return {};
-  }
-}
-
-function calcularLucroCombinacao(tipo, tier, quantidade, taxaEstacao, premium, useFocus, custoTransporte, descontarTransporte, cidadeRefino, precoBruto, precoT1, precoRefinado) {
-  const rec = REFINO_RECEITAS[tipo];
-  const ratio = rec ? rec.ratio : 2;
-  const taxaVenda = premium ? 0.04 : 0.08;
-  const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
-
-  const custoMP = precoBruto * ratio * quantidade;
-  const custoTierAnterior = usaTierAnterior ? (precoT1 * quantidade) : 0;
-  const custoMateriaisTotal = custoMP + custoTierAnterior;
-
-  const receitaBruta = precoRefinado * quantidade;
-  const taxaTotal = taxaEstacao * quantidade;
-
-  // RRR baseado na cidade de REFINO
-  const rrr = getRRRBase(tier, tipo, cidadeRefino);
-  const retornoValor = custoMateriaisTotal * (rrr / 100);
-  const imposto = receitaBruta * taxaVenda;
-  const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
-  const transporte = descontarTransporte ? custoTransporte : 0;
-  const lucroLiquido = receitaBruta - imposto - custoTotal - transporte;
-
-  return {
-    lucroLiquido,
-    lucroPct: custoTotal > 0 ? (lucroLiquido / custoTotal) : 0,
-    custoTotal,
-    receitaBruta,
-    imposto,
-    retornoValor,
-    taxaTotal,
-    custoMP,
-    custoTierAnterior,
-    rrr,
-    transporte
-  };
-}
-
-async function otimizarRotaRefino() {
-  try {
-    otimizacaoAbortada = false;
-    const btn = document.getElementById('btnOtimizarRota');
-    const btnText = document.getElementById('btnOtimizarRotaText');
-    const btnCancel = document.getElementById('btnCancelarOtimizacao');
-    const resultadoDiv = document.getElementById('refinoOtimizacaoResultado');
-
-    const tipo = document.getElementById('refinoReceita').value;
-    const tier = parseInt(document.getElementById('refinoTier').value);
-    const cidadeRefino = document.getElementById('refinoCidade').value;
-    const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
-    const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
-    const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
-    const useFocus = document.getElementById('refinoFocusToggle').classList.contains('active');
-    const custoTransporte = parseFloat(document.getElementById('refinoCustoTransporte').value) || 0;
-    const descontarTransporte = document.getElementById('refinoTransporteToggle').classList.contains('active');
-
-    const map = REFINO_IDS[tipo];
-    if (!map) return;
-
-    const idBruto = map.bruto[tier];
-    const idRefinado = map.refinado[tier];
-    const usaTierAnterior = (tier >= 4 && REFINO_RECEITAS[tipo] && REFINO_RECEITAS[tipo].tierAnterior);
-    const idTierAnterior = usaTierAnterior ? map.refinado[tier - 1] : null;
-
-    const cidades = ['Bridgewatch', 'Caerleon', 'Fort Sterling', 'Lymhurst', 'Martlock', 'Thetford', 'Brecilien'];
-
-    btn.disabled = true;
-    btnText.textContent = 'Buscando preços...';
-    btnCancel.style.display = 'block';
-    resultadoDiv.style.display = 'block';
-    resultadoDiv.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 12px;"></div><p>Buscando preços nas 7 cidades...</p><p style="font-size:12px;color:var(--gray);">Etapa 1/3: Bruto, Refinado' + (usaTierAnterior ? ', T-1' : '') + '</p></div>';
-
-    // Buscar preços em paralelo (3 requisições = cobre todas as 343 combinações)
-    const promises = [
-      buscarPrecoItemMultiCidades(idBruto, cidades),
-      buscarPrecoItemMultiCidades(idRefinado, cidades)
-    ];
-    if (idTierAnterior) {
-      promises.push(buscarPrecoItemMultiCidades(idTierAnterior, cidades));
-    }
-
-    const resultados = await Promise.all(promises);
-    if (otimizacaoAbortada) return;
-
-    const precosBruto = resultados[0];
-    const precosRefinado = resultados[1];
-    const precosT1 = idTierAnterior ? resultados[2] : {};
-
-    resultadoDiv.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 12px;"></div><p>Calculando 343 combinações...</p></div>';
-
-    // Calcular lucro para todas as combinações
-    const rotas = [];
-    for (const cb of cidades) {
-      const pb = precosBruto[cb];
-      if (!pb || pb <= 0) continue;
-      for (const cv of cidades) {
-        const pr = precosRefinado[cv];
-        if (!pr || pr <= 0) continue;
-
-        if (usaTierAnterior) {
-          for (const ct of cidades) {
-            if (otimizacaoAbortada) return;
-            const pt = precosT1[ct];
-            if (!pt || pt <= 0) continue;
-            const calc = calcularLucroCombinacao(tipo, tier, quantidade, taxaEstacao, premium, useFocus, custoTransporte, descontarTransporte, cidadeRefino, pb, pt, pr);
-            rotas.push({
-              cidadeBruto: cb, cidadeT1: ct, cidadeVenda: cv,
-              precoBruto: pb, precoT1: pt, precoRefinado: pr,
-              ...calc
-            });
-          }
-        } else {
-          if (otimizacaoAbortada) return;
-          const calc = calcularLucroCombinacao(tipo, tier, quantidade, taxaEstacao, premium, useFocus, custoTransporte, descontarTransporte, cidadeRefino, pb, 0, pr);
-          rotas.push({
-            cidadeBruto: cb, cidadeT1: null, cidadeVenda: cv,
-            precoBruto: pb, precoT1: 0, precoRefinado: pr,
-            ...calc
+        const buyCost = cityPrice.sell;
+        const sellRevenue = bmPrice.buy;
+        const sellFee = Math.ceil(sellRevenue * tax);
+        const netRevenue = sellRevenue - sellFee;
+        const profit = netRevenue - buyCost;
+        const profitPct = buyCost > 0 ? (profit / buyCost) : 0;
+        
+        if (profit > 0) {
+          bmData.push({
+            itemId,
+            city,
+            buy: buyCost,
+            sell: sellRevenue,
+            profit,
+            profitPct,
+            updated: timeSince(cityPrice.sellDate || bmPrice.buyDate)
           });
         }
       }
     }
-
-    if (otimizacaoAbortada) return;
-
-    rotas.sort((a, b) => b.lucroLiquido - a.lucroLiquido);
-    const topRotas = rotas.slice(0, 3);
-
-    renderTopRotas(topRotas, rotas.length);
-
-    btn.disabled = false;
-    btnText.textContent = '🚀 Otimizar Rota (343 combinações)';
-    btnCancel.style.display = 'none';
+    
+    bmData.sort((a, b) => b.profit - a.profit);
+    filtrarBM();
   } catch (e) {
-    console.warn('Erro em otimizarRotaRefino:', e);
-    const btn = document.getElementById('btnOtimizarRota');
-    const btnText = document.getElementById('btnOtimizarRotaText');
-    const btnCancel = document.getElementById('btnCancelarOtimizacao');
-    const resultadoDiv = document.getElementById('refinoOtimizacaoResultado');
-    if (btn) btn.disabled = false;
-    if (btnText) btnText.textContent = '🚀 Otimizar Rota (343 combinações)';
-    if (btnCancel) btnCancel.style.display = 'none';
-    if (resultadoDiv) {
-      resultadoDiv.style.display = 'block';
-      resultadoDiv.innerHTML = '<div style="text-align:center;padding:20px;color:#ef4444;"><p>Erro ao otimizar rotas</p><p style="font-size:12px;">Verifique sua conexão e tente novamente</p></div>';
-    }
+    console.error(e);
+  } finally {
+    setLoading(false);
   }
 }
 
-function cancelarOtimizacao() {
-  otimizacaoAbortada = true;
-  const btn = document.getElementById('btnOtimizarRota');
-  const btnText = document.getElementById('btnOtimizarRotaText');
-  const btnCancel = document.getElementById('btnCancelarOtimizacao');
-  const resultadoDiv = document.getElementById('refinoOtimizacaoResultado');
-  if (btn) btn.disabled = false;
-  if (btnText) btnText.textContent = '🚀 Otimizar Rota (343 combinações)';
-  if (btnCancel) btnCancel.style.display = 'none';
-  if (resultadoDiv) {
-    resultadoDiv.style.display = 'block';
-    resultadoDiv.innerHTML = '<div style="text-align:center;padding:16px;color:var(--gray);"><p>Otimização cancelada pelo usuário</p></div>';
-  }
-}
-
-function renderTopRotas(rotas, totalAnalisadas) {
-  const container = document.getElementById('refinoOtimizacaoResultado');
-  if (!container) return;
-
-  let html = '<div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Top 3 de ' + totalAnalisadas + ' combinações analisadas</div>';
-  html += '<div class="rotas-grid">';
-
-  rotas.forEach((r, i) => {
-    const rankColors = ['#c9a84c', '#a0a0a0', '#cd7f32']; // ouro, prata, bronze
-    const rankColor = rankColors[i] || '#888';
-    const perigoBruto = (r.cidadeBruto === 'Caerleon' || r.cidadeBruto === 'Brecilien') ? ' 🚨' : '';
-    const perigoT1 = (r.cidadeT1 === 'Caerleon' || r.cidadeT1 === 'Brecilien') ? ' 🚨' : '';
-    const perigoVenda = (r.cidadeVenda === 'Caerleon' || r.cidadeVenda === 'Brecilien') ? ' 🚨' : '';
-
-    html += '<div class="rota-card">';
-    html += '<div class="rota-card-header">';
-    html += '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:' + rankColor + ';color:#0b0f19;font-size:12px;font-weight:700;">' + (i + 1) + '</span>';
-    html += 'Melhor Rota #' + (i + 1);
-    html += '</div>';
-    html += '<div class="rota-card-row"><span>Comprar bruto</span><span class="value">' + r.cidadeBruto + perigoBruto + ' · ' + formatSilver(r.precoBruto) + '</span></div>';
-    if (r.cidadeT1) {
-      html += '<div class="rota-card-row"><span>Comprar T-1</span><span class="value">' + r.cidadeT1 + perigoT1 + ' · ' + formatSilver(r.precoT1) + '</span></div>';
-    }
-    html += '<div class="rota-card-row"><span>Vender refinado</span><span class="value">' + r.cidadeVenda + perigoVenda + ' · ' + formatSilver(r.precoRefinado) + '</span></div>';
-    html += '<div class="rota-card-row"><span>RRR aplicado</span><span class="value">' + r.rrr.toFixed(1) + '%</span></div>';
-    if (r.transporte > 0) {
-      html += '<div class="rota-card-row"><span>Transporte</span><span class="value" style="color:#ef4444;">-' + formatSilver(r.transporte) + '</span></div>';
-    }
-    html += '<div class="rota-card-profit">';
-    html += '<span class="label">Lucro Líquido</span>';
-    html += '<span class="value" style="color:' + (r.lucroLiquido >= 0 ? '#4ade80' : '#ef4444') + ';">' + (r.lucroLiquido >= 0 ? '+' : '') + formatSilver(r.lucroLiquido) + '</span>';
-    html += '</div>';
-    html += '<div style="text-align:right;font-size:11px;color:var(--gray-dim);margin-top:4px;">' + (r.lucroPct * 100).toFixed(1) + '% de margem</div>';
-    html += '</div>';
+function filtrarBM() {
+  const filtro = document.getElementById('bmFilterInput').value.toLowerCase();
+  const grid = document.getElementById('bmGrid');
+  
+  const filtrados = bmData.filter(o => {
+    const nome = getNomeItem(o.itemId).toLowerCase();
+    if (!nome.includes(filtro)) return false;
+    if (o.profit < bmMinProfit) return false;
+    return true;
   });
-
-  html += '</div>';
-  container.innerHTML = html;
-  container.style.display = 'block';
+  
+  if (filtrados.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Nenhuma oportunidade encontrada</p><span>Tente ajustar os filtros ou escanear novamente</span></div>';
+    return;
+  }
+  
+  grid.innerHTML = filtrados.map(o => {
+    const nome = getNomeItem(o.itemId);
+    const iconUrl = getItemIconUrl(o.itemId);
+    return '<div class="bm-card">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">' +
+      '<img src="' + iconUrl + '" style="width:36px;height:36px;border-radius:6px;background:#111827;" alt="" onerror="this.style.display=\'none\'">' +
+      '<div><div style="font-size:13px;font-weight:600;">' + escapeHtml(nome) + '</div><div style="font-size:11px;color:var(--gray);">' + o.city + ' → Black Market</div></div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--gray);">Compra</span><span>' + formatSilver(o.buy) + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--gray);">Venda BM</span><span>' + formatSilver(o.sell) + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">' +
+      '<span style="color:var(--green);">+' + formatSilver(o.profit) + '</span>' +
+      '<span style="color:var(--green-dim);font-size:12px;">' + formatPercent(o.profitPct) + '</span>' +
+      '</div>' +
+      '</div>';
+  }).join('');
 }
 
-function calcularRefino() {
-  try {
-    const tipo = document.getElementById('refinoReceita').value;
-    const tier = parseInt(document.getElementById('refinoTier').value);
-    const rec = REFINO_RECEITAS[tipo];
-    const precoBruto = parseFloat(document.getElementById('refinoPrecoBruto').value) || 0;
-    const precoRefinado = parseFloat(document.getElementById('refinoPrecoRefinado').value) || 0;
-    const precoTierAnterior = parseFloat(document.getElementById('refinoPrecoTierAnterior').value) || 0;
-    const quantidade = parseFloat(document.getElementById('refinoQuantidade').value) || 0;
-    const rrr = parseFloat(document.getElementById('refinoRRR').value) || 0;
-    const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
-    const premium = document.getElementById('refinoPremiumToggle').classList.contains('active');
-    const taxaVenda = premium ? 0.04 : 0.08;
-    const ratio = rec ? rec.ratio : 2;
-
-    const custoMP = precoBruto * ratio * quantidade;
-    const usaTierAnterior = (tier >= 4 && rec && rec.tierAnterior);
-    const custoTierAnterior = usaTierAnterior ? (precoTierAnterior * quantidade) : 0;
-    const custoMateriaisTotal = custoMP + custoTierAnterior;
-
-    const receitaBruta = precoRefinado * quantidade;
-    const taxaTotal = taxaEstacao * quantidade;
-    const retornoValor = custoMateriaisTotal * (rrr / 100);
-    const imposto = receitaBruta * taxaVenda;
-    const custoTotal = custoMateriaisTotal + taxaTotal - retornoValor;
-
-    // FASE 6: Custo de Transporte
-    const custoTransporteInput = parseFloat(document.getElementById('refinoCustoTransporte').value) || 0;
-    const descontarTransporte = document.getElementById('refinoTransporteToggle').classList.contains('active');
-    const custoTransporte = descontarTransporte ? custoTransporteInput : 0;
-
-    const lucroLiquido = receitaBruta - imposto - custoTotal - custoTransporte;
-    const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
-
-    document.getElementById('refinoCustoTotal').textContent = formatSilver(custoTotal);
-    document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
-    document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
-
-    const tierAnteriorRow = document.getElementById('refinoCustoTierAnteriorRow');
-    const tierAnteriorVal = document.getElementById('refinoCustoTierAnterior');
-    if (tierAnteriorRow && tierAnteriorVal) {
-      if (usaTierAnterior) {
-        tierAnteriorRow.style.display = 'flex';
-        tierAnteriorVal.textContent = formatSilver(custoTierAnterior);
-      } else {
-        tierAnteriorRow.style.display = 'none';
-      }
-    }
-
-    // FASE 6: Linha de transporte no breakdown
-    const transporteRow = document.getElementById('refinoTransporteRow');
-    const transporteVal = document.getElementById('refinoCustoTransporteVal');
-    if (transporteRow && transporteVal) {
-      if (descontarTransporte && custoTransporte > 0) {
-        transporteRow.style.display = 'flex';
-        transporteVal.textContent = '-' + formatSilver(custoTransporte);
-      } else {
-        transporteRow.style.display = 'none';
-      }
-    }
-
-    document.getElementById('refinoTaxa').textContent = formatSilver(taxaTotal);
-    document.getElementById('refinoRetorno').textContent = '+' + formatSilver(retornoValor);
-    document.getElementById('refinoImposto').textContent = '-' + formatSilver(imposto);
-    document.getElementById('refinoLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
-    document.getElementById('refinoLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
-    document.getElementById('refinoLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
-    document.getElementById('refinoLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red-dim)';
-    document.getElementById('refinoNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado com dados atuais' : 'Prejuízo estimado — revise os preços';
-  } catch (e) {
-    console.warn('Erro em calcularRefino:', e);
-  }
+function carregarBM() {
+  if (bmData.length > 0) filtrarBM();
 }
-
-function calcularCraft() {
-  const precoVenda = parseFloat(document.getElementById('craftPrecoVenda').value) || 0;
-  const quantidade = parseFloat(document.getElementById('craftQuantidade').value) || 0;
-  const rrr = parseFloat(document.getElementById('craftRRR').value) || 0;
-  const taxaEstacao = parseFloat(document.getElementById('craftTaxaEstacao').value) || 0;
-  const premium = document.getElementById('craftPremiumToggle').classList.contains('active');
-  const taxaVenda = premium ? 0.04 : 0.08;
-  const materiais = [];
-  let custoMP = 0;
-  for (let i = 1; i <= craftMaterialCount; i++) {
-    const nomeEl = document.getElementById('craftMat' + i + 'Nome');
-    const qtdEl = document.getElementById('craftMat' + i + 'Qtd');
-    const precoEl = document.getElementById('craftMat' + i + 'Preco');
-    if (nomeEl && qtdEl && precoEl) {
-      const nome = nomeEl.value || 'Material ' + i;
-      const qtd = parseFloat(qtdEl.value) || 0;
-      const preco = parseFloat(precoEl.value) || 0;
-      const custo = qtd * preco * quantidade;
-      custoMP += custo;
-      materiais.push({ nome, qtd, preco, custo });
-    }
-  }
-  const receitaBruta = precoVenda * quantidade;
-  const taxaTotal = taxaEstacao * quantidade;
-  const retornoValor = custoMP * (rrr / 100);
-  const imposto = receitaBruta * taxaVenda;
-  const custoTotal = custoMP + taxaTotal - retornoValor;
-
-  // FASE 6: Custo de Transporte
-  const custoTransporteInput = parseFloat(document.getElementById('craftCustoTransporte').value) || 0;
-  const descontarTransporte = document.getElementById('craftTransporteToggle').classList.contains('active');
-  const custoTransporte = descontarTransporte ? custoTransporteInput : 0;
-
-  const lucroLiquido = receitaBruta - imposto - custoTotal - custoTransporte;
-  const lucroPct = custoTotal > 0 ? (lucroLiquido / custoTotal) : 0;
-  document.getElementById('craftCustoTotal').textContent = formatSilver(custoTotal);
-  document.getElementById('craftReceitaBruta').textContent = formatSilver(receitaBruta);
-  const breakdownHTML = materiais.map(m =>
-    '<div class="breakdown-row"><span class="label">' + escapeHtml(m.nome) + ' (' + m.qtd + '×' + formatSilver(m.preco) + ')</span><span class="amount">' + formatSilver(m.custo) + '</span></div>'
-  ).join('');
-  document.getElementById('craftBreakdownMateriais').innerHTML = breakdownHTML;
-
-  // FASE 6: Linha de transporte no breakdown
-  const transporteRow = document.getElementById('craftTransporteRow');
-  const transporteVal = document.getElementById('craftCustoTransporteVal');
-  if (transporteRow && transporteVal) {
-    if (descontarTransporte && custoTransporte > 0) {
-      transporteRow.style.display = 'flex';
-      transporteVal.textContent = '-' + formatSilver(custoTransporte);
-    } else {
-      transporteRow.style.display = 'none';
-    }
-  }
-
-  document.getElementById('craftTaxa').textContent = formatSilver(taxaTotal);
-  document.getElementById('craftRetorno').textContent = '+' + formatSilver(retornoValor);
-  document.getElementById('craftImposto').textContent = '-' + formatSilver(imposto);
-  document.getElementById('craftLucroTotal').textContent = (lucroLiquido >= 0 ? '+' : '') + formatSilver(lucroLiquido);
-  document.getElementById('craftLucroTotal').style.color = lucroLiquido >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('craftLucroPct').textContent = '(' + (lucroPct * 100).toFixed(1) + '%)';
-  document.getElementById('craftLucroPct').style.color = lucroLiquido >= 0 ? 'var(--green-dim)' : 'var(--red-dim)';
-  document.getElementById('craftNota').textContent = lucroLiquido >= 0 ? 'Lucro estimado com dados atuais' : 'Prejuízo estimado — revise os preços';
-}
-
-
-// ===== FASE 6: Aviso de Zona Perigosa =====
-const CIDADES_PERIGOSAS = ['Caerleon', 'Brecilien'];
-
-function atualizarAvisoPerigoRefino() {
-  try {
-    const cidades = [];
-    const cb = document.getElementById('refinoCidadeBruto');
-    const ct = document.getElementById('refinoCidadeTierAnterior');
-    const cv = document.getElementById('refinoCidadeVenda');
-    const cr = document.getElementById('refinoCidade');
-    if (cb) cidades.push(cb.value);
-    if (ct) cidades.push(ct.value);
-    if (cv) cidades.push(cv.value);
-    if (cr) cidades.push(cr.value);
-    const temPerigo = cidades.some(c => CIDADES_PERIGOSAS.includes(c));
-    const aviso = document.getElementById('refinoAvisoPerigo');
-    if (aviso) aviso.style.display = temPerigo ? 'flex' : 'none';
-  } catch (e) {
-    console.warn('Erro em atualizarAvisoPerigoRefino:', e);
-  }
-}
-
-function atualizarAvisoPerigoCraft() {
-  try {
-    const cidade = document.getElementById('craftCidade')?.value;
-    const temPerigo = CIDADES_PERIGOSAS.includes(cidade);
-    const aviso = document.getElementById('craftAvisoPerigo');
-    if (aviso) aviso.style.display = temPerigo ? 'flex' : 'none';
-  } catch (e) {
-    console.warn('Erro em atualizarAvisoPerigoCraft:', e);
-  }
-}
+// ============================================
+// CRAFT & REFINO
+// ============================================
 
 function switchCraftTab(tab) {
   document.querySelectorAll('.craft-tab').forEach(t => t.classList.remove('active'));
   event.target.classList.add('active');
-  document.getElementById('craftRefinoPanel').style.display = tab === 'refino' ? 'grid' : 'none';
-  document.getElementById('craftCraftPanel').style.display = tab === 'craft' ? 'grid' : 'none';
+  
+  if (tab === 'refino') {
+    document.getElementById('craftRefinoPanel').style.display = '';
+    document.getElementById('craftCraftPanel').style.display = 'none';
+  } else {
+    document.getElementById('craftRefinoPanel').style.display = 'none';
+    document.getElementById('craftCraftPanel').style.display = '';
+  }
+}
+
+// REFINO
+const REFINO_INFO = {
+  metal: { nome: 'Barra de Metal', bruto: 'Minério', tierAnterior: true, ratio: 2 },
+  couro: { nome: 'Couro', bruto: 'Pele', tierAnterior: true, ratio: 2 },
+  tecido: { nome: 'Tecido', bruto: 'Fibra', tierAnterior: true, ratio: 2 },
+  tabua: { nome: 'Tábua', bruto: 'Tronco', tierAnterior: true, ratio: 2 },
+  pedra: { nome: 'Bloco de Pedra', bruto: 'Pedra Bruta', tierAnterior: false, ratio: 2 }
+};
+
+const CIDADES_BONUS = {
+  Bridgewatch: { metal: true, couro: false, tecido: false, tabua: false, pedra: false },  // +40% Minério/Metal
+  Lymhurst:     { metal: false, couro: false, tecido: true,  tabua: false, pedra: false },  // +40% Fibra/Tecido
+  Martlock:     { metal: false, couro: true,  tecido: false, tabua: false, pedra: false },  // +40% Peles/Couro
+  Thetford:     { metal: false, couro: false, tecido: false, tabua: true,  pedra: false },  // +40% Troncos/Tábuas
+  Fort Sterling:{ metal: false, couro: false, tecido: false, tabua: false, pedra: true },   // +40% Pedra
+  Caerleon:     { metal: false, couro: false, tecido: false, tabua: false, pedra: false },
+  Brecilien:    { metal: false, couro: false, tecido: false, tabua: false, pedra: false }
+};
+
+function atualizarDescRefino() {
+  const receita = document.getElementById('refinoReceita').value;
+  const tier = document.getElementById('refinoTier').value;
+  const info = REFINO_INFO[receita];
+  const qtd = document.getElementById('refinoQuantidade').value || 1;
+  
+  const tierAnterior = parseInt(tier) > 2;
+  const tierAnteriorNum = tierAnterior ? (parseInt(tier) - 1) : null;
+  
+  let desc = (info.ratio * qtd) + '× ' + info.bruto + ' T' + tier;
+  if (tierAnterior) desc += ' (usa ' + qtd + '× ' + info.nome + ' T' + tierAnteriorNum + ')';
+  desc += ' → ' + qtd + '× ' + info.nome + ' T' + tier;
+  
+  document.getElementById('refinoDesc').textContent = desc;
+  
+  // Mostrar/esconder campo de tier anterior
+  const tierGroup = document.getElementById('refinoTierAnteriorGroup');
+  const tierTag = document.getElementById('refinoTierAnteriorTag');
+  if (tierAnterior) {
+    tierGroup.style.display = '';
+    tierTag.textContent = 'T' + tierAnteriorNum;
+  } else {
+    tierGroup.style.display = 'none';
+  }
+  
+  // Mostrar banner de bônus da cidade
+  const cidade = document.getElementById('refinoCidade').value;
+  const bonus = CIDADES_BONUS[cidade];
+  const banner = document.getElementById('refinoCidadeBonusBanner');
+  const bannerText = document.getElementById('refinoCidadeBonusText');
+  
+  if (bonus && bonus[receita]) {
+    banner.style.display = 'flex';
+    bannerText.textContent = cidade + ' oferece +40% de retorno de recursos ao refinar ' + info.nome + '!';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function getRefinoPremiumTax() {
+  return document.getElementById('refinoPremiumToggle').classList.contains('active') ? 0.04 : 0.08;
 }
 
 function updateRefinoPremiumLabel() {
-  const toggle = document.getElementById('refinoPremiumToggle');
-  const label = toggle.querySelector('.toggle-label');
-  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
+  const tax = getRefinoPremiumTax();
+  // label atualizado
 }
 
-function updateCraftPremiumLabel() {
-  const toggle = document.getElementById('craftPremiumToggle');
-  const label = toggle.querySelector('.toggle-label');
-  label.textContent = toggle.classList.contains('active') ? 'Conta Premium (imposto 4%)' : 'Sem Premium (imposto 8%)';
+function getRRRBase(tier) {
+  const t = parseInt(tier);
+  if (t <= 3) return 0;
+  if (t === 4) return 36.7;
+  if (t === 5) return 39.6;
+  if (t === 6) return 42.5;
+  if (t === 7) return 45.4;
+  if (t === 8) return 48.3;
+  return 36.7;
 }
 
-function addMaterialRow() {
-  craftMaterialCount++;
-  const container = document.getElementById('craftMateriais');
-  const row = document.createElement('div');
-  row.className = 'craft-material-row';
-  row.id = 'craftMatRow' + craftMaterialCount;
-  row.innerHTML =
-    '<input type="text" class="form-input" placeholder="Material ' + craftMaterialCount + '" style="flex:1;" id="craftMat' + craftMaterialCount + 'Nome">' +
-    '<input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat' + craftMaterialCount + 'Qtd" value="1">' +
-    '<input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat' + craftMaterialCount + 'Preco" value="0">' +
-    '<button class="btn-api-buscar" onclick="buscarPrecoMaterial(' + craftMaterialCount + ')" title="Buscar preço na API">🔍</button>' +
-    '<button class="btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="removeMaterialRow(' + craftMaterialCount + ')">✕</button>';
-  container.appendChild(row);
+function getRRRComFoco(tier) {
+  const t = parseInt(tier);
+  if (t <= 3) return 0;
+  if (t === 4) return 53.0;
+  if (t === 5) return 55.9;
+  if (t === 6) return 58.8;
+  if (t === 7) return 61.7;
+  if (t === 8) return 64.6;
+  return 53.0;
 }
 
-function removeMaterialRow(n) {
-  const row = document.getElementById('craftMatRow' + n);
-  if (row) row.remove();
+function aplicarRRRAutomatico() {
+  const tier = document.getElementById('refinoTier').value;
+  const comFoco = document.getElementById('refinoFocusToggle').classList.contains('active');
+  const rrr = comFoco ? getRRRComFoco(tier) : getRRRBase(tier);
+  document.getElementById('refinoRRR').value = rrr.toFixed(1);
+  
+  const infoText = document.getElementById('refinoRRRInfo');
+  infoText.textContent = comFoco ? 'RRR com Foco (T' + tier + ')' : 'RRR sem Foco (T' + tier + ')';
 }
+
+function calcularRefino() {
+  const receita = document.getElementById('refinoReceita').value;
+  const tier = parseInt(document.getElementById('refinoTier').value);
+  const qtd = parseInt(document.getElementById('refinoQuantidade').value) || 0;
+  const precoBruto = parseFloat(document.getElementById('refinoPrecoBruto').value) || 0;
+  const precoRefinado = parseFloat(document.getElementById('refinoPrecoRefinado').value) || 0;
+  const precoTierAnterior = parseFloat(document.getElementById('refinoPrecoTierAnterior').value) || 0;
+  const rrr = parseFloat(document.getElementById('refinoRRR').value) || 0;
+  const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
+  const tax = getRefinoPremiumTax();
+  const info = REFINO_INFO[receita];
+  
+  const usarTransporte = document.getElementById('refinoTransporteToggle').classList.contains('active');
+  const custoTransporte = usarTransporte ? (parseFloat(document.getElementById('refinoCustoTransporte').value) || 0) : 0;
+  
+  const ratio = info.ratio;
+  const usaTierAnterior = info.tierAnterior && tier > 2;
+  
+  const qtdBruto = qtd * ratio;
+  const custoBruto = qtdBruto * precoBruto;
+  const custoTierAnt = usaTierAnterior ? (qtd * precoTierAnterior) : 0;
+  const custoMP = custoBruto + custoTierAnt;
+  const custoEstacao = taxaEstacao * qtd;
+  
+  const retornoPct = rrr / 100;
+  const retornoValor = custoBruto * retornoPct;
+  
+  const receitaBruta = qtd * precoRefinado;
+  const imposto = Math.ceil(receitaBruta * tax);
+  const lucro = receitaBruta - custoMP - custoEstacao + retornoValor - custoTransporte - imposto;
+  const lucroPct = custoMP > 0 ? (lucro / custoMP) : 0;
+  
+  document.getElementById('refinoCustoTotal').textContent = formatSilver(custoMP + custoEstacao);
+  document.getElementById('refinoReceitaBruta').textContent = formatSilver(receitaBruta);
+  document.getElementById('refinoCustoMP').textContent = formatSilver(custoMP);
+  document.getElementById('refinoTaxa').textContent = formatSilver(custoEstacao);
+  document.getElementById('refinoRetorno').textContent = '+' + formatSilver(retornoValor);
+  document.getElementById('refinoImposto').textContent = '-' + formatSilver(imposto);
+  document.getElementById('refinoLucroTotal').textContent = (lucro >= 0 ? '+' : '') + formatSilver(lucro);
+  document.getElementById('refinoLucroTotal').className = 'result-total-value ' + (lucro >= 0 ? 'positive' : 'negative');
+  document.getElementById('refinoLucroPct').textContent = formatPercent(lucroPct);
+  document.getElementById('refinoNota').textContent = lucro >= 0 ? 'Lucro estimado por lote de ' + qtd + ' unidades' : 'Prejuízo estimado — reveja os preços';
+  
+  if (usaTierAnterior) {
+    document.getElementById('refinoCustoTierAnteriorRow').style.display = '';
+    document.getElementById('refinoCustoTierAnterior').textContent = formatSilver(custoTierAnt);
+  } else {
+    document.getElementById('refinoCustoTierAnteriorRow').style.display = 'none';
+  }
+  
+  if (usarTransporte && custoTransporte > 0) {
+    document.getElementById('refinoTransporteRow').style.display = '';
+    document.getElementById('refinoCustoTransporteVal').textContent = '-' + formatSilver(custoTransporte);
+  } else {
+    document.getElementById('refinoTransporteRow').style.display = 'none';
+  }
+}
+
+function atualizarAvisoPerigoRefino() {
+  const cidade = document.getElementById('refinoCidade').value;
+  const cidadeBruto = document.getElementById('refinoCidadeBruto').value;
+  const cidadeTierAnt = document.getElementById('refinoCidadeTierAnterior').value;
+  const cidadeVenda = document.getElementById('refinoCidadeVenda').value;
+  const aviso = document.getElementById('refinoAvisoPerigo');
+  const avisoText = document.getElementById('refinoAvisoPerigoText');
+  
+  const perigosas = ['Caerleon', 'Brecilien'];
+  const envolvePerigosa = perigosas.includes(cidade) || perigosas.includes(cidadeBruto) || perigosas.includes(cidadeTierAnt) || perigosas.includes(cidadeVenda);
+  
+  if (envolvePerigosa) {
+    aviso.style.display = 'flex';
+    const cidadesPerigo = [cidade, cidadeBruto, cidadeTierAnt, cidadeVenda].filter(c => perigosas.includes(c));
+    const unicas = [...new Set(cidadesPerigo)];
+    avisoText.textContent = 'Atenção: esta rota envolve ' + unicas.join(' e ') + ' (zona perigosa). Risco de PvP no transporte.';
+  } else {
+    aviso.style.display = 'none';
+  }
+}
+
+async function buscarPrecosRefino() {
+  const receita = document.getElementById('refinoReceita').value;
+  const tier = document.getElementById('refinoTier').value;
+  const info = REFINO_INFO[receita];
+  
+  const idBruto = 'T' + tier + '_' + (receita === 'metal' ? 'ORE' : receita === 'couro' ? 'HIDE' : receita === 'tecido' ? 'FIBER' : receita === 'tabua' ? 'WOOD' : 'ROCK');
+  const idRefinado = 'T' + tier + '_' + (receita === 'metal' ? 'METALBAR' : receita === 'couro' ? 'LEATHER' : receita === 'tecido' ? 'CLOTH' : receita === 'tabua' ? 'PLANKS' : 'STONEBLOCK');
+  
+  const items = [idBruto, idRefinado];
+  const tierAnterior = parseInt(tier) > 2;
+  let idTierAnterior = null;
+  
+  if (tierAnterior && info.tierAnterior) {
+    const tAnt = parseInt(tier) - 1;
+    idTierAnterior = 'T' + tAnt + '_' + (receita === 'metal' ? 'METALBAR' : receita === 'couro' ? 'LEATHER' : receita === 'tecido' ? 'CLOTH' : receita === 'tabua' ? 'PLANKS' : 'STONEBLOCK');
+    items.push(idTierAnterior);
+  }
+  
+  const cidade = document.getElementById('refinoCidade').value;
+  
+  setLoading(true);
+  try {
+    const data = await fetchPrices(items, [cidade], [1]);
+    
+    const brutoPrice = getPrice(data, idBruto, cidade, 1);
+    const refinadoPrice = getPrice(data, idRefinado, cidade, 1);
+    
+    if (brutoPrice && brutoPrice.sell) document.getElementById('refinoPrecoBruto').value = brutoPrice.sell;
+    if (refinadoPrice && refinadoPrice.buy) document.getElementById('refinoPrecoRefinado').value = refinadoPrice.buy;
+    
+    if (idTierAnterior) {
+      const tierAntPrice = getPrice(data, idTierAnterior, cidade, 1);
+      if (tierAntPrice && tierAntPrice.sell) document.getElementById('refinoPrecoTierAnterior').value = tierAntPrice.sell;
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function buscarMelhorPrecoVendaRefino() {
+  const receita = document.getElementById('refinoReceita').value;
+  const tier = document.getElementById('refinoTier').value;
+  const info = REFINO_INFO[receita];
+  const idRefinado = 'T' + tier + '_' + (receita === 'metal' ? 'METALBAR' : receita === 'couro' ? 'LEATHER' : receita === 'tecido' ? 'CLOTH' : receita === 'tabua' ? 'PLANKS' : 'STONEBLOCK');
+  
+  setLoading(true);
+  try {
+    const data = await fetchPrices([idRefinado], CIDADES_COM_BRECILIEN, [1]);
+    const grid = document.getElementById('refinoPrecosVendaGrid');
+    grid.style.display = 'block';
+    
+    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px;">';
+    for (const city of CIDADES_COM_BRECILIEN) {
+      const p = getPrice(data, idRefinado, city, 1);
+      const buy = p ? p.buy : 0;
+      html += '<div style="padding:10px;border-radius:6px;background:#111827;border:1px solid rgba(255,255,255,0.06);"><div style="font-size:11px;color:var(--gray);">' + city + '</div><div style="font-size:14px;font-weight:600;color:#4ade80;">' + formatSilver(buy) + '</div></div>';
+    }
+    html += '</div>';
+    grid.innerHTML = html;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
+}
+
+let otimizacaoCancelada = false;
+
+function cancelarOtimizacao() {
+  otimizacaoCancelada = true;
+  document.getElementById('btnOtimizarRota').style.display = '';
+  document.getElementById('btnCancelarOtimizacao').style.display = 'none';
+}
+
+async function otimizarRotaRefino() {
+  otimizacaoCancelada = false;
+  document.getElementById('btnOtimizarRota').style.display = 'none';
+  document.getElementById('btnCancelarOtimizacao').style.display = '';
+  
+  const receita = document.getElementById('refinoReceita').value;
+  const tier = document.getElementById('refinoTier').value;
+  const info = REFINO_INFO[receita];
+  const qtd = parseInt(document.getElementById('refinoQuantidade').value) || 1;
+  const rrr = parseFloat(document.getElementById('refinoRRR').value) || 0;
+  const taxaEstacao = parseFloat(document.getElementById('refinoTaxaEstacao').value) || 0;
+  const tax = getRefinoPremiumTax();
+  const usarTransporte = document.getElementById('refinoTransporteToggle').classList.contains('active');
+  const custoTransporte = usarTransporte ? (parseFloat(document.getElementById('refinoCustoTransporte').value) || 0) : 0;
+  
+  const idBruto = 'T' + tier + '_' + (receita === 'metal' ? 'ORE' : receita === 'couro' ? 'HIDE' : receita === 'tecido' ? 'FIBER' : receita === 'tabua' ? 'WOOD' : 'ROCK');
+  const idRefinado = 'T' + tier + '_' + (receita === 'metal' ? 'METALBAR' : receita === 'couro' ? 'LEATHER' : receita === 'tecido' ? 'CLOTH' : receita === 'tabua' ? 'PLANKS' : 'STONEBLOCK');
+  
+  const items = [idBruto, idRefinado];
+  const tierAnterior = parseInt(tier) > 2;
+  let idTierAnterior = null;
+  
+  if (tierAnterior && info.tierAnterior) {
+    const tAnt = parseInt(tier) - 1;
+    idTierAnterior = 'T' + tAnt + '_' + (receita === 'metal' ? 'METALBAR' : receita === 'couro' ? 'LEATHER' : receita === 'tecido' ? 'CLOTH' : receita === 'tabua' ? 'PLANKS' : 'STONEBLOCK');
+    items.push(idTierAnterior);
+  }
+  
+  const resultadoDiv = document.getElementById('refinoOtimizacaoResultado');
+  resultadoDiv.style.display = 'block';
+  resultadoDiv.innerHTML = '<div class="auto-scanning-msg"><div class="spinner"></div><p>Otimizando rotas...</p></div>';
+  
+  setLoading(true);
+  
+  try {
+    const data = await fetchPrices(items, CIDADES_COM_BRECILIEN, [1]);
+    
+    let melhorLucro = -Infinity;
+    let melhorRota = null;
+    let combinacoes = 0;
+    
+    for (const cidadeBruto of CIDADES_COM_BRECILIEN) {
+      for (const cidadeRefino of CIDADES_COM_BRECILIEN) {
+        for (const cidadeVenda of CIDADES_COM_BRECILIEN) {
+          if (otimizacaoCancelada) break;
+          
+          const brutoPrice = getPrice(data, idBruto, cidadeBruto, 1);
+          const refinadoPrice = getPrice(data, idRefinado, cidadeVenda, 1);
+          
+          if (!brutoPrice || !brutoPrice.sell || !refinadoPrice || !refinadoPrice.buy) continue;
+          
+          let tierAntPrice = null;
+          if (idTierAnterior) {
+            tierAntPrice = getPrice(data, idTierAnterior, cidadeRefino, 1);
+            if (!tierAntPrice || !tierAntPrice.sell) continue;
+          }
+          
+          const precoBruto = brutoPrice.sell;
+          const precoRefinado = refinadoPrice.buy;
+          const precoTierAnt = tierAntPrice ? tierAntPrice.sell : 0;
+          
+          const qtdBruto = qtd * info.ratio;
+          const custoBruto = qtdBruto * precoBruto;
+          const custoTierAnt = tierAnterior && info.tierAnterior ? (qtd * precoTierAnt) : 0;
+          const custoMP = custoBruto + custoTierAnt;
+          const custoEstacao = taxaEstacao * qtd;
+          const retornoValor = custoBruto * (rrr / 100);
+          const receitaBruta = qtd * precoRefinado;
+          const imposto = Math.ceil(receitaBruta * tax);
+          const lucro = receitaBruta - custoMP - custoEstacao + retornoValor - custoTransporte - imposto;
+          
+          combinacoes++;
+          
+          if (lucro > melhorLucro) {
+            melhorLucro = lucro;
+            melhorRota = {
+              cidadeBruto,
+              cidadeRefino,
+              cidadeVenda,
+              precoBruto,
+              precoRefinado,
+              precoTierAnt,
+              lucro,
+              combinacoes
+            };
+          }
+        }
+      }
+      if (otimizacaoCancelada) break;
+    }
+    
+    if (otimizacaoCancelada) {
+      resultadoDiv.innerHTML = '';
+      resultadoDiv.style.display = 'none';
+    } else if (melhorRota) {
+      let html = '<div style="padding:16px;border-radius:10px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);">';
+      html += '<div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:12px;">🚀 Melhor Rota Encontrada</div>';
+      html += '<div class="rota-card"><div class="rota-card-header">📦 Comprar Bruto</div>';
+      html += '<div class="rota-card-row"><span>Cidade</span><span class="value">' + melhorRota.cidadeBruto + '</span></div>';
+      html += '<div class="rota-card-row"><span>Preço/un</span><span class="value">' + formatSilver(melhorRota.precoBruto) + '</span></div></div>';
+      
+      if (idTierAnterior) {
+        html += '<div class="rota-card" style="margin-top:8px;"><div class="rota-card-header">🔧 Tier Anterior</div>';
+        html += '<div class="rota-card-row"><span>Cidade</span><span class="value">' + melhorRota.cidadeRefino + '</span></div>';
+        html += '<div class="rota-card-row"><span>Preço/un</span><span class="value">' + formatSilver(melhorRota.precoTierAnt) + '</span></div></div>';
+      }
+      
+      html += '<div class="rota-card" style="margin-top:8px;"><div class="rota-card-header">💰 Vender Refinado</div>';
+      html += '<div class="rota-card-row"><span>Cidade</span><span class="value">' + melhorRota.cidadeVenda + '</span></div>';
+      html += '<div class="rota-card-row"><span>Preço/un</span><span class="value">' + formatSilver(melhorRota.precoRefinado) + '</span></div></div>';
+      
+      html += '<div class="rota-card-profit" style="margin-top:12px;">';
+      html += '<span class="label">Lucro Líquido</span>';
+      html += '<span class="value" style="color:' + (melhorRota.lucro >= 0 ? 'var(--green)' : '#ef4444') + ';">' + (melhorRota.lucro >= 0 ? '+' : '') + formatSilver(melhorRota.lucro) + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:11px;color:var(--gray);margin-top:8px;">' + melhorRota.combinacoes + ' combinações testadas</div>';
+      html += '</div>';
+      
+      resultadoDiv.innerHTML = html;
+    } else {
+      resultadoDiv.innerHTML = '<div class="empty-state small"><p>Nenhuma rota lucrativa encontrada</p></div>';
+    }
+  } catch (e) {
+    console.error(e);
+    resultadoDiv.innerHTML = '<div class="empty-state small"><p>Erro na otimização</p></div>';
+  } finally {
+    setLoading(false);
+    document.getElementById('btnOtimizarRota').style.display = '';
+    document.getElementById('btnCancelarOtimizacao').style.display = 'none';
+  }
+}
+
+// CRAFT
+let craftMaterialCount = 2;
 
 function onCraftInput(val) {
   const sugestoesBox = document.getElementById('craftSugestoes');
@@ -2541,65 +2517,191 @@ function onCraftInput(val) {
     sugestoesBox.innerHTML = sugestoes.map(s => {
       const id = TRADUCOES[s];
       const nome = getNomeItem(id);
-      return '<div class="sugestao-item" onclick="selecionarCraftSugestao(\'' + escapeHtml(s) + '\')">' + nome + '<span class="sugestao-id">' + id + '</span></div>';
+      return '<div class="sugestao-item" onclick="selecionarCraftItem(\'' + id + '\')">' + escapeHtml(nome) + '</div>';
     }).join('');
     sugestoesBox.style.display = 'block';
   } else {
-    sugestoesBox.innerHTML = '';
     sugestoesBox.style.display = 'none';
   }
 }
 
-function selecionarCraftSugestao(texto) {
-  document.getElementById('craftItemInput').value = texto;
+function selecionarCraftItem(itemId) {
+  document.getElementById('craftItemInput').value = getNomeItem(itemId);
   document.getElementById('craftSugestoes').style.display = 'none';
 }
 
-let craftMaterialCount = 2;
+function addMaterialRow() {
+  craftMaterialCount++;
+  const row = document.createElement('div');
+  row.className = 'craft-material-row';
+  row.id = 'craftMatRow' + craftMaterialCount;
+  row.innerHTML = '<input type="text" class="form-input" placeholder="Material ' + craftMaterialCount + '" style="flex:1;" id="craftMat' + craftMaterialCount + 'Nome">' +
+    '<input type="number" class="form-input" placeholder="Qtd" style="width:80px;" id="craftMat' + craftMaterialCount + 'Qtd" value="1">' +
+    '<input type="number" class="form-input" placeholder="Preço/un" style="width:120px;" id="craftMat' + craftMaterialCount + 'Preco" value="0">' +
+    '<button class="btn-api-buscar" onclick="buscarPrecoMaterial(' + craftMaterialCount + ')" title="Buscar preço na API">🔍</button>' +
+    '<button class="btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="removeMaterialRow(' + craftMaterialCount + ')">✕</button>';
+  document.getElementById('craftMateriais').appendChild(row);
+}
 
+function removeMaterialRow(n) {
+  const row = document.getElementById('craftMatRow' + n);
+  if (row) row.remove();
+}
+
+async function buscarPrecoMaterial(n) {
+  const nome = document.getElementById('craftMat' + n + 'Nome').value;
+  const id = traduzirParaId(nome);
+  if (!id) return;
+  
+  const cidade = document.getElementById('craftCidade').value;
+  setLoading(true);
+  try {
+    const data = await fetchPrices([id], [cidade], [1]);
+    const price = getPrice(data, id, cidade, 1);
+    if (price && price.sell) {
+      document.getElementById('craftMat' + n + 'Preco').value = price.sell;
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function buscarPrecoVendaCraft() {
+  const nome = document.getElementById('craftItemInput').value;
+  const id = traduzirParaId(nome);
+  if (!id) return;
+  
+  const cidade = document.getElementById('craftCidade').value;
+  setLoading(true);
+  try {
+    const data = await fetchPrices([id], [cidade], [1]);
+    const price = getPrice(data, id, cidade, 1);
+    if (price && price.buy) {
+      document.getElementById('craftPrecoVenda').value = price.buy;
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
+}
+
+function getCraftPremiumTax() {
+  return document.getElementById('craftPremiumToggle').classList.contains('active') ? 0.04 : 0.08;
+}
+
+function updateCraftPremiumLabel() {
+  const tax = getCraftPremiumTax();
+}
+
+function atualizarAvisoPerigoCraft() {
+  const cidade = document.getElementById('craftCidade').value;
+  const aviso = document.getElementById('craftAvisoPerigo');
+  const avisoText = document.getElementById('craftAvisoPerigoText');
+  const perigosas = ['Caerleon', 'Brecilien'];
+  
+  if (perigosas.includes(cidade)) {
+    aviso.style.display = 'flex';
+    avisoText.textContent = 'Atenção: ' + cidade + ' é uma cidade de zona perigosa. Risco de PvP no transporte.';
+  } else {
+    aviso.style.display = 'none';
+  }
+}
+
+function calcularCraft() {
+  const precoVenda = parseFloat(document.getElementById('craftPrecoVenda').value) || 0;
+  const qtd = parseInt(document.getElementById('craftQuantidade').value) || 0;
+  const rrr = parseFloat(document.getElementById('craftRRR').value) || 0;
+  const taxaEstacao = parseFloat(document.getElementById('craftTaxaEstacao').value) || 0;
+  const tax = getCraftPremiumTax();
+  
+  const usarTransporte = document.getElementById('craftTransporteToggle').classList.contains('active');
+  const custoTransporte = usarTransporte ? (parseFloat(document.getElementById('craftCustoTransporte').value) || 0) : 0;
+  
+  let custoMP = 0;
+  for (let i = 1; i <= craftMaterialCount; i++) {
+    const nomeEl = document.getElementById('craftMat' + i + 'Nome');
+    const qtdEl = document.getElementById('craftMat' + i + 'Qtd');
+    const precoEl = document.getElementById('craftMat' + i + 'Preco');
+    if (!nomeEl || !qtdEl || !precoEl) continue;
+    
+    const matQtd = parseInt(qtdEl.value) || 0;
+    const matPreco = parseFloat(precoEl.value) || 0;
+    custoMP += matQtd * matPreco;
+  }
+  
+  const custoEstacao = taxaEstacao * qtd;
+  const retornoValor = custoMP * (rrr / 100);
+  const receitaBruta = qtd * precoVenda;
+  const imposto = Math.ceil(receitaBruta * tax);
+  const lucro = receitaBruta - custoMP - custoEstacao + retornoValor - custoTransporte - imposto;
+  const lucroPct = custoMP > 0 ? (lucro / custoMP) : 0;
+  
+  document.getElementById('craftCustoTotal').textContent = formatSilver(custoMP + custoEstacao);
+  document.getElementById('craftReceitaBruta').textContent = formatSilver(receitaBruta);
+  document.getElementById('craftTaxa').textContent = formatSilver(custoEstacao);
+  document.getElementById('craftRetorno').textContent = '+' + formatSilver(retornoValor);
+  document.getElementById('craftImposto').textContent = '-' + formatSilver(imposto);
+  document.getElementById('craftLucroTotal').textContent = (lucro >= 0 ? '+' : '') + formatSilver(lucro);
+  document.getElementById('craftLucroTotal').className = 'result-total-value ' + (lucro >= 0 ? 'positive' : 'negative');
+  document.getElementById('craftLucroPct').textContent = formatPercent(lucroPct);
+  document.getElementById('craftNota').textContent = lucro >= 0 ? 'Lucro estimado por lote de ' + qtd + ' unidades' : 'Prejuízo estimado — reveja os preços';
+  
+  // Breakdown materiais
+  let breakdownHTML = '';
+  for (let i = 1; i <= craftMaterialCount; i++) {
+    const nomeEl = document.getElementById('craftMat' + i + 'Nome');
+    const qtdEl = document.getElementById('craftMat' + i + 'Qtd');
+    const precoEl = document.getElementById('craftMat' + i + 'Preco');
+    if (!nomeEl || !qtdEl || !precoEl) continue;
+    
+    const matNome = nomeEl.value || 'Material ' + i;
+    const matQtd = parseInt(qtdEl.value) || 0;
+    const matPreco = parseFloat(precoEl.value) || 0;
+    const matCusto = matQtd * matPreco;
+    
+    breakdownHTML += '<div class="breakdown-row"><span class="label">' + escapeHtml(matNome) + ' (' + matQtd + '×)</span><span class="amount">' + formatSilver(matCusto) + '</span></div>';
+  }
+  document.getElementById('craftBreakdownMateriais').innerHTML = breakdownHTML;
+  
+  if (usarTransporte && custoTransporte > 0) {
+    document.getElementById('craftTransporteRow').style.display = '';
+    document.getElementById('craftCustoTransporteVal').textContent = '-' + formatSilver(custoTransporte);
+  } else {
+    document.getElementById('craftTransporteRow').style.display = 'none';
+  }
+}
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-
   initBuscar();
-  initBM();
-  updateFlipPremiumLabel();
-  updateBMPremiumLabel();
-  updateRefinoPremiumLabel();
-  updateCraftPremiumLabel();
+  initBMRange();
+  atualizarDescRefino();
   atualizarAvisoPerigoRefino();
   atualizarAvisoPerigoCraft();
-
+  
   // Fechar sugestões ao clicar fora
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#flipItemInput') && !e.target.closest('#flipSugestoes')) {
-      const box = document.getElementById('flipSugestoes');
-      if (box) box.style.display = 'none';
-    }
-    if (!e.target.closest('#buscarInput') && !e.target.closest('#buscarSugestoes')) {
-      const box = document.getElementById('buscarSugestoes');
-      if (box) box.style.display = 'none';
-    }
-    if (!e.target.closest('#craftItemInput') && !e.target.closest('#craftSugestoes')) {
-      const box = document.getElementById('craftSugestoes');
-      if (box) box.style.display = 'none';
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.form-group')) {
+      document.querySelectorAll('.sugestoes-box').forEach(s => s.style.display = 'none');
     }
   });
-
-  // Enter nos inputs
-  document.getElementById('flipItemInput')?.addEventListener('keypress', e => {
-    if (e.key === 'Enter') { document.getElementById('flipSugestoes').style.display = 'none'; scanFlips(); }
+  
+  // Enter para buscar
+  document.getElementById('flipItemInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') scanFlips();
   });
-  document.getElementById('buscarInput')?.addEventListener('keypress', e => {
-    if (e.key === 'Enter') { document.getElementById('buscarSugestoes').style.display = 'none'; const id = traduzirParaId(e.target.value); if (id) selecionarBuscarItem(id); }
-  });
-  document.getElementById('craftItemInput')?.addEventListener('keypress', e => {
-    if (e.key === 'Enter') { document.getElementById('craftSugestoes').style.display = 'none'; }
+  
+  document.getElementById('craftItemInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('craftSugestoes').style.display = 'none';
+    }
   });
 });
-
 </script>
 </body>
 </html>
